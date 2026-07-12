@@ -22,33 +22,31 @@ export function HomeHero({ authed }: { authed: boolean }) {
       animate="animate"
     >
       <motion.div className="order-2 space-y-5 lg:order-1" variants={fadeUp}>
-        <NeoBadge tone="pink">English · Deutsch · 3D AI Tutor</NeoBadge>
-        <h1 className="text-4xl font-black leading-[0.95] tracking-tight text-neo-ink sm:text-5xl lg:text-6xl">
-          Speak with Ao.
-          <br />
-          <span className="rounded-xl bg-neo-yellow px-2 neo-border">
+        <NeoBadge tone="pink">English · German · 3D AI Tutor</NeoBadge>
+        <h1 className="text-4xl font-black leading-[1.15] tracking-tight text-neo-ink sm:text-5xl lg:text-6xl">
+          <span className="block py-1">Speak.</span>
+          <span className="my-1 inline-block rounded-xl bg-neo-yellow px-3 py-2 neo-border text-neo-white">
             Get scored.
           </span>
-          <br />
-          Level up.
+          <span className="block py-1">Level up.</span>
         </h1>
         <p className="max-w-xl text-sm font-medium leading-relaxed text-neo-muted sm:text-base">
-          Short speaking stages, live pronunciation feedback from Gemini, and a
-          VRM avatar that reacts with emotion, motion, and lip-sync. Fail 3
-          times? 3-hour cooldown keeps practice disciplined.
+          Short speaking drills with Ao — a virtual tutor that listens to your
+          pronunciation, gives instant feedback, and reacts with expression &
+          motion. Miss 3 times? A 3-hour cool-down keeps practice disciplined.
         </p>
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
           {authed ? (
             <Link href="/dashboard">
               <NeoButton tone="pink" className="w-full sm:w-auto">
-                Open dashboard
+                Start learning
               </NeoButton>
             </Link>
           ) : (
             <>
               <RegisterLink postLoginRedirectURL="/dashboard">
                 <NeoButton tone="pink" className="w-full sm:w-auto">
-                  Start free
+                  Try free
                 </NeoButton>
               </RegisterLink>
               <LoginLink postLoginRedirectURL="/dashboard">
@@ -59,20 +57,20 @@ export function HomeHero({ authed }: { authed: boolean }) {
             </>
           )}
         </div>
-        <div className="grid grid-cols-3 gap-2">
+        <div className="flex flex-wrap gap-2">
           <NeoChip tone="cyan">Sequential stages</NeoChip>
-          <NeoChip tone="lime">Score ≥ 60 pass</NeoChip>
-          <NeoChip tone="orange">3 tries · 3h lock</NeoChip>
+          <NeoChip tone="lime">Pass ≥ 60</NeoChip>
+          <NeoChip tone="orange">3 misses · 3h</NeoChip>
         </div>
       </motion.div>
 
       <motion.div className="order-1 lg:order-2" variants={fadeUp}>
         <NeoPanel tone="white" className="bg-neo-white">
-          <div className="h-[48vh] min-h-[300px] sm:h-[56vh] lg:h-[min(70vh,640px)]">
+          <div className="h-[36vh] min-h-[200px] sm:h-[48vh] sm:min-h-[280px] lg:h-[min(70vh,640px)]">
             <HomeAvatar />
           </div>
           <p className="border-t-4 border-neo-ink bg-neo-yellow px-4 py-2 text-center text-[11px] font-black uppercase tracking-wide text-neo-ink">
-            Click model · Drag to rotate · Pinch/scroll zoom
+            Click Ao · Drag to rotate · Pinch/zoom
           </p>
         </NeoPanel>
       </motion.div>

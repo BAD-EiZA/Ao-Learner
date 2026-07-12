@@ -2,15 +2,51 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import { NeoCard } from "@/components/ui/neo";
+import { heatClass, type WordHeat } from "@/lib/learning/word-heat";
+
+export type BreakdownView = {
+  sounds: number;
+  completeness: number;
+  stress: number;
+  clarity: number;
+};
 
 type Props = {
   score?: number | null;
   feedback?: string | null;
   isCorrect?: boolean | null;
   loading?: boolean;
+  breakdown?: BreakdownView | null;
+  combo?: number;
+  wordHeat?: WordHeat[] | null;
 };
 
-export function FeedbackPanel({ score, feedback, isCorrect, loading }: Props) {
+function Bar({ label, value }: { label: string; value: number }) {
+  return (
+    <div className="space-y-0.5">
+      <div className="flex justify-between text-[10px] font-black uppercase">
+        <span>{label}</span>
+        <span>{value}</span>
+      </div>
+      <div className="h-1.5 overflow-hidden rounded-full bg-neo-white/60">
+        <div
+          className="h-full bg-neo-ink transition-all"
+          style={{ width: `${Math.max(0, Math.min(100, value))}%` }}
+        />
+      </div>
+    </div>
+  );
+}
+
+export function FeedbackPanel({
+  score,
+  feedback,
+  isCorrect,
+  loading,
+  breakdown,
+  combo,
+  wordHeat,
+}: Props) {
   return (
     <AnimatePresence mode="wait">
       {loading ? (
@@ -35,13 +71,38 @@ export function FeedbackPanel({ score, feedback, isCorrect, loading }: Props) {
           <NeoCard
             tone={isCorrect ? "lime" : "pink"}
             hover={false}
-            className="text-sm"
+            className="space-y-2 text-sm"
           >
             {score != null && (
               <p className="mb-1 text-2xl font-black">
                 Score: {score}
                 <span className="text-sm font-bold opacity-70"> / 100</span>
+                {combo != null && combo > 1 && (
+                  <span className="ml-2 text-sm font-black">×{combo} combo</span>
+                )}
               </p>
+            )}
+            {wordHeat && wordHeat.length > 0 && (
+              <div className="flex flex-wrap gap-1.5">
+                {wordHeat.map((w, i) => (
+                  <span
+                    key={`${w.word}-${i}`}
+                    title={`${w.score}`}
+                    className={`neo-border rounded-lg px-2 py-0.5 text-xs font-black ${heatClass(w.score)}`}
+                  >
+                    {w.word}
+                    <span className="ml-1 opacity-70">{w.score}</span>
+                  </span>
+                ))}
+              </div>
+            )}
+            {breakdown && (
+              <div className="grid gap-1.5">
+                <Bar label="Sounds" value={breakdown.sounds} />
+                <Bar label="Words" value={breakdown.completeness} />
+                <Bar label="Stress" value={breakdown.stress} />
+                <Bar label="Clarity" value={breakdown.clarity} />
+              </div>
             )}
             {feedback && (
               <p className="font-medium leading-relaxed">{feedback}</p>

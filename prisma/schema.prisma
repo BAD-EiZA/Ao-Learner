@@ -8,28 +8,48 @@ datasource db {
 }
 
 model User {
-  id        String         @id @default(uuid())
-  kindeId   String         @unique
-  email     String         @unique
-  name      String?
-  createdAt DateTime       @default(now())
-  updatedAt DateTime       @updatedAt
-  progress  UserProgress[]
+  id             String                     @id @default(uuid())
+  kindeId        String                     @unique
+  email          String                     @unique
+  name           String?
+  createdAt      DateTime                   @default(now())
+  updatedAt      DateTime                   @updatedAt
+  progress       UserProgress[]
+  attempts       AttemptHistory[]
+  stats          UserStats?
+  dailyCompleted DailyChallengeCompletion[]
+  reviews        ReviewItem[]
+  phonemeStats   PhonemeStat[]
+  events         AnalyticsEvent[]
+  achievements   UserAchievement[]
+  questProgress  QuestProgress[]
+  wordBank       WordBankItem[]
+  checkpointRuns CheckpointRun[]
+  clubMembership ClubMember?
 }
 
 model Stage {
-  id             String         @id @default(uuid())
+  id             String                     @id @default(uuid())
   language       Language
   title          String
   description    String
   expectedText   String
-  /// Arti dalam Bahasa Indonesia
-  meaningId      String         @default("")
+  meaningId      String                     @default("")
   referenceAudio String
   order          Int
+  cefrLevel      CefrLevel                  @default(A1)
+  mode           StageMode                  @default(PHRASE)
+  tags           String[]                   @default([])
+  scenarioId     String?
+  turns          Json?
   userProgress   UserProgress[]
+  attempts       AttemptHistory[]
+  dailyCompleted DailyChallengeCompletion[]
+  reviews        ReviewItem[]
 
   @@unique([language, order])
+  @@index([language, cefrLevel])
+  @@index([scenarioId])
 }
 
 model UserProgress {
@@ -41,6 +61,9 @@ model UserProgress {
   bestScore     Int?
   cooldownUntil DateTime?
   lastAttemptAt DateTime  @default(now())
+  /// Duolingo-style crowns 0–5
+  crowns        Int       @default(0)
+  legendary     Boolean   @default(false)
 
   user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
   stage Stage @relation(fields: [stageId], references: [id], onDelete: Cascade)
@@ -48,7 +71,234 @@ model UserProgress {
   @@unique([userId, stageId])
 }
 
+model AttemptHistory {
+  id        String   @id @default(uuid())
+  userId    String
+  stageId   String
+  score     Int
+  passed    Boolean
+  feedback  String?
+  createdAt DateTime @default(now())
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  stage Stage @relation(fields: [stageId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@index([userId, stageId])
+}
+
+model UserStats {
+  userId            String     @id
+  currentStreak     Int        @default(0)
+  longestStreak     Int        @default(0)
+  lastActiveDate    DateTime?
+  totalAttempts     Int        @default(0)
+  totalPassed       Int        @default(0)
+  xp                Int        @default(0)
+  level             Int        @default(1)
+  placementDone     Boolean    @default(false)
+  placementCefr     CefrLevel?
+  passBoost         Int        @default(0)
+  leaderboardOptIn  Boolean    @default(false)
+  consecutivePasses Int        @default(0)
+  aoMood            String     @default("neutral")
+  /// Hearts / energy (Duolingo-style)
+  hearts            Int        @default(5)
+  heartsUpdatedAt   DateTime   @default(now())
+  /// Daily XP goal: 10 | 20 | 30
+  dailyXpGoal       Int        @default(20)
+  dailyXpDate       String?
+  dailyXpEarned     Int        @default(0)
+  /// Streak freeze charges
+  streakFreezes     Int        @default(1)
+  freezeUsedDate    String?
+  /// Combo of consecutive passes in session (persisted lightly)
+  combo             Int        @default(0)
+  /// Learning why: travel | work | school | fun
+  learningWhy       String?
+  reminderHour      Int?
+  /// Soft monetization
+  isPlus            Boolean    @default(false)
+  plusUntil         DateTime?
+  /// Weekly league
+  leagueTier        String     @default("bronze")
+  weekXp            Int        @default(0)
+  weekKey           String?
+  /// Gems (soft currency)
+  gems              Int        @default(0)
+  /// Super trial once
+  trialUsed         Boolean    @default(false)
+  trialUntil        DateTime?
+  /// Path chests claimed bitmask / count
+  chestsClaimed     Int        @default(0)
+  /// Friend pair code for duo quests
+  friendCode        String?
+  friendOfUserId    String?
+  /// Club invite code joined
+  clubCode          String?
+  updatedAt         DateTime   @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model WordBankItem {
+  id        String   @id @default(uuid())
+  userId    String
+  stageId   String?
+  phrase    String
+  meaningId String   @default("")
+  language  Language @default(ENGLISH)
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@unique([userId, phrase, language])
+}
+
+model CheckpointRun {
+  id        String   @id @default(uuid())
+  userId    String
+  language  Language
+  unitKey   String
+  scoreAvg  Int
+  passed    Boolean
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, language])
+  @@unique([userId, language, unitKey])
+}
+
+model Club {
+  id        String       @id @default(uuid())
+  code      String       @unique
+  name      String
+  weekXp    Int          @default(0)
+  weekKey   String?
+  createdAt DateTime     @default(now())
+  members   ClubMember[]
+}
+
+model ClubMember {
+  id     String @id @default(uuid())
+  clubId String
+  userId String @unique
+  weekXp Int    @default(0)
+
+  club Club @relation(fields: [clubId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([clubId])
+}
+
+model DailyChallengeCompletion {
+  id        String   @id @default(uuid())
+  userId    String
+  dateKey   String
+  stageId   String
+  score     Int?
+  passed    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  stage Stage @relation(fields: [stageId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, dateKey])
+}
+
+model ReviewItem {
+  id           String   @id @default(uuid())
+  userId       String
+  stageId      String
+  dueAt        DateTime
+  ease         Float    @default(2.5)
+  intervalDays Int      @default(1)
+  repetitions  Int      @default(0)
+  lastScore    Int?
+  updatedAt    DateTime @updatedAt
+  createdAt    DateTime @default(now())
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  stage Stage @relation(fields: [stageId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, stageId])
+  @@index([userId, dueAt])
+}
+
+model PhonemeStat {
+  id        String   @id @default(uuid())
+  userId    String
+  bucket    String
+  language  Language
+  fails     Int      @default(0)
+  attempts  Int      @default(0)
+  sumScore  Int      @default(0)
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, bucket, language])
+  @@index([userId])
+}
+
+model AnalyticsEvent {
+  id        String   @id @default(uuid())
+  userId    String?
+  name      String
+  props     Json?
+  createdAt DateTime @default(now())
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([name, createdAt])
+  @@index([userId, createdAt])
+}
+
+model UserAchievement {
+  id         String   @id @default(uuid())
+  userId     String
+  code       String
+  unlockedAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, code])
+  @@index([userId])
+}
+
+model QuestProgress {
+  id        String   @id @default(uuid())
+  userId    String
+  questCode String
+  dateKey   String
+  progress  Int      @default(0)
+  target    Int
+  completed Boolean  @default(false)
+  claimed   Boolean  @default(false)
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, questCode, dateKey])
+  @@index([userId, dateKey])
+}
+
 enum Language {
   ENGLISH
   GERMAN
+}
+
+enum StageMode {
+  PHRASE
+  DIALOGUE
+  ROLEPLAY
+  STORY
+}
+
+enum CefrLevel {
+  A1
+  A2
+  B1
 }

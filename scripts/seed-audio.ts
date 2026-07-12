@@ -8,16 +8,23 @@
  * Re-run safe: skips stages that already have ufs.sh / uploadthing URLs.
  */
 import "dotenv/config";
+import dns from "node:dns";
 import { GoogleGenAI, Modality } from "@google/genai";
 import { PrismaClient } from "../src/generated/prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
+import { Pool } from "pg";
 import { UTApi, UTFile } from "uploadthing/server";
 import { getGeminiKeyCount, withGeminiKey } from "../src/lib/ai/gemini-keys";
+import { dbConnectionString } from "../src/lib/db/prisma";
 
-const adapter = new PrismaPg({
-  connectionString: process.env.DATABASE_URL!,
+dns.setDefaultResultOrder("ipv4first");
+
+const pool = new Pool({
+  connectionString: dbConnectionString(),
+  connectionTimeoutMillis: 30_000,
+  ssl: { rejectUnauthorized: false },
 });
-const prisma = new PrismaClient({ adapter });
+const prisma = new PrismaClient({ adapter: new PrismaPg(pool) });
 const utapi = new UTApi();
 
 const TTS_MODEL =
@@ -30,18 +37,12 @@ function sleep(ms: number) {
 }
 
 function isRemoteAudio(url: string) {
-  // force re-upload of old raw L16 files: only skip if looks like wav filename
   if (!url.startsWith("http")) return false;
-  if (
-    !(
-      url.includes("ufs.sh") ||
-      url.includes("uploadthing") ||
-      url.includes("utfs.io")
-    )
-  )
-    return false;
-  // re-seed all existing until converted to .wav names
-  return url.includes(".wav") || url.endsWith(".wav");
+  return (
+    url.includes("ufs.sh") ||
+    url.includes("uploadthing") ||
+    url.includes("utfs.io")
+  );
 }
 
 function parseRetryMs(err: unknown): number {
@@ -251,4 +252,7 @@ main()
     console.error(e);
     process.exit(1);
   })
-  .finally(() => prisma.$disconnect());
+  .finally(async () => {
+    await prisma.$disconnect();
+    await pool.end();
+  });

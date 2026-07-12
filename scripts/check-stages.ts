@@ -1,9 +1,19 @@
 import "dotenv/config";
+import dns from "node:dns";
 import { PrismaClient } from "../src/generated/prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
+import { Pool } from "pg";
+import { dbConnectionString } from "../src/lib/db/prisma";
 
+dns.setDefaultResultOrder("ipv4first");
+
+const pool = new Pool({
+  connectionString: dbConnectionString(),
+  connectionTimeoutMillis: 30_000,
+  ssl: { rejectUnauthorized: false },
+});
 const p = new PrismaClient({
-  adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL! }),
+  adapter: new PrismaPg(pool),
 });
 
 async function main() {
@@ -23,4 +33,7 @@ async function main() {
 
 main()
   .catch(console.error)
-  .finally(() => p.$disconnect());
+  .finally(async () => {
+    await p.$disconnect();
+    await pool.end();
+  });

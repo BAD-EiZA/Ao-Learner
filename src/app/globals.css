@@ -1,22 +1,29 @@
 @import "tailwindcss";
 
+/* ColorHunt: https://colorhunt.co/palette/1b4ef53874ff5996fff4ceff */
+/* #1B4EF5 #3874FF #5996FF #F4CEFF */
+
 :root {
-  --background: #fff8e7;
-  --foreground: #111111;
+  --background: #f4f7ff;
+  --foreground: #1b4ef5;
+  --p-deep: #1b4ef5;
+  --p-mid: #3874ff;
+  --p-light: #5996ff;
+  --p-soft: #f4ceff;
 }
 
 @theme {
-  --color-background: #fff8e7;
-  --color-foreground: #111111;
-  --color-neo-yellow: #ffe566;
-  --color-neo-pink: #ff6b9d;
-  --color-neo-cyan: #5ce1e6;
-  --color-neo-lime: #b8f25a;
-  --color-neo-purple: #c4a1ff;
-  --color-neo-orange: #ff9f43;
+  --color-background: #f4f7ff;
+  --color-foreground: #1b4ef5;
+  --color-neo-yellow: #3874ff;
+  --color-neo-pink: #f4ceff;
+  --color-neo-cyan: #5996ff;
+  --color-neo-lime: #5996ff;
+  --color-neo-purple: #f4ceff;
+  --color-neo-orange: #3874ff;
   --color-neo-white: #ffffff;
-  --color-neo-ink: #111111;
-  --color-neo-muted: #3d3d3d;
+  --color-neo-ink: #1b4ef5;
+  --color-neo-muted: #3d5fd4;
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
@@ -24,17 +31,19 @@
 html,
 body {
   min-height: 100%;
+  overflow-x: clip;
+  max-width: 100vw;
 }
 
 body {
-  background-color: #fff8e7 !important;
+  background-color: #f4f7ff !important;
   background-image:
-    radial-gradient(circle at 12% 18%, rgba(255, 229, 102, 0.55) 0 18%, transparent 19%),
-    radial-gradient(circle at 88% 12%, rgba(255, 107, 157, 0.35) 0 14%, transparent 15%),
-    radial-gradient(circle at 70% 80%, rgba(92, 225, 230, 0.3) 0 16%, transparent 17%),
-    radial-gradient(circle at 20% 85%, rgba(184, 242, 90, 0.28) 0 12%, transparent 13%),
-    linear-gradient(180deg, #fff8e7 0%, #ffe9c7 100%) !important;
-  color: #111111 !important;
+    radial-gradient(circle at 12% 18%, rgba(244, 206, 255, 0.7) 0 18%, transparent 19%),
+    radial-gradient(circle at 88% 12%, rgba(89, 150, 255, 0.35) 0 14%, transparent 15%),
+    radial-gradient(circle at 70% 80%, rgba(56, 116, 255, 0.22) 0 16%, transparent 17%),
+    radial-gradient(circle at 20% 85%, rgba(244, 206, 255, 0.4) 0 12%, transparent 13%),
+    linear-gradient(180deg, #f4f7ff 0%, #e8eeff 100%) !important;
+  color: #1b4ef5 !important;
   font-family: var(--font-geist-sans), system-ui, sans-serif;
 }
 
@@ -43,62 +52,86 @@ body {
 }
 
 ::selection {
-  background: #ffe566;
-  color: #111111;
+  background: #f4ceff;
+  color: #1b4ef5;
 }
 
-/* Explicit neo utilities (always available, independent of @theme scan) */
-.bg-neo-yellow { background-color: #ffe566 !important; }
-.bg-neo-pink { background-color: #ff6b9d !important; }
-.bg-neo-cyan { background-color: #5ce1e6 !important; }
-.bg-neo-lime { background-color: #b8f25a !important; }
-.bg-neo-purple { background-color: #c4a1ff !important; }
-.bg-neo-orange { background-color: #ff9f43 !important; }
+/* Explicit neo utilities */
+.bg-neo-yellow { background-color: #3874ff !important; }
+.bg-neo-pink { background-color: #f4ceff !important; }
+.bg-neo-cyan { background-color: #5996ff !important; }
+.bg-neo-lime { background-color: #5996ff !important; }
+.bg-neo-purple { background-color: #f4ceff !important; }
+.bg-neo-orange { background-color: #3874ff !important; }
 .bg-neo-white { background-color: #ffffff !important; }
-.bg-neo-ink { background-color: #111111 !important; }
+.bg-neo-ink { background-color: #1b4ef5 !important; }
 
-.text-neo-yellow { color: #ffe566 !important; }
-.text-neo-pink { color: #ff6b9d !important; }
-.text-neo-cyan { color: #5ce1e6 !important; }
-.text-neo-lime { color: #b8f25a !important; }
-.text-neo-purple { color: #c4a1ff !important; }
-.text-neo-orange { color: #ff9f43 !important; }
+.text-neo-yellow { color: #3874ff !important; }
+.text-neo-pink { color: #f4ceff !important; }
+.text-neo-cyan { color: #5996ff !important; }
+.text-neo-lime { color: #5996ff !important; }
+.text-neo-purple { color: #f4ceff !important; }
+.text-neo-orange { color: #3874ff !important; }
 .text-neo-white { color: #ffffff !important; }
-.text-neo-ink { color: #111111 !important; }
-.text-neo-muted { color: #3d3d3d !important; }
+.text-neo-ink { color: #1b4ef5 !important; }
+.text-neo-muted { color: #3d5fd4 !important; }
 
-.border-neo-ink { border-color: #111111 !important; }
-.border-neo-yellow { border-color: #ffe566 !important; }
+/* Readable text on mid/deep blue fills */
+.bg-neo-yellow,
+.bg-neo-cyan,
+.bg-neo-lime,
+.bg-neo-orange {
+  color: #ffffff !important;
+}
+.bg-neo-yellow.text-neo-ink,
+.bg-neo-cyan.text-neo-ink,
+.bg-neo-lime.text-neo-ink,
+.bg-neo-orange.text-neo-ink {
+  color: #ffffff !important;
+}
+
+.border-neo-ink { border-color: #1b4ef5 !important; }
+.border-neo-yellow { border-color: #3874ff !important; }
 
 .neo-border {
-  border: 3px solid #111111 !important;
+  border: 3px solid #1b4ef5 !important;
 }
 
 .neo-shadow {
-  box-shadow: 4px 4px 0 #111111 !important;
+  box-shadow: 4px 4px 0 #1b4ef5 !important;
 }
 
 .neo-shadow-lg {
-  box-shadow: 6px 6px 0 #111111 !important;
+  box-shadow: 6px 6px 0 #1b4ef5 !important;
 }
 
 .neo-shadow-sm {
-  box-shadow: 2px 2px 0 #111111 !important;
+  box-shadow: 2px 2px 0 #1b4ef5 !important;
 }
 
 .neo-press:active {
   transform: translate(3px, 3px);
-  box-shadow: 1px 1px 0 #111111 !important;
+  box-shadow: 1px 1px 0 #1b4ef5 !important;
 }
 
 .neo-grid-bg {
   background-image:
-    linear-gradient(to right, rgba(17, 17, 17, 0.05) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(17, 17, 17, 0.05) 1px, transparent 1px),
-    radial-gradient(circle at 12% 18%, rgba(255, 229, 102, 0.55) 0 18%, transparent 19%),
-    radial-gradient(circle at 88% 12%, rgba(255, 107, 157, 0.35) 0 14%, transparent 15%),
-    radial-gradient(circle at 70% 80%, rgba(92, 225, 230, 0.3) 0 16%, transparent 17%),
-    linear-gradient(180deg, #fff8e7 0%, #ffe9c7 100%);
+    linear-gradient(to right, rgba(27, 78, 245, 0.06) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(27, 78, 245, 0.06) 1px, transparent 1px),
+    radial-gradient(circle at 12% 18%, rgba(244, 206, 255, 0.65) 0 18%, transparent 19%),
+    radial-gradient(circle at 88% 12%, rgba(89, 150, 255, 0.35) 0 14%, transparent 15%),
+    radial-gradient(circle at 70% 80%, rgba(56, 116, 255, 0.2) 0 16%, transparent 17%),
+    linear-gradient(180deg, #f4f7ff 0%, #e8eeff 100%);
   background-size: 24px 24px, 24px 24px, auto, auto, auto, auto;
-  background-color: #fff8e7;
+  background-color: #f4f7ff;
+}
+
+/* Reduced motion */
+html.reduce-motion *,
+html.reduce-motion *::before,
+html.reduce-motion *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
 }

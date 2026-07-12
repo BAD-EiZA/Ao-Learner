@@ -39,6 +39,8 @@ type AvatarViewerProps = {
   /** Called when a non-looping clip finishes */
   onAnimationFinished?: () => void;
   onReady?: () => void;
+  /** Bump to force re-play even if animationUrl is unchanged */
+  animationNonce?: number;
 };
 
 const EMOTION_MAP: Record<Emotion, VRMExpressionPresetName | null> = {
@@ -93,8 +95,13 @@ function applyMouth(vrm: VRM, mouthOpen: number) {
 
 const clipCache = new Map<string, Promise<THREE.AnimationClip | null>>();
 
+function stripQuery(url: string) {
+  return url.split("?")[0] ?? url;
+}
+
 function loadClip(url: string, vrm: VRM): Promise<THREE.AnimationClip | null> {
-  const cacheKey = `${url}::${vrm.scene.uuid}`;
+  const clean = stripQuery(url);
+  const cacheKey = `${clean}::${vrm.scene.uuid}`;
   const existing = clipCache.get(cacheKey);
   if (existing) return existing;
 
@@ -102,7 +109,7 @@ function loadClip(url: string, vrm: VRM): Promise<THREE.AnimationClip | null> {
     const animLoader = new GLTFLoader();
     animLoader.register((parser) => new VRMAnimationLoaderPlugin(parser));
     animLoader.load(
-      url,
+      clean,
       (animGltf) => {
         const animations = animGltf.userData.vrmAnimations as
           | VRMAnimation[]
@@ -137,6 +144,7 @@ function VrmModel({
   fadeDuration = FADE_DEFAULT,
   onAnimationFinished,
   onReady,
+  animationNonce = 0,
 }: {
   url: string;
   emotion?: Emotion;
@@ -148,12 +156,15 @@ function VrmModel({
   fadeDuration?: number;
   onAnimationFinished?: () => void;
   onReady?: () => void;
+  animationNonce?: number;
 }) {
   const group = useRef<THREE.Group>(null);
   const vrmRef = useRef<VRM | null>(null);
   const mixerRef = useRef<THREE.AnimationMixer | null>(null);
   const currentActionRef = useRef<THREE.AnimationAction | null>(null);
   const currentUrlRef = useRef<string | null>(null);
+  const currentLoopRef = useRef(true);
+  const oneShotDoneRef = useRef(false);
   const finishedListenerRef = useRef<
     ((e: { action: THREE.AnimationAction }) => void) | null
   >(null);
@@ -227,70 +238,44 @@ function VrmModel({
 
   // Smooth crossfade when animationUrl / loop changes
   useEffect(() => {
-    let cancelled = false;
     if (!animationUrl) return;
+    let alive = true;
+    const requestId = Symbol("anim");
 
     const run = async () => {
-      // wait for VRM + mixer
       let tries = 0;
-      while ((!vrmRef.current || !mixerRef.current) && tries < 80) {
-        await new Promise((r) => setTimeout(r, 50));
+      while ((!vrmRef.current || !mixerRef.current) && tries < 100) {
+        await new Promise((r) => setTimeout(r, 40));
         tries++;
-        if (cancelled) return;
+        if (!alive) return;
       }
       const vrm = vrmRef.current;
       const mixer = mixerRef.current;
-      if (!vrm || !mixer || cancelled) return;
+      if (!vrm || !mixer || !alive) return;
 
       const clip = await loadClip(animationUrl, vrm);
-      if (cancelled || !clip || !mixerRef.current || vrmRef.current !== vrm)
-        return;
+      if (!alive || !clip || !mixerRef.current || vrmRef.current !== vrm) return;
 
       const mixerNow = mixerRef.current;
       const next = mixerNow.clipAction(clip);
       const prev = currentActionRef.current;
       const wantLoop = loopRef.current;
-      const fade = Math.max(0.45, fadeRef.current);
+      const fade = Math.max(0.4, fadeRef.current);
 
-      // SAME clip already current — never hard-reset (fixes LookAround→LookAround snap)
-      if (prev === next || currentUrlRef.current === animationUrl) {
-        if (prev && (prev === next || prev.getClip() === clip)) {
-          // ensure still playing as loop idle without restarting time
-          if (wantLoop) {
-            prev.setLoop(THREE.LoopRepeat, Infinity);
-            prev.clampWhenFinished = false;
-            prev.enabled = true;
-            prev.paused = false;
-            prev.setEffectiveWeight(1);
-            if (!prev.isRunning()) {
-              // resume gently from current time, do not reset()
-              prev.play();
-            }
-            // clear one-shot finished listener
-            if (finishedListenerRef.current) {
-              mixerNow.removeEventListener(
-                "finished",
-                finishedListenerRef.current as unknown as () => void
-              );
-              finishedListenerRef.current = null;
-            }
-          }
-          currentActionRef.current = prev;
-          currentUrlRef.current = animationUrl;
-          applyEmotion(vrm, emotionRef.current);
-          return;
-        }
+      // Skip only if same looping idle is already running
+      if (
+        currentUrlRef.current === animationUrl &&
+        currentLoopRef.current === wantLoop &&
+        wantLoop &&
+        prev === next &&
+        prev.isRunning() &&
+        prev.getEffectiveWeight() > 0.9
+      ) {
+        applyEmotion(vrm, emotionRef.current);
+        return;
       }
 
-      next.enabled = true;
-      next.setEffectiveTimeScale(1);
-      next.setLoop(
-        wantLoop ? THREE.LoopRepeat : THREE.LoopOnce,
-        wantLoop ? Infinity : 1
-      );
-      next.clampWhenFinished = !wantLoop;
-
-      // finished callback for one-shots only
+      // teardown previous finished listener
       if (finishedListenerRef.current) {
         mixerNow.removeEventListener(
           "finished",
@@ -298,9 +283,21 @@ function VrmModel({
         );
         finishedListenerRef.current = null;
       }
+      oneShotDoneRef.current = false;
+
+      next.enabled = true;
+      next.paused = false;
+      next.setEffectiveTimeScale(1);
+      next.setLoop(
+        wantLoop ? THREE.LoopRepeat : THREE.LoopOnce,
+        wantLoop ? Infinity : 1
+      );
+      next.clampWhenFinished = !wantLoop;
+
       if (!wantLoop) {
         const onFinished = (e: { action: THREE.AnimationAction }) => {
-          if (e.action !== next) return;
+          if (e.action !== next || oneShotDoneRef.current) return;
+          oneShotDoneRef.current = true;
           finishedCbRef.current?.();
         };
         finishedListenerRef.current = onFinished;
@@ -310,30 +307,37 @@ function VrmModel({
         );
       }
 
+      // Always start one-shots from t=0; blend from previous if different
       if (prev && prev !== next) {
-        // smooth blend: start next at weight 0, crossfade from prev
-        next.reset();
-        next.setEffectiveWeight(0);
-        next.play();
-        prev.crossFadeTo(next, fade, true);
-      } else {
-        // first play only
         next.reset();
         next.setEffectiveWeight(1);
-        next.fadeIn(fade * 0.5);
+        next.play();
+        // fade previous out while next is already at full weight path
+        try {
+          prev.crossFadeTo(next, fade, true);
+        } catch {
+          prev.fadeOut(fade);
+        }
+        // ensure next is audible even if crossFade glitches
+        next.setEffectiveWeight(1);
+      } else {
+        next.reset();
+        next.setEffectiveWeight(1);
         next.play();
       }
 
       currentActionRef.current = next;
       currentUrlRef.current = animationUrl;
+      currentLoopRef.current = wantLoop;
       applyEmotion(vrm, emotionRef.current);
+      void requestId;
     };
 
     void run();
     return () => {
-      cancelled = true;
+      alive = false;
     };
-  }, [animationUrl, loopAnimation]);
+  }, [animationUrl, loopAnimation, animationNonce]);
 
   useEffect(() => {
     const vrm = vrmRef.current;
@@ -346,6 +350,22 @@ function VrmModel({
 
     if (mixerRef.current && currentActionRef.current) {
       mixerRef.current.update(delta);
+
+      // Fallback finish for one-shots (VRMA often skips mixer "finished")
+      const action = currentActionRef.current;
+      if (
+        action &&
+        !currentLoopRef.current &&
+        !oneShotDoneRef.current
+      ) {
+        const dur = action.getClip().duration;
+        const t = action.time;
+        // require some progress so we don't finish on frame 0
+        if (dur > 0.05 && t >= Math.max(0.2, dur - 0.08)) {
+          oneShotDoneRef.current = true;
+          finishedCbRef.current?.();
+        }
+      }
     } else {
       idle.current += delta;
       const t = idle.current;
@@ -399,9 +419,10 @@ export function AvatarViewer({
   cameraTarget = [0, 0.95, 0],
   loopAnimation = true,
   fadeDuration = FADE_DEFAULT,
-  backgroundColor = "#fff1c9",
+  backgroundColor = "#F4CEFF",
   onAnimationFinished,
   onReady,
+  animationNonce = 0,
 }: AvatarViewerProps) {
   const bones = useMemo(
     () => boneCommands ?? STANDING_POSE,
@@ -430,6 +451,7 @@ export function AvatarViewer({
             fadeDuration={fadeDuration}
             onAnimationFinished={onAnimationFinished}
             onReady={onReady}
+            animationNonce={animationNonce}
           />
           <Environment preset="city" />
           <ContactShadows

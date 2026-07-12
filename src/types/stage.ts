@@ -1,3 +1,11 @@
+export type CefrLevel = "A1" | "A2" | "B1";
+
+export type StageTurn = {
+  expectedText: string;
+  meaningId: string;
+  prompt?: string;
+};
+
 export type StageView = {
   id: string;
   title: string;
@@ -7,6 +15,9 @@ export type StageView = {
   referenceAudio: string;
   language: "ENGLISH" | "GERMAN";
   order: number;
+  cefrLevel: CefrLevel;
+  mode?: "PHRASE" | "DIALOGUE" | "ROLEPLAY" | "STORY";
+  turns?: StageTurn[] | null;
   unlocked: boolean;
   isCompleted: boolean;
   attemptsCount: number;
@@ -14,4 +25,6 @@ export type StageView = {
   bestScore: number | null;
   cooldownUntil: string | null;
   cooldownActive: boolean;
+  crowns?: number;
+  legendary?: boolean;
 };

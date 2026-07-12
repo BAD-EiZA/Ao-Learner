@@ -6,9 +6,21 @@ import type { ReactNode } from "react";
 
 const press = {
   whileHover: { y: -2 },
-  whileTap: { x: 3, y: 3, boxShadow: "1px 1px 0 #111111" },
+  whileTap: { x: 3, y: 3, boxShadow: "1px 1px 0 #1B4EF5" },
   transition: { type: "spring" as const, stiffness: 500, damping: 28 },
 };
+
+function motionSafe() {
+  if (typeof document === "undefined") return press;
+  if (document.documentElement.classList.contains("reduce-motion")) {
+    return {
+      whileHover: undefined,
+      whileTap: undefined,
+      transition: { duration: 0 },
+    };
+  }
+  return press;
+}
 
 type Tone =
   | "yellow"
@@ -20,15 +32,16 @@ type Tone =
   | "white"
   | "ink";
 
+/** Mapped to ColorHunt: deep / mid / light / soft */
 const tones: Record<Tone, string> = {
-  yellow: "bg-neo-yellow text-neo-ink",
-  pink: "bg-neo-pink text-neo-ink",
-  cyan: "bg-neo-cyan text-neo-ink",
-  lime: "bg-neo-lime text-neo-ink",
-  purple: "bg-neo-purple text-neo-ink",
-  orange: "bg-neo-orange text-neo-ink",
+  yellow: "bg-neo-yellow text-neo-white", // #3874FF
+  pink: "bg-neo-pink text-neo-ink", // #F4CEFF
+  cyan: "bg-neo-cyan text-neo-white", // #5996FF
+  lime: "bg-neo-lime text-neo-white", // #5996FF
+  purple: "bg-neo-purple text-neo-ink", // #F4CEFF
+  orange: "bg-neo-orange text-neo-white", // #3874FF
   white: "bg-neo-white text-neo-ink",
-  ink: "bg-neo-ink text-neo-white",
+  ink: "bg-neo-ink text-neo-white", // #1B4EF5
 };
 
 export function NeoCard({
@@ -50,7 +63,7 @@ export function NeoCard({
         tones[tone],
         className
       )}
-      {...(hover ? press : {})}
+      {...(hover ? motionSafe() : {})}
       {...props}
     >
       {children}
@@ -77,12 +90,12 @@ export function NeoButton({
       type={type}
       disabled={disabled}
       className={cn(
-        "neo-border neo-shadow inline-flex items-center justify-center rounded-xl px-5 py-3 text-sm font-black uppercase tracking-wide",
+        "neo-border neo-shadow inline-flex min-h-11 items-center justify-center rounded-xl px-4 py-2.5 text-sm font-black uppercase tracking-wide sm:px-5 sm:py-3",
         tones[tone],
         disabled && "pointer-events-none opacity-50",
         className
       )}
-      {...press}
+      {...motionSafe()}
       {...props}
     >
       {children}

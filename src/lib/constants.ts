@@ -1,6 +1,10 @@
 export const PASS_SCORE = Number(process.env.PASS_SCORE_THRESHOLD ?? 60);
 export const MAX_ATTEMPTS = Number(process.env.MAX_ATTEMPTS ?? 3);
 export const COOLDOWN_HOURS = Number(process.env.COOLDOWN_HOURS ?? 3);
+/** Plus members get shorter lockout after max fails */
+export const PLUS_COOLDOWN_HOURS = Number(
+  process.env.PLUS_COOLDOWN_HOURS ?? 0.5
+);
 export const GEMINI_MODEL =
   process.env.GEMINI_MODEL ?? "gemini-3.1-flash-lite";
 export const VRM_URL = "/model.vrm";

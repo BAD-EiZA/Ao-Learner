@@ -1,0 +1,127 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  unit:
+    name: Unit tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Prisma generate
+        run: npx prisma generate
+
+      - name: Unit + coverage (≥98%)
+        run: npm run test:unit
+
+      - name: Upload coverage
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-unit
+          path: coverage/
+          if-no-files-found: ignore
+
+  e2e:
+    name: E2E smoke
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: ao
+          POSTGRES_PASSWORD: ao
+          POSTGRES_DB: ao_learner
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U ao -d ao_learner"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      # App DB (CI-only ephemeral Postgres)
+      DATABASE_URL: postgresql://ao:ao@127.0.0.1:5432/ao_learner?sslmode=disable
+      DIRECT_URL: postgresql://ao:ao@127.0.0.1:5432/ao_learner?sslmode=disable
+      DATABASE_SSL: "0"
+      PGSSLMODE: disable
+      # Dummy Kinde so Next can boot (never real secrets)
+      KINDE_CLIENT_ID: ci-client
+      KINDE_CLIENT_SECRET: ci-secret
+      KINDE_ISSUER_URL: https://example.kinde.com
+      KINDE_SITE_URL: http://127.0.0.1:3000
+      KINDE_POST_LOGOUT_REDIRECT_URL: http://127.0.0.1:3000
+      KINDE_POST_LOGIN_REDIRECT_URL: http://127.0.0.1:3000/dashboard
+      # Logged-in e2e only — must stay off in production deploys
+      E2E_BYPASS_AUTH: "1"
+      CI: "true"
+      PLAYWRIGHT_BASE_URL: http://127.0.0.1:3000
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Prisma generate + push schema
+        run: |
+          npx prisma generate
+          npx prisma db push --skip-generate --accept-data-loss
+
+      - name: Install Playwright Chromium
+        run: npx playwright install chromium --with-deps
+
+      - name: E2E (public + authenticated)
+        run: npm run test:e2e
+        env:
+          # Reinforce bypass for webServer child process
+          E2E_BYPASS_AUTH: "1"
+
+      - name: Upload Playwright report
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: |
+            test-results/
+            playwright-report/
+          if-no-files-found: ignore
+
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+      - run: npx prisma generate
+      - run: npm run lint

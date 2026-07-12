@@ -15,6 +15,18 @@ import { parseAudioMime, pcm16leToWavBase64 } from "@/lib/audio/server";
 import { isKnownBone, VRM_GESTURE_BONES } from "@/lib/vrm/bones";
 import { withGeminiKey } from "@/lib/ai/gemini-keys";
 
+export type ScoreBreakdown = {
+  sounds: number;
+  completeness: number;
+  stress: number;
+  clarity: number;
+};
+
+export type WordHeatItem = {
+  word: string;
+  score: number;
+};
+
 export type EvaluateResult = {
   score: number;
   is_correct: boolean;
@@ -23,6 +35,8 @@ export type EvaluateResult = {
   bone_commands: { boneName: string; rotation: [number, number, number] }[];
   audio_content: string | null;
   audio_mime: string | null;
+  breakdown: ScoreBreakdown | null;
+  word_heat: WordHeatItem[];
 };
 
 const responseSchema: ResponseSchema = {
@@ -34,6 +48,16 @@ const responseSchema: ResponseSchema = {
       type: SchemaType.STRING,
       format: "enum",
       enum: ["neutral", "joy", "sorrow", "angry", "fun"],
+    },
+    breakdown: {
+      type: SchemaType.OBJECT,
+      properties: {
+        sounds: { type: SchemaType.NUMBER },
+        completeness: { type: SchemaType.NUMBER },
+        stress: { type: SchemaType.NUMBER },
+        clarity: { type: SchemaType.NUMBER },
+      },
+      required: ["sounds", "completeness", "stress", "clarity"],
     },
     bone_commands: {
       type: SchemaType.ARRAY,
@@ -49,8 +73,26 @@ const responseSchema: ResponseSchema = {
         required: ["boneName", "rotation"],
       },
     },
+    word_scores: {
+      type: SchemaType.ARRAY,
+      items: {
+        type: SchemaType.OBJECT,
+        properties: {
+          word: { type: SchemaType.STRING },
+          score: { type: SchemaType.NUMBER },
+        },
+        required: ["word", "score"],
+      },
+    },
   },
-  required: ["score", "feedback_text", "emotion", "bone_commands"],
+  required: [
+    "score",
+    "feedback_text",
+    "emotion",
+    "bone_commands",
+    "breakdown",
+    "word_scores",
+  ],
 };
 
 export async function evaluateSpeech(params: {
@@ -58,9 +100,19 @@ export async function evaluateSpeech(params: {
   mimeType: string;
   expectedText: string;
   language: string;
+  /** Feedback language for learner (not target language) */
+  feedbackLocale?: "en" | "id";
+  hardMode?: boolean;
 }): Promise<EvaluateResult> {
+  const fbLang =
+    params.feedbackLocale === "id" ? "Indonesian" : "English";
+  const hardNote = params.hardMode
+    ? "HARD MODE: be stricter. Deduct more for weak endings/stress. Prefer scores 5–10 lower than normal when borderline."
+    : "";
+
   const prompt = `You are a STRICT pronunciation examiner for ${params.language} learners.
 Expected target phrase (exact): "${params.expectedText}"
+${hardNote}
 
 Listen carefully to the user's spoken audio. Your job is pronunciation accuracy first.
 
@@ -71,6 +123,8 @@ SCORING RULES (be strict, do not inflate scores):
    - 25% word completeness (missing/extra/wrong words)
    - 15% stress & rhythm (natural language stress)
    - 10% clarity / intelligibility
+2b) Also return breakdown object with sounds, completeness, stress, clarity each 0-100.
+2c) Return word_scores: array of { word, score 0-100 } for EACH word in the expected phrase (same order/spelling as expected, without punctuation). Score each word independently.
 3) Score bands:
    - 90-100: near-native match, all key sounds correct
    - 75-89: clearly recognizable, minor sound issues only
@@ -84,7 +138,7 @@ SCORING RULES (be strict, do not inflate scores):
 7) Pass threshold is ${PASS_SCORE}. Only mark high scores when pronunciation truly deserves it.
 
 feedback_text rules:
-- Max 2 short sentences in English, spoken-friendly (will be read aloud).
+- Max 2 short sentences in ${fbLang}, spoken-friendly (will be read aloud).
 - Point to 1 concrete sound/word to fix when failing.
 - Praise specifically when passing (which sound was good).
 
@@ -94,7 +148,7 @@ bone_commands: 1-3 poses { boneName, rotation: [x,y,z] radians }.
 boneName MUST be exactly one of: ${VRM_GESTURE_BONES.join(", ")}
 Keep |rotation| < 0.8.
 
-Return JSON only with: score, feedback_text, emotion, bone_commands.`;
+Return JSON only with: score, feedback_text, emotion, bone_commands, breakdown, word_scores.`;
 
   const text = await withGeminiKey(async (apiKey) => {
     const genAI = new GoogleGenerativeAI(apiKey);
@@ -124,6 +178,8 @@ Return JSON only with: score, feedback_text, emotion, bone_commands.`;
     feedback_text?: string;
     emotion?: Emotion;
     bone_commands?: { boneName: string; rotation: number[] }[];
+    breakdown?: ScoreBreakdown;
+    word_scores?: { word?: string; score?: number }[];
   };
 
   try {
@@ -134,6 +190,8 @@ Return JSON only with: score, feedback_text, emotion, bone_commands.`;
       feedback_text: "Could not parse evaluation. Please try again.",
       emotion: "sorrow",
       bone_commands: [{ boneName: "head", rotation: [0, -0.15, 0] }],
+      breakdown: { sounds: 0, completeness: 0, stress: 0, clarity: 0 },
+      word_scores: [],
     };
   }
 
@@ -158,7 +216,33 @@ Return JSON only with: score, feedback_text, emotion, bone_commands.`;
       ? "Great job! Your pronunciation is clear."
       : "Keep practicing — focus on clarity and stress.");
 
-  const spoken = await generateSpeechBase64(feedback_text, params.language);
+  const bd = parsed.breakdown;
+  const breakdown: ScoreBreakdown = {
+    sounds: Math.max(0, Math.min(100, Math.round(Number(bd?.sounds) || score))),
+    completeness: Math.max(
+      0,
+      Math.min(100, Math.round(Number(bd?.completeness) || score))
+    ),
+    stress: Math.max(0, Math.min(100, Math.round(Number(bd?.stress) || score))),
+    clarity: Math.max(
+      0,
+      Math.min(100, Math.round(Number(bd?.clarity) || score))
+    ),
+  };
+
+  const { alignWordHeat } = await import("@/lib/learning/word-heat");
+  const word_heat = alignWordHeat(
+    params.expectedText,
+    parsed.word_scores,
+    score
+  );
+
+  // TTS language follows feedback locale for ID learners; target lang otherwise
+  const ttsLang =
+    params.feedbackLocale === "id"
+      ? "Indonesian"
+      : params.language;
+  const spoken = await generateSpeechBase64(feedback_text, ttsLang);
 
   return {
     score,
@@ -168,6 +252,8 @@ Return JSON only with: score, feedback_text, emotion, bone_commands.`;
     bone_commands,
     audio_content: spoken?.base64 ?? null,
     audio_mime: spoken?.mime ?? null,
+    breakdown,
+    word_heat,
   };
 }
 
@@ -179,7 +265,11 @@ export async function generateSpeechBase64(
   text: string,
   language: string
 ): Promise<{ base64: string; mime: string; model: string } | null> {
-  const langCode = /german/i.test(language) ? "de-DE" : "en-US";
+  const langCode = /german/i.test(language)
+    ? "de-DE"
+    : /indonesia/i.test(language)
+      ? "id-ID"
+      : "en-US";
   const prompt = `Speak as a friendly language tutor. Say only the following feedback clearly, nothing else: ${text}`;
 
   for (const model of GEMINI_TTS_MODELS) {
