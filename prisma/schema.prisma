@@ -1,0 +1,54 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        String         @id @default(uuid())
+  kindeId   String         @unique
+  email     String         @unique
+  name      String?
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+  progress  UserProgress[]
+}
+
+model Stage {
+  id             String         @id @default(uuid())
+  language       Language
+  title          String
+  description    String
+  expectedText   String
+  /// Arti dalam Bahasa Indonesia
+  meaningId      String         @default("")
+  referenceAudio String
+  order          Int
+  userProgress   UserProgress[]
+
+  @@unique([language, order])
+}
+
+model UserProgress {
+  id            String    @id @default(uuid())
+  userId        String
+  stageId       String
+  isCompleted   Boolean   @default(false)
+  attemptsCount Int       @default(0)
+  bestScore     Int?
+  cooldownUntil DateTime?
+  lastAttemptAt DateTime  @default(now())
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  stage Stage @relation(fields: [stageId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, stageId])
+}
+
+enum Language {
+  ENGLISH
+  GERMAN
+}

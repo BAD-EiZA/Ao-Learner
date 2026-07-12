@@ -1,0 +1,104 @@
+@import "tailwindcss";
+
+:root {
+  --background: #fff8e7;
+  --foreground: #111111;
+}
+
+@theme {
+  --color-background: #fff8e7;
+  --color-foreground: #111111;
+  --color-neo-yellow: #ffe566;
+  --color-neo-pink: #ff6b9d;
+  --color-neo-cyan: #5ce1e6;
+  --color-neo-lime: #b8f25a;
+  --color-neo-purple: #c4a1ff;
+  --color-neo-orange: #ff9f43;
+  --color-neo-white: #ffffff;
+  --color-neo-ink: #111111;
+  --color-neo-muted: #3d3d3d;
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+html,
+body {
+  min-height: 100%;
+}
+
+body {
+  background-color: #fff8e7 !important;
+  background-image:
+    radial-gradient(circle at 12% 18%, rgba(255, 229, 102, 0.55) 0 18%, transparent 19%),
+    radial-gradient(circle at 88% 12%, rgba(255, 107, 157, 0.35) 0 14%, transparent 15%),
+    radial-gradient(circle at 70% 80%, rgba(92, 225, 230, 0.3) 0 16%, transparent 17%),
+    radial-gradient(circle at 20% 85%, rgba(184, 242, 90, 0.28) 0 12%, transparent 13%),
+    linear-gradient(180deg, #fff8e7 0%, #ffe9c7 100%) !important;
+  color: #111111 !important;
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+::selection {
+  background: #ffe566;
+  color: #111111;
+}
+
+/* Explicit neo utilities (always available, independent of @theme scan) */
+.bg-neo-yellow { background-color: #ffe566 !important; }
+.bg-neo-pink { background-color: #ff6b9d !important; }
+.bg-neo-cyan { background-color: #5ce1e6 !important; }
+.bg-neo-lime { background-color: #b8f25a !important; }
+.bg-neo-purple { background-color: #c4a1ff !important; }
+.bg-neo-orange { background-color: #ff9f43 !important; }
+.bg-neo-white { background-color: #ffffff !important; }
+.bg-neo-ink { background-color: #111111 !important; }
+
+.text-neo-yellow { color: #ffe566 !important; }
+.text-neo-pink { color: #ff6b9d !important; }
+.text-neo-cyan { color: #5ce1e6 !important; }
+.text-neo-lime { color: #b8f25a !important; }
+.text-neo-purple { color: #c4a1ff !important; }
+.text-neo-orange { color: #ff9f43 !important; }
+.text-neo-white { color: #ffffff !important; }
+.text-neo-ink { color: #111111 !important; }
+.text-neo-muted { color: #3d3d3d !important; }
+
+.border-neo-ink { border-color: #111111 !important; }
+.border-neo-yellow { border-color: #ffe566 !important; }
+
+.neo-border {
+  border: 3px solid #111111 !important;
+}
+
+.neo-shadow {
+  box-shadow: 4px 4px 0 #111111 !important;
+}
+
+.neo-shadow-lg {
+  box-shadow: 6px 6px 0 #111111 !important;
+}
+
+.neo-shadow-sm {
+  box-shadow: 2px 2px 0 #111111 !important;
+}
+
+.neo-press:active {
+  transform: translate(3px, 3px);
+  box-shadow: 1px 1px 0 #111111 !important;
+}
+
+.neo-grid-bg {
+  background-image:
+    linear-gradient(to right, rgba(17, 17, 17, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(17, 17, 17, 0.05) 1px, transparent 1px),
+    radial-gradient(circle at 12% 18%, rgba(255, 229, 102, 0.55) 0 18%, transparent 19%),
+    radial-gradient(circle at 88% 12%, rgba(255, 107, 157, 0.35) 0 14%, transparent 15%),
+    radial-gradient(circle at 70% 80%, rgba(92, 225, 230, 0.3) 0 16%, transparent 17%),
+    linear-gradient(180deg, #fff8e7 0%, #ffe9c7 100%);
+  background-size: 24px 24px, 24px 24px, auto, auto, auto, auto;
+  background-color: #fff8e7;
+}
