@@ -135,16 +135,17 @@ export function RecordButton({ disabled, onRecorded }: Props) {
   }, []);
 
   return (
-    <div className="flex w-full flex-col items-center gap-3">
+    <div className="relative flex flex-col items-center">
+      {/* Compact side bars — does not sit above mic */}
       <div
-        className="neo-border neo-shadow-sm flex h-12 w-full max-w-[220px] items-end justify-center gap-1 rounded-xl bg-neo-white px-2 py-1.5"
+        className="pointer-events-none absolute bottom-1/2 left-1/2 z-0 flex h-10 w-[min(100vw-8rem,16rem)] -translate-x-1/2 translate-y-2 items-end justify-center gap-0.5 opacity-90"
         aria-hidden
       >
         {levels.map((lv, i) => (
           <motion.div
             key={i}
-            className="w-1.5 rounded-sm bg-neo-ink"
-            animate={{ height: `${Math.max(12, lv * 100)}%` }}
+            className="w-1 rounded-full bg-neo-ink/80"
+            animate={{ height: `${Math.max(8, lv * 36)}px` }}
             transition={{ type: "spring", stiffness: 400, damping: 28 }}
           />
         ))}
@@ -155,7 +156,7 @@ export function RecordButton({ disabled, onRecorded }: Props) {
         disabled={disabled}
         onClick={recording ? stop : start}
         className={cn(
-          "neo-border neo-shadow flex h-20 w-20 items-center justify-center rounded-full text-sm font-black uppercase sm:h-24 sm:w-24",
+          "neo-border neo-shadow relative z-10 flex h-16 w-16 items-center justify-center rounded-full text-xs font-black uppercase sm:h-[4.5rem] sm:w-[4.5rem] sm:text-sm",
           recording ? "bg-neo-pink text-neo-ink" : "bg-neo-ink text-neo-white",
           disabled && "pointer-events-none opacity-50"
         )}
@@ -186,13 +187,13 @@ export function RecordButton({ disabled, onRecorded }: Props) {
       >
         {recording ? "STOP" : "REC"}
       </motion.button>
-      <p className="text-xs font-bold text-neo-muted">
+      <p className="relative z-10 mt-1 text-[10px] font-bold text-neo-ink drop-shadow-[0_1px_0_#fff] sm:text-xs">
         {recording
           ? app?.tr("rec_listening") ?? "Listening… tap to stop"
           : app?.tr("rec_tap") ?? "Tap to speak"}
       </p>
       {error && (
-        <p className="neo-border neo-shadow-sm rounded-lg bg-neo-pink px-2 py-1 text-center text-xs font-bold">
+        <p className="neo-border relative z-10 mt-1 rounded-lg bg-neo-pink px-2 py-1 text-center text-[10px] font-bold">
           {error}
         </p>
       )}

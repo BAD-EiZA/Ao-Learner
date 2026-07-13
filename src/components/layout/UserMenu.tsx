@@ -20,6 +20,14 @@ function initials(name?: string | null, email?: string | null) {
   return base.slice(0, 2).toUpperCase();
 }
 
+const ACCOUNT_LINKS = [
+  { href: "/dashboard", label: "Dashboard" },
+  { href: "/shop", label: "Shop" },
+  { href: "/plus", label: "Plus" },
+  { href: "/onboarding", label: "Goals" },
+  { href: "/", label: "Home" },
+] as const;
+
 export function UserMenu({ name, email, picture }: Props) {
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
@@ -43,15 +51,15 @@ export function UserMenu({ name, email, picture }: Props) {
   }, [open]);
 
   return (
-    <div ref={rootRef} className="relative">
+    <div ref={rootRef} className="relative shrink-0">
       <button
         type="button"
         aria-haspopup="menu"
         aria-expanded={open}
         onClick={() => setOpen((v) => !v)}
-        className="neo-border neo-shadow-sm neo-press flex min-h-11 items-center gap-2 rounded-xl bg-neo-white py-1 pl-1 pr-2 font-black text-neo-ink"
+        className="flex h-10 items-center gap-1.5 rounded-xl border-2 border-neo-ink bg-neo-white py-0.5 pl-0.5 pr-2 font-black text-neo-ink shadow-[2px_2px_0_#1B4EF5] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none"
       >
-        <span className="neo-border flex h-9 w-9 items-center justify-center overflow-hidden rounded-lg bg-neo-pink text-xs font-black">
+        <span className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-lg border-2 border-neo-ink bg-neo-pink text-[11px] font-black">
           {picture ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
@@ -64,11 +72,11 @@ export function UserMenu({ name, email, picture }: Props) {
             abbr
           )}
         </span>
-        <span className="hidden max-w-[100px] truncate text-xs sm:inline">
+        <span className="hidden max-w-[88px] truncate text-xs md:inline">
           {label}
         </span>
         <span
-          className={`text-[10px] transition-transform ${open ? "rotate-180" : ""}`}
+          className={`text-[9px] opacity-60 transition-transform ${open ? "rotate-180" : ""}`}
           aria-hidden
         >
           ▼
@@ -83,9 +91,9 @@ export function UserMenu({ name, email, picture }: Props) {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -4, scale: 0.98 }}
             transition={{ type: "spring", stiffness: 420, damping: 28 }}
-            className="neo-border neo-shadow absolute right-0 z-50 mt-2 w-56 overflow-hidden rounded-2xl bg-neo-white"
+            className="absolute right-0 z-50 mt-2 w-52 overflow-hidden rounded-2xl border-2 border-neo-ink bg-neo-white shadow-[4px_4px_0_#1B4EF5]"
           >
-            <div className="border-b-3 border-neo-ink bg-neo-yellow px-3 py-2">
+            <div className="border-b-2 border-neo-ink bg-neo-yellow/40 px-3 py-2">
               <p className="truncate text-xs font-black text-neo-ink">{label}</p>
               {email && name ? (
                 <p className="truncate text-[10px] font-bold text-neo-muted">
@@ -93,31 +101,21 @@ export function UserMenu({ name, email, picture }: Props) {
                 </p>
               ) : null}
             </div>
-            <div className="flex max-h-[min(60vh,320px)] flex-col overflow-y-auto p-1.5">
-              {(
-                [
-                  ["/dashboard", "Dashboard", "hover:bg-neo-cyan"],
-                  ["/path", "Path", "hover:bg-neo-lime"],
-                  ["/practice", "Practice", "hover:bg-neo-yellow"],
-                  ["/review", "Review", "hover:bg-neo-orange"],
-                  ["/shop", "Shop", "hover:bg-neo-yellow"],
-                  ["/plus", "Plus", "hover:bg-neo-pink"],
-                  ["/", "Home", "hover:bg-neo-pink"],
-                ] as const
-              ).map(([href, text, hover]) => (
+            <div className="flex flex-col p-1">
+              {ACCOUNT_LINKS.map((l) => (
                 <Link
-                  key={href}
-                  href={href}
+                  key={l.href}
+                  href={l.href}
                   role="menuitem"
                   onClick={() => setOpen(false)}
-                  className={`neo-press min-h-11 rounded-xl px-3 py-2.5 text-left text-xs font-black uppercase ${hover}`}
+                  className="rounded-xl px-3 py-2.5 text-left text-xs font-black uppercase text-neo-ink hover:bg-neo-yellow/15"
                 >
-                  {text}
+                  {l.label}
                 </Link>
               ))}
               <LogoutLink
                 role="menuitem"
-                className="neo-press min-h-11 rounded-xl bg-neo-pink px-3 py-2.5 text-left text-xs font-black uppercase"
+                className="mt-0.5 rounded-xl bg-neo-pink/80 px-3 py-2.5 text-left text-xs font-black uppercase text-neo-ink"
               >
                 Log out
               </LogoutLink>

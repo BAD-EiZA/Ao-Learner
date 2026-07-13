@@ -1,12 +1,11 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { withGeminiKey } from "@/lib/ai/gemini-keys";
 import { GEMINI_MODEL } from "@/lib/constants";
-import { generateSpeechBase64 } from "@/lib/ai/gemini";
 
 export type TalkTurn = { role: "user" | "tutor"; text: string };
 
 export async function aoConversation(params: {
-  language: "English" | "German";
+  language: "English" | "German" | "French";
   history: TalkTurn[];
   userMessage: string;
   level?: string;
@@ -32,10 +31,10 @@ Ao:`;
     return result.response.text().trim().slice(0, 400);
   });
 
-  const spoken = await generateSpeechBase64(text, params.language);
+  // Chat-only: no TTS (faster / cheaper). Learn evaluate still uses speech.
   return {
     reply: text,
-    audio_content: spoken?.base64 ?? null,
-    audio_mime: spoken?.mime ?? null,
+    audio_content: null,
+    audio_mime: null,
   };
 }

@@ -14,7 +14,7 @@ export function StageList({
   language,
   stages,
 }: {
-  language: "ENGLISH" | "GERMAN";
+  language: "ENGLISH" | "GERMAN" | "FRENCH";
   stages: StageView[];
 }) {
   const byLevel = CEFR_LEVELS.map((level) => ({
@@ -22,13 +22,16 @@ export function StageList({
     items: stages.filter((s) => (s.cefrLevel || "A1") === level),
   })).filter((g) => g.items.length > 0);
 
+  const badgeTone =
+    language === "ENGLISH" ? "cyan" : language === "GERMAN" ? "orange" : "pink";
+
   return (
     <section className="space-y-6">
       <div className="flex items-center gap-3">
         <h2 className="text-2xl font-black uppercase tracking-tight text-neo-ink">
           {languageLabel(language)}
         </h2>
-        <NeoBadge tone={language === "ENGLISH" ? "cyan" : "orange"}>
+        <NeoBadge tone={badgeTone}>
           CEFR · {stages.length} stages
         </NeoBadge>
       </div>

@@ -20,9 +20,21 @@ export const PLACEMENT_PROMPTS: Record<
       cefr: "A2",
     },
     {
-      expectedText: "Could you repeat that?",
-      meaningId: "Bisa ulangi lagi?",
-      cefr: "A2",
+      expectedText: "I think we should leave earlier tomorrow",
+      meaningId: "Menurut saya kita harus berangkat lebih awal besok",
+      cefr: "B1",
+    },
+    {
+      expectedText: "Although it was difficult, I managed to finish on time",
+      meaningId: "Meski sulit, saya berhasil selesai tepat waktu",
+      cefr: "B2",
+    },
+    {
+      expectedText:
+        "I'd argue that clear communication is essential in any workplace",
+      meaningId:
+        "Saya berpendapat komunikasi yang jelas penting di tempat kerja",
+      cefr: "C1",
     },
   ],
   GERMAN: [
@@ -39,23 +51,72 @@ export const PLACEMENT_PROMPTS: Record<
       cefr: "A2",
     },
     {
-      expectedText: "Können Sie das wiederholen?",
-      meaningId: "Bisa ulangi lagi?",
+      expectedText: "Ich denke, wir sollten morgen früher gehen",
+      meaningId: "Menurut saya kita harus berangkat lebih awal besok",
+      cefr: "B1",
+    },
+    {
+      expectedText:
+        "Obwohl es schwierig war, habe ich es rechtzeitig geschafft",
+      meaningId: "Meski sulit, saya berhasil selesai tepat waktu",
+      cefr: "B2",
+    },
+    {
+      expectedText:
+        "Ich würde behaupten, dass klare Kommunikation am Arbeitsplatz entscheidend ist",
+      meaningId:
+        "Saya berpendapat komunikasi yang jelas penting di tempat kerja",
+      cefr: "C1",
+    },
+  ],
+  FRENCH: [
+    { expectedText: "Bonjour", meaningId: "Selamat siang / Halo", cefr: "A1" },
+    {
+      expectedText: "Je m'appelle Alex",
+      meaningId: "Nama saya Alex",
+      cefr: "A1",
+    },
+    {
+      expectedText: "Où sont les toilettes ?",
+      meaningId: "Di mana toilet?",
       cefr: "A2",
+    },
+    {
+      expectedText: "Un café, s'il vous plaît",
+      meaningId: "Satu kopi, tolong",
+      cefr: "A2",
+    },
+    {
+      expectedText: "Je pense que nous devrions partir plus tôt demain",
+      meaningId: "Menurut saya kita harus berangkat lebih awal besok",
+      cefr: "B1",
+    },
+    {
+      expectedText:
+        "Bien que ce fût difficile, j'ai réussi à finir à temps",
+      meaningId: "Meski sulit, saya berhasil selesai tepat waktu",
+      cefr: "B2",
+    },
+    {
+      expectedText:
+        "Je dirais qu'une communication claire est essentielle au travail",
+      meaningId:
+        "Saya berpendapat komunikasi yang jelas penting di tempat kerja",
+      cefr: "C1",
     },
   ],
 };
 
-export function computePlacementLevel(
-  scores: number[]
-): CefrLevel {
+export function computePlacementLevel(scores: number[]): CefrLevel {
   if (scores.length === 0) return "A1";
   const avg = scores.reduce((a, b) => a + b, 0) / scores.length;
-  const lastTwo = scores.slice(-2);
-  const strongA2 =
-    lastTwo.length === 2 && lastTwo.every((s) => s >= 70) && avg >= 72;
-  if (strongA2 && avg >= 80) return "B1";
-  if (avg >= 65 || strongA2) return "A2";
+  const last = scores.slice(-3);
+  const strongTail =
+    last.length >= 2 && last.every((s) => s >= 72) && avg >= 74;
+  if (avg >= 90 && strongTail) return "C1";
+  if (avg >= 84 && strongTail) return "B2";
+  if (avg >= 78 || (strongTail && avg >= 76)) return "B1";
+  if (avg >= 65 || strongTail) return "A2";
   return "A1";
 }
 
@@ -80,6 +141,15 @@ export async function savePlacement(
   });
 
   try {
+    const { unlockAchievement } = await import(
+      "@/lib/learning/achievements"
+    );
+    await unlockAchievement(userId, "placement_done");
+  } catch {
+    /* ignore */
+  }
+
+  try {
     const { trackServer } = await import("@/lib/analytics-server");
     await trackServer("placement_complete", {
       userId,
@@ -91,7 +161,7 @@ export async function savePlacement(
 
   // Unlock stages up to recommended CEFR by marking prior levels complete-lite
   // Actually: set progress unlocked by completing all stages below placement
-  const ranks: CefrLevel[] = ["A1", "A2", "B1"];
+  const ranks: CefrLevel[] = ["A1", "A2", "B1", "B2", "C1"];
   const target = ranks.indexOf(level);
   if (target <= 0) return { level };
 

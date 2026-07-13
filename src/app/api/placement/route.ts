@@ -16,10 +16,7 @@ export async function GET() {
   const status = await getPlacementStatus(user.id);
   return NextResponse.json({
     ...status,
-    prompts: {
-      ENGLISH: PLACEMENT_PROMPTS.ENGLISH,
-      GERMAN: PLACEMENT_PROMPTS.GERMAN,
-    },
+    prompts: PLACEMENT_PROMPTS,
   });
 }
 

@@ -2,7 +2,14 @@ import { prisma } from "@/lib/db/prisma";
 import { PASS_SCORE } from "@/lib/constants";
 import type { CefrLevel, Language } from "@/generated/prisma/client";
 
-const CEFR_ORDER: CefrLevel[] = ["A1", "A2", "B1"];
+const CEFR_ORDER: CefrLevel[] = ["A1", "A2", "B1", "B2", "C1"];
+
+const CEFR_BUMP: Partial<Record<CefrLevel, number>> = {
+  A2: 4,
+  B1: 8,
+  B2: 12,
+  C1: 16,
+};
 
 export function cefrRank(level: CefrLevel | string) {
   return Math.max(0, CEFR_ORDER.indexOf(level as CefrLevel));
@@ -16,10 +23,9 @@ export async function getAdaptivePassThreshold(
 ) {
   const stats = await prisma.userStats.findUnique({ where: { userId } });
   const boost = stats?.passBoost ?? 0;
-  const cefrBump =
-    cefrLevel === "B1" ? 8 : cefrLevel === "A2" ? 4 : 0;
+  const cefrBump = CEFR_BUMP[cefrLevel as CefrLevel] ?? 0;
   const hardBump = hardMode ? 10 : 0;
-  return Math.min(90, Math.max(50, PASS_SCORE + boost + cefrBump + hardBump));
+  return Math.min(92, Math.max(50, PASS_SCORE + boost + cefrBump + hardBump));
 }
 
 /** After consecutive strong passes, raise difficulty slightly */

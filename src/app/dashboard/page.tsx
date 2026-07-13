@@ -55,6 +55,7 @@ export default async function DashboardPage() {
 
   let english: StageView[] = [];
   let german: StageView[] = [];
+  let french: StageView[] = [];
   let dbError: string | null = null;
   let stats = await getUserStats(user.id).catch(() => ({
     currentStreak: 0,
@@ -111,6 +112,7 @@ export default async function DashboardPage() {
       "ENGLISH"
     )) as StageView[];
     german = (await getStagesWithProgress(user.id, "GERMAN")) as StageView[];
+    french = (await getStagesWithProgress(user.id, "FRENCH")) as StageView[];
     stats = await getUserStats(user.id);
     daily = (await getDailyChallenge(user.id)) as DailyChallengeView | null;
     history = (await getRecentAttempts(user.id, 10)) as HistoryItem[];
@@ -266,6 +268,7 @@ export default async function DashboardPage() {
 
           <StageList language="ENGLISH" stages={english} />
           <StageList language="GERMAN" stages={german} />
+          <StageList language="FRENCH" stages={french} />
 
           <HistoryList items={history} />
 

@@ -14,9 +14,8 @@ export async function GET(req: Request) {
   if (!user)
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const url = new URL(req.url);
-  const language = (
-    url.searchParams.get("lang") === "de" ? "GERMAN" : "ENGLISH"
-  ) as Language;
+  const { parseLangParam } = await import("@/lib/languages");
+  const language = parseLangParam(url.searchParams.get("lang")) as Language;
   const unitKey = url.searchParams.get("unit");
   if (unitKey) {
     const quiz = await getCheckpointQuiz(user.id, language, unitKey);
@@ -31,8 +30,9 @@ export async function POST(req: Request) {
   if (!user)
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const body = await req.json().catch(() => ({}));
-  const language = (
-    body.lang === "de" || body.language === "GERMAN" ? "GERMAN" : "ENGLISH"
+  const { parseLangParam } = await import("@/lib/languages");
+  const language = parseLangParam(
+    String(body.lang ?? body.language ?? "en")
   ) as Language;
   const unitKey = String(body.unitKey ?? "u1");
   const scores = Array.isArray(body.scores)

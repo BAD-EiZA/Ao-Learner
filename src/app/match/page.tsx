@@ -16,7 +16,10 @@ export default async function MatchPage({
   if (!user) redirect("/api/auth/login?post_login_redirect_url=/match");
 
   const sp = await searchParams;
-  const lang = sp.lang === "de" ? "GERMAN" : "ENGLISH";
+  const { parseLangParam, LANGUAGE_META, LANGUAGES } = await import(
+    "@/lib/languages"
+  );
+  const lang = parseLangParam(sp.lang);
   const deck = await getMatchDeck(lang, 6);
 
   return (
@@ -27,12 +30,13 @@ export default async function MatchPage({
         No mic needed — warm up before speaking.
       </p>
       <div className="flex flex-wrap gap-2">
-        <Link href="/match?lang=en">
-          <NeoButton tone={lang === "ENGLISH" ? "ink" : "white"}>EN</NeoButton>
-        </Link>
-        <Link href="/match?lang=de">
-          <NeoButton tone={lang === "GERMAN" ? "ink" : "white"}>DE</NeoButton>
-        </Link>
+        {LANGUAGES.map((l) => (
+          <Link key={l} href={`/match?lang=${LANGUAGE_META[l].code}`}>
+            <NeoButton tone={lang === l ? "ink" : "white"}>
+              {LANGUAGE_META[l].short}
+            </NeoButton>
+          </Link>
+        ))}
         <Link href="/practice">
           <NeoButton tone="orange">Practice hub</NeoButton>
         </Link>

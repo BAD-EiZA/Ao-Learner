@@ -15,7 +15,7 @@ import type { Emotion } from "@/lib/constants";
 import { MAX_ATTEMPTS, PASS_SCORE } from "@/lib/constants";
 import { pickAnimForScore, VRM_ANIMS, type AnimDef } from "@/lib/vrm/anims";
 import { resolvePlayableAudioUrl } from "@/lib/audio/client";
-import { NeoBadge, NeoButton, NeoChip, NeoPanel } from "@/components/ui/neo";
+import { NeoBadge, NeoButton } from "@/components/ui/neo";
 import type { StageTurn, StageView } from "@/types/stage";
 import { trackClient } from "@/lib/analytics";
 import { useAppOptional } from "@/components/providers/AppProviders";
@@ -73,7 +73,7 @@ export function LearnSession({
     [isDialogue, isStory, stage]
   );
 
-  const idleAnim = VRM_ANIMS.LookAround;
+  const idleAnim = VRM_ANIMS.Idle;
   const evalAnim = VRM_ANIMS.Thinking;
   const [turnIndex, setTurnIndex] = useState(0);
   const [anim, setAnim] = useState<AnimDef>(idleAnim);
@@ -498,252 +498,283 @@ export function LearnSession({
     score != null &&
     score >= threshold;
 
+  const micDisabled =
+    loading ||
+    locked ||
+    completed ||
+    dialogueDone ||
+    hearts === 0 ||
+    (!heardTurn && !isReview);
+
   return (
     <motion.div
-      className="mx-auto flex w-full max-w-6xl flex-col gap-4 px-3 py-4 sm:px-6 lg:grid lg:grid-cols-2 lg:gap-8 lg:py-8"
+      className="relative mx-auto w-full max-w-5xl px-2 py-2 sm:px-4 sm:py-3"
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ type: "spring", stiffness: 280, damping: 26 }}
     >
-      <NeoPanel tone="white" className="bg-neo-white">
-        <div className="h-[30vh] min-h-[160px] sm:h-[42vh] sm:min-h-[260px] lg:h-[min(70vh,640px)]">
+      <div className="neo-border neo-shadow relative overflow-hidden rounded-2xl bg-neo-white">
+        {/* Full canvas stage */}
+        <div className="relative h-[min(82dvh,760px)] min-h-[440px] w-full sm:min-h-[520px]">
           <AvatarViewer
             emotion={emotion}
             animationUrl={anim.url}
             mouthOpen={mouthOpen}
             autoRotate={false}
             loopAnimation={loopAnim}
-            fadeDuration={0.75}
+            fadeDuration={0.65}
             onAnimationFinished={returnToIdle}
             backgroundColor="#F4CEFF"
-            modelY={0.1}
-            cameraPosition={[0, 1.4, 1.9]}
-            cameraTarget={[0, 1.1, 0]}
-            className="h-full w-full"
+            modelY={0.12}
+            cameraPosition={[0, 1.42, 1.35]}
+            cameraTarget={[0, 1.28, 0]}
+            className="absolute inset-0 h-full w-full"
           />
-        </div>
-        <p className="border-t-4 border-neo-ink bg-neo-cyan px-3 py-1.5 text-center text-[10px] font-black uppercase tracking-wide text-neo-ink">
-          {anim.key} · lip-sync live
-        </p>
-      </NeoPanel>
 
-      <div className="flex flex-col gap-4">
-        <div className="space-y-2">
-          <div className="flex flex-wrap gap-2">
-            <NeoBadge tone="purple">
-              {stage.cefrLevel || "A1"} · Stage {stage.order}
-            </NeoBadge>
-            <NeoBadge tone="white">Pass ≥ {threshold}</NeoBadge>
-            {isDaily && <NeoBadge tone="pink">Daily</NeoBadge>}
-            {isReview && <NeoBadge tone="orange">Review</NeoBadge>}
-            {isShadow && <NeoBadge tone="cyan">Shadow</NeoBadge>}
-            {isStory && <NeoBadge tone="purple">Story</NeoBadge>}
-            {isDialogue && (
-              <NeoBadge tone="cyan">
-                {isStory ? "Story" : "Dialogue"}{" "}
-                {Math.min(turnIndex + 1, turns.length)}/{turns.length}
-              </NeoBadge>
-            )}
-            {xpGain > 0 && <NeoBadge tone="lime">+{xpGain} XP</NeoBadge>}
-            {combo > 1 && <NeoBadge tone="orange">Combo ×{combo}</NeoBadge>}
-            {hearts != null && (
-              <NeoBadge tone="pink">{"❤️".repeat(Math.min(5, hearts))}</NeoBadge>
-            )}
-            {!heardTurn && !completed && !dialogueDone && (
-              <NeoBadge tone="orange">Listen first</NeoBadge>
-            )}
-            {hardMode && <NeoBadge tone="ink">Hard</NeoBadge>}
+          {/* Top: compact chrome — model stays clear in center */}
+          <div className="pointer-events-none absolute inset-x-0 top-0 z-10 px-2 pt-2 sm:px-3 sm:pt-3">
+            <div className="pointer-events-auto flex items-start justify-between gap-2">
+              <div className="min-w-0 flex-1">
+                <div className="flex flex-wrap gap-1">
+                  <NeoBadge tone="purple">
+                    {stage.cefrLevel || "A1"} · {stage.order}
+                  </NeoBadge>
+                  <NeoBadge tone="white">≥{threshold}</NeoBadge>
+                  {isDaily && <NeoBadge tone="pink">Daily</NeoBadge>}
+                  {isReview && <NeoBadge tone="orange">Review</NeoBadge>}
+                  {isShadow && <NeoBadge tone="cyan">Shadow</NeoBadge>}
+                  {isStory && <NeoBadge tone="purple">Story</NeoBadge>}
+                  {isDialogue && (
+                    <NeoBadge tone="cyan">
+                      {Math.min(turnIndex + 1, turns.length)}/{turns.length}
+                    </NeoBadge>
+                  )}
+                  {xpGain > 0 && (
+                    <NeoBadge tone="lime">+{xpGain}</NeoBadge>
+                  )}
+                  {combo > 1 && (
+                    <NeoBadge tone="orange">×{combo}</NeoBadge>
+                  )}
+                  {hearts != null && (
+                    <NeoBadge tone="pink">
+                      {"❤".repeat(Math.min(5, hearts))}
+                    </NeoBadge>
+                  )}
+                  {!heardTurn && !completed && !dialogueDone && (
+                    <NeoBadge tone="orange">Listen</NeoBadge>
+                  )}
+                  {hardMode && <NeoBadge tone="ink">Hard</NeoBadge>}
+                  {!isDaily && !isDialogue && (
+                    <NeoBadge tone="white">
+                      {attemptsLeft}/{MAX_ATTEMPTS}
+                    </NeoBadge>
+                  )}
+                </div>
+                <h1 className="mt-1 truncate text-base font-black text-neo-ink drop-shadow-[0_1px_0_#fff] sm:text-lg">
+                  {stage.title}
+                </h1>
+              </div>
+              <div className="flex shrink-0 flex-col items-end gap-1">
+                <button
+                  type="button"
+                  onClick={toggleHard}
+                  className={`rounded-lg border-2 border-neo-ink px-2 py-1 text-[10px] font-black uppercase ${
+                    hardMode
+                      ? "bg-neo-ink text-neo-white"
+                      : "bg-white/95 text-neo-ink"
+                  }`}
+                >
+                  Hard {hardMode ? "ON" : "OFF"}
+                </button>
+                <div className="flex gap-0.5 rounded-lg border-2 border-neo-ink bg-white/95 p-0.5">
+                  {SPEEDS.map((s) => (
+                    <button
+                      key={s}
+                      type="button"
+                      onClick={() => setPlaybackRate(s)}
+                      className={`min-w-7 rounded-md px-1 py-0.5 text-[10px] font-black ${
+                        playbackRate === s
+                          ? "bg-neo-ink text-neo-white"
+                          : "text-neo-ink"
+                      }`}
+                    >
+                      {s}x
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
-          <h1 className="text-3xl font-black tracking-tight text-neo-ink sm:text-4xl">
-            {stage.title}
-          </h1>
-          <p className="text-sm font-medium text-neo-muted">
-            {stage.description}
-          </p>
-          <div className="neo-border neo-shadow rounded-2xl bg-neo-yellow px-3 py-3 text-sm font-bold text-neo-ink">
-            {currentTurn.prompt ? (
-              <p className="mb-1 text-xs font-black uppercase opacity-80">
-                {currentTurn.prompt}
-              </p>
-            ) : null}
-            {dialogueDone ? (
-              <p className="text-base font-black">✓ Dialogue complete</p>
-            ) : (
-              <KaraokePhrase
-                text={currentTurn.expectedText}
-                progress={karaokeProgress}
-              />
+
+          {/* Bottom dock: phrase above Listen, mic center */}
+          <div className="absolute inset-x-0 bottom-0 z-20 px-2 pb-1.5 pt-1 sm:px-3 sm:pb-2">
+            {!isDaily && !isDialogue && cooldownUntil && (
+              <div className="mb-1">
+                <CooldownTimer
+                  until={cooldownUntil}
+                  onExpire={() => {
+                    setCooldownUntil(null);
+                    setAttemptsLeft(MAX_ATTEMPTS);
+                    returnToIdle();
+                    router.refresh();
+                  }}
+                />
+              </div>
             )}
-            {!dialogueDone &&
-            currentTurn.meaningId &&
-            (!hardMode || attemptNum >= 2) ? (
-              <p className="mt-1.5 text-xs font-bold opacity-80">
-                Meaning (ID):{" "}
-                <span className="font-black">{currentTurn.meaningId}</span>
-              </p>
-            ) : null}
-            {hardMode && !dialogueDone && attemptNum < 2 && (
-              <p className="mt-1.5 text-[10px] font-black uppercase opacity-70">
-                Hard · meaning hidden until attempt 2
-              </p>
+
+            {hearts === 0 && (
+              <div className="mb-1 rounded-xl border-2 border-neo-ink bg-neo-pink/95 px-2 py-1 text-center text-[11px] font-bold text-neo-ink">
+                Out of hearts ·{" "}
+                <button
+                  type="button"
+                  className="font-black underline"
+                  onClick={() => router.push("/plus")}
+                >
+                  Plus
+                </button>
+              </div>
             )}
-            {/* Adaptive hint ladder */}
-            {!dialogueDone && attemptNum >= 2 && !hardMode && (
-              <p className="mt-2 text-xs font-black opacity-90">
-                Hint: listen at 0.75x · meaning above
-              </p>
-            )}
-            {!dialogueDone && attemptNum >= 3 && (
-              <p className="mt-1 font-mono text-xs font-bold opacity-90">
-                {syllables}
-              </p>
-            )}
+
+            {/* Phrase card — directly above Listen / mic row */}
+            <div className="mb-2 flex justify-center px-1">
+              <div className="max-w-md rounded-2xl border-2 border-neo-ink bg-white/95 px-3 py-1.5 text-center shadow-[2px_2px_0_#1B4EF5] backdrop-blur-md sm:px-4 sm:py-2">
+                {currentTurn.prompt ? (
+                  <p className="mb-0.5 text-[10px] font-black uppercase text-neo-muted">
+                    {currentTurn.prompt}
+                  </p>
+                ) : null}
+                {dialogueDone ? (
+                  <p className="text-sm font-black text-neo-ink">✓ Complete</p>
+                ) : (
+                  <div className="text-sm text-neo-ink sm:text-base">
+                    <KaraokePhrase
+                      text={currentTurn.expectedText}
+                      progress={karaokeProgress}
+                    />
+                  </div>
+                )}
+                {!dialogueDone &&
+                currentTurn.meaningId &&
+                (!hardMode || attemptNum >= 2) ? (
+                  <p className="mt-0.5 text-[11px] font-bold text-neo-muted">
+                    {currentTurn.meaningId}
+                  </p>
+                ) : null}
+                {hardMode && !dialogueDone && attemptNum < 2 && (
+                  <p className="mt-0.5 text-[10px] font-black uppercase text-neo-muted">
+                    Hard · meaning after attempt 2
+                  </p>
+                )}
+                {!dialogueDone && attemptNum >= 3 && (
+                  <p className="mt-0.5 font-mono text-[10px] font-bold text-neo-ink/70">
+                    {syllables}
+                  </p>
+                )}
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between gap-2">
+              <button
+                type="button"
+                onClick={playReference}
+                disabled={loading || dialogueDone}
+                className={`min-h-10 shrink-0 rounded-xl border-2 border-neo-ink px-2.5 py-2 text-[11px] font-black uppercase shadow-[2px_2px_0_#1B4EF5] disabled:opacity-50 sm:px-3 sm:text-xs ${
+                  !heardTurn
+                    ? "bg-neo-ink text-neo-white"
+                    : "bg-white text-neo-ink"
+                }`}
+              >
+                {!heardTurn ? "▶ Listen" : "▶ Tutor"}
+              </button>
+
+              <div className="relative z-10 flex min-w-0 flex-1 flex-col items-center">
+                {!heardTurn && !completed && !dialogueDone && (
+                  <p className="mb-0.5 text-[10px] font-black text-neo-ink drop-shadow-[0_1px_0_#fff]">
+                    Listen first
+                  </p>
+                )}
+                <RecordButton
+                  disabled={micDisabled}
+                  onRecorded={onRecorded}
+                />
+              </div>
+
+              <div className="flex w-[4.5rem] shrink-0 justify-end sm:w-[5rem]">
+                {lastUserBlob ? (
+                  <button
+                    type="button"
+                    onClick={() => setShowCompare((v) => !v)}
+                    className="min-h-10 rounded-xl border-2 border-neo-ink bg-white px-2.5 py-2 text-[11px] font-black uppercase text-neo-ink sm:text-xs"
+                  >
+                    {showCompare ? "Hide" : "Cmp"}
+                  </button>
+                ) : null}
+              </div>
+            </div>
+
+            <div className="mt-1.5 flex gap-2">
+              {prevStageId && !isDaily ? (
+                <NeoButton
+                  type="button"
+                  tone="white"
+                  className="flex-1 !py-1.5 text-xs"
+                  onClick={() => router.push(`/learn/${prevStageId}`)}
+                >
+                  ← Prev
+                </NeoButton>
+              ) : (
+                <NeoButton
+                  type="button"
+                  tone="white"
+                  className="flex-1 !py-1.5 text-xs"
+                  onClick={() => router.push("/dashboard")}
+                >
+                  ← Dash
+                </NeoButton>
+              )}
+              {canGoNext ? (
+                <NeoButton
+                  type="button"
+                  tone="lime"
+                  className="flex-1 !py-1.5 text-xs"
+                  onClick={() => router.push(`/learn/${nextStageId}`)}
+                >
+                  Next →
+                </NeoButton>
+              ) : completed || dialogueDone || isDaily ? (
+                <NeoButton
+                  type="button"
+                  tone="lime"
+                  className="flex-1 !py-1.5 text-xs"
+                  onClick={() => router.push("/dashboard")}
+                >
+                  Dashboard
+                </NeoButton>
+              ) : null}
+            </div>
           </div>
         </div>
+      </div>
 
-        <div className="flex flex-wrap items-center gap-2">
-          <button
-            type="button"
-            onClick={toggleHard}
-            className={`neo-border neo-shadow-sm min-h-11 rounded-xl px-3 py-2 text-xs font-black uppercase ${
-              hardMode ? "bg-neo-ink text-neo-white" : "bg-neo-white"
-            }`}
-          >
-            Hard {hardMode ? "ON" : "OFF"}
-          </button>
-          <span className="text-[10px] font-bold text-neo-muted">
-            FB: {app?.locale === "id" ? "ID" : "EN"}
-          </span>
-        </div>
-
-        <div className="flex flex-wrap items-center gap-2">
-          {!isDaily && !isDialogue && (
-            <NeoChip tone="white">
-              Attempts {attemptsLeft}/{MAX_ATTEMPTS}
-            </NeoChip>
-          )}
-          {(completed || dialogueDone) && (
-            <NeoChip tone="lime">Completed</NeoChip>
-          )}
-          <NeoChip tone="cyan">{anim.key}</NeoChip>
-        </div>
-
-        {/* Slow-mo tutor speed */}
-        <div className="flex flex-wrap items-center gap-2">
-          <span className="text-xs font-black uppercase text-neo-muted">
-            Tutor speed
-          </span>
-          {SPEEDS.map((s) => (
-            <button
-              key={s}
-              type="button"
-              onClick={() => setPlaybackRate(s)}
-              className={`neo-border neo-shadow-sm neo-press min-h-11 min-w-11 rounded-xl px-3 py-2 text-xs font-black ${
-                playbackRate === s
-                  ? "bg-neo-ink text-neo-white"
-                  : "bg-neo-white text-neo-ink"
-              }`}
-            >
-              {s}x
-            </button>
-          ))}
-        </div>
-
-        {!isDaily && !isDialogue && (
-          <CooldownTimer
-            until={cooldownUntil}
-            onExpire={() => {
-              setCooldownUntil(null);
-              setAttemptsLeft(MAX_ATTEMPTS);
-              returnToIdle();
-              router.refresh();
-            }}
-          />
-        )}
-
-        {!heardTurn && !completed && !dialogueDone && (
-          <div className="neo-border rounded-xl bg-neo-orange/20 px-3 py-2 text-xs font-black text-neo-ink">
-            1. Play tutor → 2. Speak. Mic unlocks after you listen.
-          </div>
-        )}
-
-        {hearts === 0 && (
-          <div className="neo-border rounded-xl bg-neo-pink px-3 py-3 text-sm font-bold">
-            <p className="font-black">Out of hearts</p>
-            <p className="text-xs opacity-80">
-              Wait ~30 min to regen, or get Plus for unlimited.
-            </p>
-            <NeoButton
-              tone="ink"
-              className="mt-2 text-xs"
-              onClick={() => router.push("/plus")}
-            >
-              Get Plus
-            </NeoButton>
-          </div>
-        )}
-
-        <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-center">
-          <NeoButton
-            type="button"
-            onClick={playReference}
-            disabled={loading || dialogueDone}
-            tone={!heardTurn ? "ink" : "orange"}
-            className="w-full sm:w-auto"
-          >
-            {!heardTurn
-              ? "▶ Listen first"
-              : isShadow
-                ? "Play then shadow"
-                : "Play tutor"}{" "}
-            {playbackRate !== 1 ? `(${playbackRate}x)` : ""}
-          </NeoButton>
-          <div className="flex flex-1 justify-center sm:justify-end">
-            <RecordButton
-              disabled={
-                loading ||
-                locked ||
-                completed ||
-                dialogueDone ||
-                hearts === 0 ||
-                (!heardTurn && !isReview)
-              }
-              onRecorded={onRecorded}
-            />
-          </div>
-        </div>
+      {/* Below-canvas: feedback / extras only when needed */}
+      <div className="mx-auto mt-3 flex w-full max-w-xl flex-col gap-3 px-1">
         {isShadow && (
-          <p className="text-xs font-bold text-neo-muted">
-            Shadow mode: play the tutor, then speak along — practice scoring
-            with lighter cooldown.
+          <p className="text-center text-xs font-bold text-neo-muted">
+            Shadow: play tutor, then speak along.
           </p>
         )}
         {isStory && (
-          <p className="text-xs font-bold text-neo-muted">
-            Story mode: speak each line in order to finish the scene.
+          <p className="text-center text-xs font-bold text-neo-muted">
+            Story: speak each line in order.
           </p>
         )}
-        {isStory && dialogueDone && (
-          <StoryQuiz turns={turns} />
-        )}
-
-        {lastUserBlob && (
-          <NeoButton
-            type="button"
-            tone="white"
-            className="w-full sm:w-auto"
-            onClick={() => setShowCompare((v) => !v)}
-          >
-            {showCompare ? "Hide compare" : "Compare audio"}
-          </NeoButton>
-        )}
+        {isStory && dialogueDone && <StoryQuiz turns={turns} />}
         {showCompare && (
           <CompareWaveform
             tutorUrl={stage.referenceAudio}
             userBlob={lastUserBlob}
           />
         )}
-
         <FeedbackPanel
           loading={loading}
           score={score}
@@ -753,7 +784,6 @@ export function LearnSession({
           combo={combo}
           wordHeat={wordHeat}
         />
-
         {showRecap && score != null && (
           <SessionRecap
             score={score}
@@ -764,7 +794,6 @@ export function LearnSession({
             onContinue={() => setShowRecap(false)}
           />
         )}
-
         {showShare && score != null && (
           <ShareCard
             stageTitle={stage.title}
@@ -774,48 +803,6 @@ export function LearnSession({
             language={stage.language}
           />
         )}
-
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-          {prevStageId && !isDaily ? (
-            <NeoButton
-              type="button"
-              tone="white"
-              className="w-full sm:flex-1"
-              onClick={() => router.push(`/learn/${prevStageId}`)}
-            >
-              ← Prev
-            </NeoButton>
-          ) : (
-            <NeoButton
-              type="button"
-              tone="white"
-              className="w-full sm:flex-1"
-              onClick={() => router.push("/dashboard")}
-            >
-              ← Dashboard
-            </NeoButton>
-          )}
-
-          {canGoNext ? (
-            <NeoButton
-              type="button"
-              tone="lime"
-              className="w-full sm:flex-1"
-              onClick={() => router.push(`/learn/${nextStageId}`)}
-            >
-              Next →
-            </NeoButton>
-          ) : completed || dialogueDone || isDaily ? (
-            <NeoButton
-              type="button"
-              tone="lime"
-              className="w-full sm:flex-1"
-              onClick={() => router.push("/dashboard")}
-            >
-              Dashboard
-            </NeoButton>
-          ) : null}
-        </div>
       </div>
     </motion.div>
   );

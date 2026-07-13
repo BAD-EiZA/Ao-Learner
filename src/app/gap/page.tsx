@@ -9,8 +9,16 @@ export const dynamic = "force-dynamic";
 
 function makeGap(text: string) {
   const words = text.replace(/[?.!,]/g, "").split(/\s+/).filter(Boolean);
-  if (words.length < 2) {
-    return { display: "___", full: text, blank: words[0] ?? text };
+  if (words.length === 0) {
+    return { display: "_____", full: text, blank: text };
+  }
+  if (words.length === 1) {
+    const w = words[0]!;
+    // Keep first letter as hint for single-word phrases
+    const blank = w;
+    const display =
+      w.length <= 2 ? "_____" : `${w[0]}${"_".repeat(Math.min(5, w.length - 1))}`;
+    return { display, full: text, blank };
   }
   const idx = Math.floor(words.length / 2);
   const blank = words[idx]!;
@@ -28,7 +36,10 @@ export default async function GapPage({
   const user = await requireUser();
   if (!user) redirect("/api/auth/login?post_login_redirect_url=/gap");
   const sp = await searchParams;
-  const language = sp.lang === "de" ? "GERMAN" : "ENGLISH";
+  const { parseLangParam, LANGUAGE_META, LANGUAGES } = await import(
+    "@/lib/languages"
+  );
+  const language = parseLangParam(sp.lang);
   const stages = await prisma.stage.findMany({
     where: { language, mode: "PHRASE" },
     orderBy: { order: "asc" },
@@ -53,17 +64,14 @@ export default async function GapPage({
       <p className="text-sm font-medium text-neo-muted">
         See the sentence with a missing word — say the full phrase.
       </p>
-      <div className="flex gap-2">
-        <Link href="/gap?lang=en">
-          <NeoButton tone={language === "ENGLISH" ? "ink" : "white"}>
-            EN
-          </NeoButton>
-        </Link>
-        <Link href="/gap?lang=de">
-          <NeoButton tone={language === "GERMAN" ? "ink" : "white"}>
-            DE
-          </NeoButton>
-        </Link>
+      <div className="flex flex-wrap gap-2">
+        {LANGUAGES.map((l) => (
+          <Link key={l} href={`/gap?lang=${LANGUAGE_META[l].code}`}>
+            <NeoButton tone={language === l ? "ink" : "white"}>
+              {LANGUAGE_META[l].short}
+            </NeoButton>
+          </Link>
+        ))}
       </div>
       <GapClient items={items} />
     </div>

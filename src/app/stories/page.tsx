@@ -49,7 +49,12 @@ export default async function StoriesPage() {
                 >
                   <div>
                     <p className="text-[10px] font-black uppercase opacity-70">
-                      {s.language === "ENGLISH" ? "EN" : "DE"} · {s.cefrLevel}
+                      {s.language === "ENGLISH"
+                        ? "EN"
+                        : s.language === "GERMAN"
+                          ? "DE"
+                          : "FR"}{" "}
+                      · {s.cefrLevel}
                       {turns ? ` · ${turns} lines` : ""}
                       {done ? " · done" : ""}
                     </p>

@@ -18,38 +18,41 @@ export async function Nav() {
     null;
 
   return (
-    <header className="sticky top-0 z-40 border-b-4 border-neo-ink bg-neo-yellow pt-[env(safe-area-inset-top)]">
-      <div className="mx-auto flex h-14 max-w-6xl items-center justify-between gap-2 px-3 sm:h-16 sm:gap-3 sm:px-6">
+    <header className="sticky top-0 z-40 border-b-3 border-neo-ink bg-neo-yellow pt-[env(safe-area-inset-top)] text-white">
+      <div className="mx-auto flex h-14 max-w-6xl items-center gap-2 px-3 sm:h-14 sm:gap-3 sm:px-6">
         <Link
           href="/"
-          className="neo-border neo-shadow-sm shrink-0 rounded-xl bg-neo-white px-2.5 py-2 text-xs font-black tracking-tight text-neo-ink sm:px-3 sm:text-base"
+          className="shrink-0 rounded-lg border-2 border-neo-ink bg-neo-white px-2.5 py-1.5 text-sm font-black tracking-tight !text-neo-ink shadow-[2px_2px_0_#1B4EF5]"
         >
-          AO
-          <span className="hidden sm:inline"> LEARNER</span>
+          Ao<span className="!text-neo-muted">.</span>
+          <span className="hidden sm:inline">Learner</span>
         </Link>
-        <nav className="flex min-w-0 items-center gap-1.5 text-xs sm:gap-2 sm:text-sm">
-          <NavClientLinks />
+
+        <nav className="flex min-w-0 flex-1 items-center justify-end gap-1.5 sm:gap-2">
           {authed && user ? (
-            <UserMenu
-              name={name}
-              email={user.email}
-              picture={user.picture}
-            />
-          ) : (
             <>
+              <NavClientLinks authed />
+              <UserMenu
+                name={name}
+                email={user.email}
+                picture={user.picture}
+              />
+            </>
+          ) : (
+            <div className="flex items-center gap-1.5">
               <LoginLink
                 postLoginRedirectURL="/dashboard"
-                className="neo-border neo-shadow-sm neo-press hidden min-h-11 items-center rounded-xl bg-neo-white px-3 py-2 font-black uppercase sm:inline-flex"
+                className="hidden rounded-lg border-2 border-neo-ink bg-neo-white px-3 py-1.5 text-xs font-black uppercase !text-neo-ink sm:inline-flex"
               >
                 Log in
               </LoginLink>
               <RegisterLink
                 postLoginRedirectURL="/dashboard"
-                className="neo-border neo-shadow-sm neo-press inline-flex min-h-11 items-center rounded-xl bg-neo-pink px-3 py-2 font-black uppercase"
+                className="inline-flex rounded-lg border-2 border-neo-ink bg-neo-ink px-3 py-1.5 text-xs font-black uppercase !text-neo-white"
               >
                 Sign up
               </RegisterLink>
-            </>
+            </div>
           )}
         </nav>
       </div>

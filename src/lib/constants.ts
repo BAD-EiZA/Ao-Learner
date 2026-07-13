@@ -26,6 +26,7 @@ export const EMOTIONS = [
   "sorrow",
   "angry",
   "fun",
+  "surprised",
 ] as const;
 
 export type Emotion = (typeof EMOTIONS)[number];

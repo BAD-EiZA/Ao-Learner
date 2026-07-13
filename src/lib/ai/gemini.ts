@@ -47,7 +47,7 @@ const responseSchema: ResponseSchema = {
     emotion: {
       type: SchemaType.STRING,
       format: "enum",
-      enum: ["neutral", "joy", "sorrow", "angry", "fun"],
+      enum: ["neutral", "joy", "sorrow", "angry", "fun", "surprised"],
     },
     breakdown: {
       type: SchemaType.OBJECT,
@@ -265,11 +265,13 @@ export async function generateSpeechBase64(
   text: string,
   language: string
 ): Promise<{ base64: string; mime: string; model: string } | null> {
-  const langCode = /german/i.test(language)
-    ? "de-DE"
-    : /indonesia/i.test(language)
-      ? "id-ID"
-      : "en-US";
+  const langCode = /french|français/i.test(language)
+    ? "fr-FR"
+    : /german|deutsch/i.test(language)
+      ? "de-DE"
+      : /indonesia/i.test(language)
+        ? "id-ID"
+        : "en-US";
   const prompt = `Speak as a friendly language tutor. Say only the following feedback clearly, nothing else: ${text}`;
 
   for (const model of GEMINI_TTS_MODELS) {

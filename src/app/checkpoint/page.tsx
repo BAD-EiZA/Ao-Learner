@@ -20,7 +20,7 @@ type QuizItem = {
 };
 
 export default function CheckpointPage() {
-  const [lang, setLang] = useState<"en" | "de">("en");
+  const [lang, setLang] = useState<"en" | "de" | "fr">("en");
   const [units, setUnits] = useState<Unit[]>([]);
   const [quiz, setQuiz] = useState<QuizItem[] | null>(null);
   const [unitKey, setUnitKey] = useState<string | null>(null);
@@ -80,19 +80,22 @@ export default function CheckpointPage() {
       <p className="text-sm font-medium text-neo-muted">
         Finish unit stages, then self-score or speak each line in Learn.
       </p>
-      <div className="flex gap-2">
-        <NeoButton
-          tone={lang === "en" ? "ink" : "white"}
-          onClick={() => setLang("en")}
-        >
-          EN
-        </NeoButton>
-        <NeoButton
-          tone={lang === "de" ? "ink" : "white"}
-          onClick={() => setLang("de")}
-        >
-          DE
-        </NeoButton>
+      <div className="flex flex-wrap gap-2">
+        {(
+          [
+            ["en", "EN"],
+            ["de", "DE"],
+            ["fr", "FR"],
+          ] as const
+        ).map(([code, label]) => (
+          <NeoButton
+            key={code}
+            tone={lang === code ? "ink" : "white"}
+            onClick={() => setLang(code)}
+          >
+            {label}
+          </NeoButton>
+        ))}
       </div>
 
       {result && (

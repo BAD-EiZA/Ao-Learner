@@ -98,8 +98,17 @@ function createClient(pool: Pool) {
   });
 }
 
+// Bump when UserStats schema fields change so HMR doesn't keep a stale client
+const PRISMA_CLIENT_REV = 3;
+
 const pool = globalForPrisma.pgPool || createPool();
-export const prisma = globalForPrisma.prisma || createClient(pool);
+const cached = globalForPrisma.prisma as
+  | (PrismaClient & { __rev?: number })
+  | undefined;
+export const prisma =
+  cached && cached.__rev === PRISMA_CLIENT_REV
+    ? cached
+    : Object.assign(createClient(pool), { __rev: PRISMA_CLIENT_REV });
 
 if (process.env.NODE_ENV !== "production") {
   globalForPrisma.prisma = prisma;

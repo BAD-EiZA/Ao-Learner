@@ -49,4 +49,6 @@ export const BUCKET_LABELS: Record<string, string> = {
   a1: "A1",
   a2: "A2",
   b1: "B1",
+  b2: "B2",
+  c1: "C1",
 };

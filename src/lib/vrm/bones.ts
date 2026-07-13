@@ -82,6 +82,7 @@ export const VRM_EMOTION_PRESETS = [
   "sorrow",
   "angry",
   "fun",
+  "surprised",
 ] as const;
 
 export function isKnownBone(name: string): name is VrmBoneName {

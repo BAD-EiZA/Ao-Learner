@@ -63,7 +63,12 @@ export default async function ScenariosPage() {
                     {pack.map((s) => (
                       <Link key={s.id} href={`/learn/${s.id}`}>
                         <NeoButton tone="ink">
-                          {s.language === "ENGLISH" ? "EN" : "DE"} · {s.title}
+                          {s.language === "ENGLISH"
+                            ? "EN"
+                            : s.language === "GERMAN"
+                              ? "DE"
+                              : "FR"}{" "}
+                          · {s.title}
                         </NeoButton>
                       </Link>
                     ))}

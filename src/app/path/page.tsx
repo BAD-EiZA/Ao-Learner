@@ -5,10 +5,11 @@ import { getStagesWithProgress } from "@/lib/db/progress";
 import { NeoBadge, NeoButton, NeoCard } from "@/components/ui/neo";
 import type { StageView } from "@/types/stage";
 import { crownEmoji } from "@/lib/learning/crowns";
+import { LANGUAGE_META, LANGUAGES, parseLangParam } from "@/lib/languages";
 
 export const dynamic = "force-dynamic";
 
-const CEFR = ["A1", "A2", "B1"] as const;
+const CEFR = ["A1", "A2", "B1", "B2", "C1"] as const;
 
 export default async function PathPage({
   searchParams,
@@ -19,7 +20,7 @@ export default async function PathPage({
   if (!user) redirect("/api/auth/login?post_login_redirect_url=/path");
 
   const sp = await searchParams;
-  const lang = sp.lang === "de" ? "GERMAN" : "ENGLISH";
+  const lang = parseLangParam(sp.lang);
   const stages = (await getStagesWithProgress(
     user.id,
     lang
@@ -39,16 +40,13 @@ export default async function PathPage({
       <NeoBadge tone="cyan">Learning path</NeoBadge>
       <h1 className="text-3xl font-black text-neo-ink">Your path</h1>
       <div className="flex flex-wrap gap-2">
-        <Link href="/path?lang=en">
-          <NeoButton tone={lang === "ENGLISH" ? "ink" : "white"}>
-            English
-          </NeoButton>
-        </Link>
-        <Link href="/path?lang=de">
-          <NeoButton tone={lang === "GERMAN" ? "ink" : "white"}>
-            German
-          </NeoButton>
-        </Link>
+        {LANGUAGES.map((l) => (
+          <Link key={l} href={`/path?lang=${LANGUAGE_META[l].code}`}>
+            <NeoButton tone={lang === l ? "ink" : "white"}>
+              {LANGUAGE_META[l].label}
+            </NeoButton>
+          </Link>
+        ))}
         <Link href="/dashboard">
           <NeoButton tone="pink">Dashboard</NeoButton>
         </Link>

@@ -2,25 +2,23 @@
 
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
 import { RecordButton } from "@/components/learn/RecordButton";
 import { NeoBadge, NeoButton, NeoCard, NeoPanel } from "@/components/ui/neo";
 import type { Language } from "@/generated/prisma/client";
+import { LANGUAGE_META, LANGUAGES } from "@/lib/languages";
 
 type Prompt = { expectedText: string; meaningId: string; cefr: string };
 
 export function PlacementWizard({
-  english,
-  german,
+  promptsByLang,
 }: {
-  english: Prompt[];
-  german: Prompt[];
+  promptsByLang: Record<Language, Prompt[]>;
 }) {
   const router = useRouter();
   const [lang, setLang] = useState<Language>("ENGLISH");
   const prompts = useMemo(
-    () => (lang === "ENGLISH" ? english : german),
-    [lang, english, german]
+    () => promptsByLang[lang] ?? promptsByLang.ENGLISH,
+    [lang, promptsByLang]
   );
   const [idx, setIdx] = useState(0);
   const [scores, setScores] = useState<number[]>([]);
@@ -32,6 +30,7 @@ export function PlacementWizard({
 
   const finish = async (finalScores: number[], skip = false) => {
     setLoading(true);
+    setFeedback(null);
     try {
       const res = await fetch("/api/placement", {
         method: "POST",
@@ -42,8 +41,19 @@ export function PlacementWizard({
             : { scores: finalScores, language: lang }
         ),
       });
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setFeedback(
+          typeof data.error === "string"
+            ? data.error
+            : `Placement failed (${res.status})`
+        );
+        return;
+      }
       setDoneLevel(data.level ?? "A1");
+      router.refresh();
+    } catch (e) {
+      setFeedback(e instanceof Error ? e.message : "Network error");
     } finally {
       setLoading(false);
     }
@@ -58,10 +68,7 @@ export function PlacementWizard({
       form.append("audio", blob, "speech.webm");
       form.append("expectedText", current.expectedText);
       form.append("placement", "1");
-      form.append(
-        "language",
-        lang === "ENGLISH" ? "English" : "German"
-      );
+      form.append("language", LANGUAGE_META[lang].speak);
       const res = await fetch("/api/evaluate", { method: "POST", body: form });
       const data = await res.json();
       if (!res.ok) {
@@ -104,14 +111,14 @@ export function PlacementWizard({
 
   return (
     <div className="mx-auto max-w-lg space-y-4 px-3 py-8">
-      <NeoBadge tone="pink">Placement test · 5 phrases</NeoBadge>
+      <NeoBadge tone="pink">Placement test · A1–C1</NeoBadge>
       <h1 className="text-3xl font-black text-neo-ink">Find your level</h1>
       <p className="text-sm font-medium text-neo-muted">
-        Speak a few phrases. We place you in CEFR A1–B1. Or skip to start at A1.
+        Speak a few phrases. We place you in CEFR A1–C1. Or skip to start at A1.
       </p>
 
-      <div className="flex gap-2">
-        {(["ENGLISH", "GERMAN"] as Language[]).map((l) => (
+      <div className="flex flex-wrap gap-2">
+        {LANGUAGES.map((l) => (
           <button
             key={l}
             type="button"
@@ -126,7 +133,7 @@ export function PlacementWizard({
               lang === l ? "bg-neo-ink text-neo-white" : "bg-neo-white"
             }`}
           >
-            {l}
+            {LANGUAGE_META[l].short}
           </button>
         ))}
       </div>
@@ -134,31 +141,29 @@ export function PlacementWizard({
       {current && (
         <NeoPanel tone="white" className="space-y-4 p-4">
           <p className="text-xs font-black uppercase opacity-70">
-            {idx + 1}/{prompts.length} · {current.cefr}
+            {idx + 1}/{prompts.length} · {current.cefr} ·{" "}
+            {LANGUAGE_META[lang].label}
           </p>
           <p className="text-2xl font-black">{current.expectedText}</p>
-          <p className="text-sm font-bold opacity-80">= {current.meaningId}</p>
-          <RecordButton disabled={loading} onRecorded={onRecorded} />
+          <p className="text-sm font-bold text-neo-muted">{current.meaningId}</p>
+          <RecordButton
+            disabled={loading}
+            onRecorded={(b) => void onRecorded(b)}
+          />
           {feedback && (
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="text-sm font-bold"
-            >
-              {feedback}
-            </motion.p>
+            <p className="text-sm font-bold text-neo-ink">{feedback}</p>
           )}
+          <div className="flex flex-wrap gap-2">
+            <NeoButton
+              tone="white"
+              disabled={loading}
+              onClick={() => void finish([], true)}
+            >
+              Skip · start A1
+            </NeoButton>
+          </div>
         </NeoPanel>
       )}
-
-      <NeoButton
-        type="button"
-        tone="white"
-        disabled={loading}
-        onClick={() => finish([], true)}
-      >
-        Skip · start at A1
-      </NeoButton>
     </div>
   );
 }

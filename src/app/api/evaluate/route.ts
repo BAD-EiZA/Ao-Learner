@@ -141,7 +141,12 @@ export async function POST(req: Request) {
       audioBase64: buffer.toString("base64"),
       mimeType: file.type || "audio/webm",
       expectedText,
-      language: stage.language === "ENGLISH" ? "English" : "German",
+      language:
+        stage.language === "FRENCH"
+          ? "French"
+          : stage.language === "GERMAN"
+            ? "German"
+            : "English",
       feedbackLocale,
       hardMode: isHard,
     });

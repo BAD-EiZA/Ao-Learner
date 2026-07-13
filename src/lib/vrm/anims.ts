@@ -3,6 +3,8 @@ import type { Emotion } from "@/lib/constants";
 export const ANIM_KEYS = [
   "LookAround",
   "Thinking",
+  "Idle",
+  "Dance02",
   "Clapping",
   "Jump",
   "Blush",
@@ -29,17 +31,27 @@ export type AnimDef = {
   emotion: Emotion;
 };
 
-/** Expression follows filename / intent */
+/** Expression follows filename / intent — always pair clip + face */
 export const VRM_ANIMS: Record<AnimKey, AnimDef> = {
   LookAround: {
     key: "LookAround",
     url: "/anims/LookAround.vrma",
-    emotion: "neutral",
+    emotion: "fun",
   },
   Thinking: {
     key: "Thinking",
     url: "/anims/Thinking.vrma",
+    emotion: "fun",
+  },
+  Idle: {
+    key: "Idle",
+    url: "/anims/StandingIdle.vrma",
     emotion: "neutral",
+  },
+  Dance02: {
+    key: "Dance02",
+    url: "/anims/Dance02.vrma",
+    emotion: "joy",
   },
   Clapping: {
     key: "Clapping",
@@ -79,18 +91,17 @@ export const VRM_ANIMS: Record<AnimKey, AnimDef> = {
   Surprised: {
     key: "Surprised",
     url: "/anims/Surprised.vrma",
-    emotion: "fun",
+    emotion: "surprised",
   },
   Goodbye: {
     key: "Goodbye",
     url: "/anims/Goodbye.vrma",
     emotion: "sorrow",
   },
-  // VRMA_01–07
   ShowFullBody: {
     key: "ShowFullBody",
     url: "/anims/ShowFullBody.vrma",
-    emotion: "neutral",
+    emotion: "joy",
   },
   Greeting: {
     key: "Greeting",
@@ -115,7 +126,7 @@ export const VRM_ANIMS: Record<AnimKey, AnimDef> = {
   ModelPose: {
     key: "ModelPose",
     url: "/anims/ModelPose.vrma",
-    emotion: "neutral",
+    emotion: "joy",
   },
   Squat: {
     key: "Squat",
@@ -157,9 +168,22 @@ export function pickAnimForScore(
   return VRM_ANIMS.Angry;
 }
 
-/** Home click reactions (play once then return to idle) */
+/** Home click reaction (play once then return to idle) */
 export function pickHomeClickAnim(): AnimDef {
-  return Math.random() < 0.5 ? VRM_ANIMS.Greeting : VRM_ANIMS.Spin;
+  return VRM_ANIMS.Dance02;
+}
+
+const HOME_FIDGET_POOL: AnimKey[] = [
+  "Blush",
+  "ModelPose",
+  "PeaceSign",
+  "Shoot",
+  "Sleepy",
+];
+
+/** Home idle boredom (10s no click) — one-shot then back to StandingIdle */
+export function pickHomeFidgetAnim(): AnimDef {
+  return pickRandom(HOME_FIDGET_POOL);
 }
 
 export function animFromKey(key: AnimKey): AnimDef {

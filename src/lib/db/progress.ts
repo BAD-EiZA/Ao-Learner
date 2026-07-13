@@ -53,7 +53,7 @@ export async function getStagesWithProgress(
       meaningId: stage.meaningId ?? "",
       referenceAudio: stage.referenceAudio,
       order: stage.order,
-      cefrLevel: stage.cefrLevel as "A1" | "A2" | "B1",
+      cefrLevel: stage.cefrLevel as "A1" | "A2" | "B1" | "B2" | "C1",
       mode: stage.mode as
         | "PHRASE"
         | "DIALOGUE"

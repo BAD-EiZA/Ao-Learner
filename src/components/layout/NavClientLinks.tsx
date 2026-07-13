@@ -1,89 +1,145 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 import { useAppOptional } from "@/components/providers/AppProviders";
 import { MobileNav } from "@/components/layout/MobileNav";
+import { moreNav, navActive, primaryNav } from "@/lib/nav";
+import { cn } from "@/lib/utils";
 
-const desk =
-  "neo-border neo-shadow-sm neo-press hidden min-h-11 items-center rounded-xl px-3 py-2 font-black uppercase md:inline-flex";
-
-export function NavClientLinks() {
+export function NavClientLinks({ authed = false }: { authed?: boolean }) {
+  const pathname = usePathname();
   const app = useAppOptional();
-  const learn = app?.tr("nav_learn") ?? "Learn";
-  const review = app?.tr("nav_review") ?? "Review";
-  const plan = app?.tr("nav_plan") ?? "Plan";
+  const [moreOpen, setMoreOpen] = useState(false);
+  const moreRef = useRef<HTMLDivElement>(null);
+  const primary = primaryNav();
+  const more = moreNav();
+
+  useEffect(() => {
+    setMoreOpen(false);
+  }, [pathname]);
+
+  useEffect(() => {
+    if (!moreOpen) return;
+    const onDoc = (e: MouseEvent) => {
+      if (!moreRef.current?.contains(e.target as Node)) setMoreOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setMoreOpen(false);
+    };
+    document.addEventListener("mousedown", onDoc);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", onDoc);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [moreOpen]);
+
+  // Guest: no app routes in nav (all require login)
+  if (!authed) return null;
 
   return (
     <>
-      {/* Mobile: Learn + hamburger */}
-      <Link
-        href="/dashboard"
-        className="neo-border neo-shadow-sm neo-press inline-flex min-h-11 items-center rounded-xl bg-neo-cyan px-3 py-2 font-black uppercase md:hidden"
-      >
-        {learn}
-      </Link>
       <MobileNav />
 
-      {/* Desktop strip */}
-      <Link
-        href="/dashboard"
-        className={`${desk} bg-neo-cyan`}
-      >
-        {learn}
-      </Link>
-      <Link href="/path" className={`${desk} bg-neo-lime`}>
-        Path
-      </Link>
-      <Link href="/practice" className={`${desk} bg-neo-yellow`}>
-        Practice
-      </Link>
-      <Link href="/review" className={`${desk} bg-neo-orange`}>
-        {review}
-      </Link>
-      <Link href="/plan" className={`${desk} bg-neo-pink lg:inline-flex`}>
-        {plan}
-      </Link>
-      <Link
-        href="/talk"
-        className={`${desk} bg-neo-pink lg:inline-flex`}
-      >
-        Talk
-      </Link>
-      <Link
-        href="/shop"
-        className={`${desk} bg-neo-yellow lg:inline-flex`}
-      >
-        Shop
-      </Link>
-      {app && (
-        <div className="hidden items-center gap-1 lg:flex">
+      {/* Desktop primary links — text, not rainbow pills */}
+      <div className="hidden items-center gap-0.5 md:flex">
+        {primary.map((item) => {
+          const active = navActive(pathname, item.href);
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={cn(
+                "rounded-lg px-2.5 py-1.5 text-xs font-black uppercase tracking-wide transition-colors lg:px-3 lg:text-sm",
+                active
+                  ? "bg-neo-white !text-neo-ink shadow-[2px_2px_0_#1B4EF5]"
+                  : "!text-white hover:bg-white/20"
+              )}
+            >
+              {item.label}
+            </Link>
+          );
+        })}
+
+        <div ref={moreRef} className="relative">
           <button
             type="button"
-            className={`neo-border neo-shadow-sm min-h-9 min-w-9 rounded-lg px-2 text-[10px] font-black ${
-              app.locale === "en" ? "bg-neo-ink text-neo-white" : "bg-neo-white"
-            }`}
+            aria-expanded={moreOpen}
+            aria-haspopup="menu"
+            onClick={() => setMoreOpen((v) => !v)}
+            className={cn(
+              "flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-black uppercase tracking-wide lg:px-3 lg:text-sm",
+              moreOpen || more.some((i) => navActive(pathname, i.href))
+                ? "bg-neo-white !text-neo-ink shadow-[2px_2px_0_#1B4EF5]"
+                : "!text-white hover:bg-white/20"
+            )}
+          >
+            More
+            <span
+              className={cn(
+                "text-[9px] opacity-80 transition-transform",
+                moreOpen && "rotate-180"
+              )}
+            >
+              ▼
+            </span>
+          </button>
+          {moreOpen && (
+            <div
+              role="menu"
+              className="neo-border neo-shadow absolute right-0 z-50 mt-2 grid w-56 grid-cols-2 gap-1 rounded-2xl bg-neo-white p-2"
+            >
+              {more.map((item) => {
+                const active = navActive(pathname, item.href);
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    role="menuitem"
+                    onClick={() => setMoreOpen(false)}
+                    className={cn(
+                      "rounded-xl px-2.5 py-2 text-left text-[11px] font-black uppercase !text-neo-ink",
+                      active
+                        ? "bg-neo-ink !text-neo-white"
+                        : "hover:bg-neo-yellow/15"
+                    )}
+                  >
+                    {item.label}
+                  </Link>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {app && (
+        <div className="ml-1 hidden items-center gap-0.5 border-l-2 border-white/30 pl-2 lg:flex">
+          <button
+            type="button"
+            className={cn(
+              "rounded-md px-2 py-1 text-[10px] font-black",
+              app.locale === "en"
+                ? "bg-neo-white !text-neo-ink"
+                : "!text-white/90 hover:bg-white/20"
+            )}
             onClick={() => app.setLocale("en")}
           >
             EN
           </button>
           <button
             type="button"
-            className={`neo-border neo-shadow-sm min-h-9 min-w-9 rounded-lg px-2 text-[10px] font-black ${
-              app.locale === "id" ? "bg-neo-ink text-neo-white" : "bg-neo-white"
-            }`}
+            className={cn(
+              "rounded-md px-2 py-1 text-[10px] font-black",
+              app.locale === "id"
+                ? "bg-neo-white !text-neo-ink"
+                : "!text-white/90 hover:bg-white/20"
+            )}
             onClick={() => app.setLocale("id")}
           >
             ID
-          </button>
-          <button
-            type="button"
-            title={app.tr("reduced_motion")}
-            className={`neo-border neo-shadow-sm min-h-9 rounded-lg px-2 text-[10px] font-black ${
-              app.reducedMotion ? "bg-neo-ink text-neo-white" : "bg-neo-white"
-            }`}
-            onClick={() => app.setReducedMotion(!app.reducedMotion)}
-          >
-            {app.reducedMotion ? "Motion off" : "Motion"}
           </button>
         </div>
       )}

@@ -12,10 +12,5 @@ export default async function PlacementPage() {
   const status = await getPlacementStatus(user.id);
   if (status.done) redirect("/dashboard");
 
-  return (
-    <PlacementWizard
-      english={PLACEMENT_PROMPTS.ENGLISH}
-      german={PLACEMENT_PROMPTS.GERMAN}
-    />
-  );
+  return <PlacementWizard promptsByLang={PLACEMENT_PROMPTS} />;
 }

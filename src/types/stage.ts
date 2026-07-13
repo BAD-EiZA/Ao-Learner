@@ -1,4 +1,4 @@
-export type CefrLevel = "A1" | "A2" | "B1";
+export type CefrLevel = "A1" | "A2" | "B1" | "B2" | "C1";
 
 export type StageTurn = {
   expectedText: string;
@@ -13,7 +13,7 @@ export type StageView = {
   expectedText: string;
   meaningId: string;
   referenceAudio: string;
-  language: "ENGLISH" | "GERMAN";
+  language: "ENGLISH" | "GERMAN" | "FRENCH";
   order: number;
   cefrLevel: CefrLevel;
   mode?: "PHRASE" | "DIALOGUE" | "ROLEPLAY" | "STORY";

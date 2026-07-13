@@ -57,7 +57,16 @@ async function ttsBuffer(
   text: string,
   language: string
 ): Promise<{ buffer: Buffer; mime: string } | null> {
-  const langHint = language === "German" ? "German" : "English";
+  const langHint = /french/i.test(language)
+    ? "French"
+    : /german/i.test(language)
+      ? "German"
+      : "English";
+  const languageCode = /french/i.test(language)
+    ? "fr-FR"
+    : /german/i.test(language)
+      ? "de-DE"
+      : "en-US";
   const prompt = `Say clearly and naturally in ${langHint}, as a friendly language tutor demonstrating pronunciation for a beginner. Speak only this phrase, nothing else: ${text}`;
 
   let lastErr: unknown;
@@ -71,7 +80,7 @@ async function ttsBuffer(
           config: {
             responseModalities: [Modality.AUDIO],
             speechConfig: {
-              languageCode: language === "German" ? "de-DE" : "en-US",
+              languageCode,
               voiceConfig: {
                 prebuiltVoiceConfig: { voiceName: VOICE },
               },
@@ -194,7 +203,12 @@ async function main() {
       continue;
     }
 
-    const lang = stage.language === "ENGLISH" ? "English" : "German";
+    const lang =
+      stage.language === "FRENCH"
+        ? "French"
+        : stage.language === "GERMAN"
+          ? "German"
+          : "English";
     process.stdout.write(
       `[${stage.language} #${stage.order}] ${stage.expectedText} … `
     );
