@@ -1,8 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
-import { NeoBadge, NeoButton, NeoCard } from "@/components/ui/neo";
+import { NeoBadge, NeoButton, NeoCard, NeoLink } from "@/components/ui/neo";
 
 export default function ClubPage() {
   const [board, setBoard] = useState<{
@@ -14,44 +13,57 @@ export default function ClubPage() {
   const [name, setName] = useState("Ao Club");
   const [code, setCode] = useState("");
   const [msg, setMsg] = useState<string | null>(null);
+  const [busy, setBusy] = useState(true);
+  const [failed, setFailed] = useState(false);
 
   const load = () =>
     fetch("/api/club")
       .then((r) => r.json())
-      .then((d) => setBoard(d.board));
+      .then((d) => setBoard(d.board))
+      .catch(() => {
+        setFailed(true);
+        setMsg("Could not load club.");
+      })
+      .finally(() => setBusy(false));
 
   useEffect(() => {
     void load();
   }, []);
 
   const create = async () => {
+    setBusy(true);
+    setFailed(false);
     const res = await fetch("/api/club", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ action: "create", name }),
     });
     const j = await res.json();
-    setMsg(res.ok ? `Created ${j.club?.code}` : "fail");
+    setFailed(!res.ok);
+    setMsg(res.ok ? `Created ${j.club?.code}` : j.error ?? "Could not create club.");
     void load();
   };
 
   const join = async () => {
+    setBusy(true);
+    setFailed(false);
     const res = await fetch("/api/club", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ code }),
     });
     const j = await res.json();
-    setMsg(res.ok ? "Joined!" : j.error);
+    setFailed(!res.ok);
+    setMsg(res.ok ? "Joined!" : j.error ?? "Could not join club.");
     void load();
   };
 
   return (
-    <div className="mx-auto max-w-lg space-y-6 px-3 py-8">
-      <NeoBadge tone="purple">Club</NeoBadge>
+    <div className="mx-auto max-w-lg space-y-6 px-3 py-8" aria-busy={busy}>
+      <NeoBadge tone="info">Club</NeoBadge>
       <h1 className="text-3xl font-black">Private league</h1>
       {board ? (
-        <NeoCard tone="cyan" hover={false} className="space-y-2">
+        <NeoCard tone="info" hover={false} className="space-y-2">
           <p className="font-black">
             {board.name} · {board.code}
           </p>
@@ -76,33 +88,35 @@ export default function ClubPage() {
       ) : (
         <div className="space-y-3">
           <NeoCard hover={false} className="space-y-2">
-            <p className="font-black">Create club</p>
+            <h2 className="font-black">Create club</h2>
+            <label htmlFor="club-name" className="text-sm font-bold">Club name</label>
             <input
+              id="club-name"
               className="neo-border w-full rounded-xl px-3 py-2 font-bold"
               value={name}
               onChange={(e) => setName(e.target.value)}
             />
-            <NeoButton tone="ink" onClick={() => void create()}>
+            <NeoButton tone="primary" disabled={busy} onClick={() => void create()}>
               Create
             </NeoButton>
           </NeoCard>
           <NeoCard hover={false} className="space-y-2">
-            <p className="font-black">Join with code</p>
+            <h2 className="font-black">Join with code</h2>
+            <label htmlFor="club-code" className="text-sm font-bold">Club code</label>
             <input
+              id="club-code"
               className="neo-border w-full rounded-xl px-3 py-2 font-black uppercase"
               value={code}
               onChange={(e) => setCode(e.target.value)}
             />
-            <NeoButton tone="cyan" onClick={() => void join()}>
+            <NeoButton tone="info" disabled={busy} onClick={() => void join()}>
               Join
             </NeoButton>
           </NeoCard>
         </div>
       )}
-      {msg && <p className="text-xs font-black">{msg}</p>}
-      <Link href="/dashboard">
-        <NeoButton tone="white">← Dashboard</NeoButton>
-      </Link>
+      {msg && <p className="text-xs font-black" role={failed ? "alert" : "status"} aria-live="polite">{msg}</p>}
+      <NeoLink href="/dashboard" tone="surface">← Dashboard</NeoLink>
     </div>
   );
 }

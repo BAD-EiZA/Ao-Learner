@@ -1,8 +1,7 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { requireUser } from "@/lib/auth/user";
 import { prisma } from "@/lib/db/prisma";
-import { NeoBadge, NeoButton, NeoCard } from "@/components/ui/neo";
+import { NeoBadge, NeoCard, NeoLink } from "@/components/ui/neo";
 
 export const dynamic = "force-dynamic";
 
@@ -48,7 +47,7 @@ export default async function StoriesPage() {
                   className="flex flex-wrap items-center justify-between gap-3"
                 >
                   <div>
-                    <p className="text-[10px] font-black uppercase opacity-70">
+                    <p className="text-xs font-black uppercase opacity-70">
                       {s.language === "ENGLISH"
                         ? "EN"
                         : s.language === "GERMAN"
@@ -63,9 +62,7 @@ export default async function StoriesPage() {
                       {s.description}
                     </p>
                   </div>
-                  <Link href={`/learn/${s.id}`}>
-                    <NeoButton tone="ink">{done ? "Replay" : "Start"}</NeoButton>
-                  </Link>
+                  <NeoLink href={`/learn/${s.id}`} tone="ink">{done ? "Replay" : "Start"}</NeoLink>
                 </NeoCard>
               </li>
             );
@@ -74,12 +71,8 @@ export default async function StoriesPage() {
       )}
 
       <div className="flex flex-wrap gap-2">
-        <Link href="/dashboard">
-          <NeoButton tone="white">← Dashboard</NeoButton>
-        </Link>
-        <Link href="/scenarios">
-          <NeoButton tone="cyan">Role-play</NeoButton>
-        </Link>
+        <NeoLink href="/dashboard" tone="white">← Dashboard</NeoLink>
+        <NeoLink href="/scenarios" tone="cyan">Role-play</NeoLink>
       </div>
     </div>
   );

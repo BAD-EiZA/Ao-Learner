@@ -60,7 +60,7 @@ export function ShareCard({
         ref={cardRef}
         className="neo-border rounded-2xl bg-neo-white p-4 text-neo-ink"
       >
-        <p className="text-[10px] font-black uppercase opacity-60">Ao Learner</p>
+        <p className="text-xs font-black uppercase opacity-60">Ao Learner</p>
         <p className="text-lg font-black">{stageTitle}</p>
         <p className="text-sm font-bold">&ldquo;{expectedText}&rdquo;</p>
         {meaningId ? (

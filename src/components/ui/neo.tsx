@@ -1,8 +1,9 @@
 "use client";
 
 import { motion, type HTMLMotionProps } from "framer-motion";
+import Link, { type LinkProps } from "next/link";
 import { cn } from "@/lib/utils";
-import type { ReactNode } from "react";
+import type { AnchorHTMLAttributes, ReactNode } from "react";
 
 const press = {
   whileHover: { y: -2 },
@@ -22,7 +23,13 @@ function motionSafe() {
   return press;
 }
 
-type Tone =
+export type Tone =
+  | "primary"
+  | "info"
+  | "success"
+  | "warning"
+  | "danger"
+  | "surface"
   | "yellow"
   | "pink"
   | "cyan"
@@ -32,14 +39,19 @@ type Tone =
   | "white"
   | "ink";
 
-/** Mapped to ColorHunt: deep / mid / light / soft */
 const tones: Record<Tone, string> = {
-  yellow: "bg-neo-yellow text-neo-white", // #3874FF
-  pink: "bg-neo-pink text-neo-ink", // #F4CEFF
-  cyan: "bg-neo-cyan text-neo-white", // #5996FF
-  lime: "bg-neo-lime text-neo-white", // #5996FF
-  purple: "bg-neo-purple text-neo-ink", // #F4CEFF
-  orange: "bg-neo-orange text-neo-white", // #3874FF
+  primary: "bg-neo-primary text-neo-white",
+  info: "bg-neo-info text-neo-ink",
+  success: "bg-neo-success text-white",
+  warning: "bg-neo-warning text-neo-warning-ink",
+  danger: "bg-neo-danger text-neo-danger-ink",
+  surface: "bg-neo-white text-neo-ink",
+  yellow: "bg-neo-primary text-neo-white",
+  pink: "bg-neo-danger text-neo-danger-ink",
+  cyan: "bg-neo-info text-neo-ink",
+  lime: "bg-neo-success text-white",
+  purple: "bg-neo-purple text-neo-ink",
+  orange: "bg-neo-warning text-neo-warning-ink",
   white: "bg-neo-white text-neo-ink",
   ink: "bg-neo-ink text-neo-white", // #1B4EF5
 };
@@ -48,7 +60,7 @@ export function NeoCard({
   children,
   className,
   tone = "white",
-  hover = true,
+  hover = false,
   ...props
 }: {
   children: ReactNode;
@@ -59,7 +71,8 @@ export function NeoCard({
   return (
     <motion.div
       className={cn(
-        "neo-border neo-shadow rounded-2xl p-4",
+        "neo-border rounded-2xl p-4",
+        hover && "neo-shadow",
         tones[tone],
         className
       )}
@@ -103,6 +116,31 @@ export function NeoButton({
   );
 }
 
+export function NeoLink({
+  children,
+  className,
+  tone = "primary",
+  ...props
+}: LinkProps &
+  Omit<AnchorHTMLAttributes<HTMLAnchorElement>, keyof LinkProps> & {
+    children: ReactNode;
+    className?: string;
+    tone?: Tone;
+  }) {
+  return (
+    <Link
+      className={cn(
+        "neo-border neo-shadow inline-flex min-h-11 items-center justify-center rounded-xl px-4 py-2.5 text-sm font-black uppercase tracking-wide sm:px-5 sm:py-3",
+        tones[tone],
+        className
+      )}
+      {...props}
+    >
+      {children}
+    </Link>
+  );
+}
+
 export function NeoBadge({
   children,
   className,
@@ -115,7 +153,7 @@ export function NeoBadge({
   return (
     <span
       className={cn(
-        "neo-border neo-shadow-sm inline-flex items-center rounded-full px-3 py-1 text-xs font-black uppercase tracking-wide",
+        "neo-border inline-flex items-center rounded-full px-3 py-1 text-xs font-black uppercase tracking-wide",
         tones[tone],
         className
       )}
@@ -137,7 +175,7 @@ export function NeoChip({
   return (
     <span
       className={cn(
-        "neo-border neo-shadow-sm rounded-lg px-2.5 py-1.5 text-center text-[11px] font-bold sm:text-xs",
+        "neo-border rounded-lg px-2.5 py-1.5 text-center text-xs font-bold",
         tones[tone],
         className
       )}

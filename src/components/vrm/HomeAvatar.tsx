@@ -148,7 +148,7 @@ export function HomeAvatar() {
         }`}
       />
       {modelReady && (
-        <p className="pointer-events-none absolute bottom-3 left-0 right-0 z-[15] text-center text-[10px] font-black uppercase tracking-wide text-neo-ink/70">
+        <p className="pointer-events-none absolute bottom-3 left-0 right-0 z-[15] text-center text-xs font-black uppercase tracking-wide text-neo-ink/70">
           {busy ? `Ao · ${anim.key}…` : "Click Ao · Dance"}
         </p>
       )}

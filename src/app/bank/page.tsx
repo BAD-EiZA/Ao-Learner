@@ -1,8 +1,7 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { requireUser } from "@/lib/auth/user";
 import { listWordBank } from "@/lib/learning/bank";
-import { NeoBadge, NeoButton, NeoCard } from "@/components/ui/neo";
+import { NeoBadge, NeoCard, NeoLink } from "@/components/ui/neo";
 
 export const dynamic = "force-dynamic";
 
@@ -34,18 +33,14 @@ export default async function BankPage() {
                   </p>
                 </div>
                 {it.stageId && (
-                  <Link href={`/learn/${it.stageId}?review=1`}>
-                    <NeoButton tone="ink">Practice</NeoButton>
-                  </Link>
+                  <NeoLink href={`/learn/${it.stageId}?review=1`} tone="ink">Practice</NeoLink>
                 )}
               </NeoCard>
             </li>
           ))}
         </ul>
       )}
-      <Link href="/dashboard">
-        <NeoButton tone="white">← Dashboard</NeoButton>
-      </Link>
+      <NeoLink href="/dashboard" tone="white">← Dashboard</NeoLink>
     </div>
   );
 }

@@ -1,115 +1,65 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { requireUser } from "@/lib/auth/user";
 import { getDueReviews, getReviewQueueCount } from "@/lib/learning/srs";
 import { getWeakSpots, getRecommendedList } from "@/lib/learning/adaptive";
 import { getSmartPracticeQueue } from "@/lib/learning/smart-practice";
-import { NeoBadge, NeoButton, NeoCard } from "@/components/ui/neo";
+import { NeoBadge, NeoCard, NeoLink } from "@/components/ui/neo";
 
 export const dynamic = "force-dynamic";
+
+const Empty = ({ children }: { children: string }) => (
+  <p className="rounded-xl bg-neo-white px-3 py-2 text-sm font-medium text-neo-muted">
+    {children}
+  </p>
+);
 
 export default async function PracticePage() {
   const user = await requireUser();
   if (!user) redirect("/api/auth/login?post_login_redirect_url=/practice");
 
-  const reviewCount = await getReviewQueueCount(user.id);
-  const due = await getDueReviews(user.id, 8);
-  const weak = await getWeakSpots(user.id, 6);
-  const rec = await getRecommendedList(user.id, 5);
-  const smart = await getSmartPracticeQueue(user.id, 8);
+  const [reviewCount, due, weak, rec, smart] = await Promise.all([
+    getReviewQueueCount(user.id),
+    getDueReviews(user.id, 8),
+    getWeakSpots(user.id, 6),
+    getRecommendedList(user.id, 1),
+    getSmartPracticeQueue(user.id, 1),
+  ]);
+  const primary = smart[0] ?? rec[0];
 
   return (
     <div className="mx-auto max-w-3xl space-y-6 px-3 py-8">
-      <NeoBadge tone="orange">Practice hub</NeoBadge>
+      <NeoBadge tone="warning">Practice hub</NeoBadge>
       <h1 className="text-3xl font-black text-neo-ink">Practice</h1>
       <p className="text-sm font-medium text-neo-muted">
-        Reviews, weak spots, shadow — no heart cost on review/shadow.
+        Focused practice. Reviews and shadowing cost no hearts.
       </p>
 
-      <section className="space-y-2">
-        <h2 className="font-black">Smart practice</h2>
-        {smart.length === 0 ? (
-          <p className="text-sm font-medium text-neo-muted">Queue empty.</p>
+      <section className="space-y-2" aria-labelledby="for-you-heading">
+        <h2 id="for-you-heading" className="text-lg font-black">For you</h2>
+        {primary ? (
+          <NeoCard tone="primary" className="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <p className="text-xs font-black uppercase opacity-80">
+                {"reason" in primary ? primary.reason : "Smart recommendation"}
+              </p>
+              <p className="text-xl font-black">{primary.title}</p>
+              <p className="text-sm font-bold">{primary.expectedText}</p>
+            </div>
+            <NeoLink href={`/learn/${primary.stageId}?review=1`} tone="surface">
+              Start practice
+            </NeoLink>
+          </NeoCard>
         ) : (
-          <ul className="space-y-2">
-            {smart.map((s) => (
-              <li key={`${s.kind}-${s.stageId}`}>
-                <NeoCard
-                  tone={
-                    s.kind === "fail"
-                      ? "pink"
-                      : s.kind === "weak"
-                        ? "orange"
-                        : "cyan"
-                  }
-                  className="flex justify-between gap-2"
-                >
-                  <div>
-                    <p className="text-[10px] font-black uppercase opacity-70">
-                      {s.reason}
-                    </p>
-                    <p className="font-black">{s.title}</p>
-                    <p className="text-sm font-bold">{s.expectedText}</p>
-                  </div>
-                  <Link href={`/learn/${s.stageId}?review=1`}>
-                    <NeoButton tone="ink">Go</NeoButton>
-                  </Link>
-                </NeoCard>
-              </li>
-            ))}
-          </ul>
+          <Empty>No recommendation yet. Complete a lesson to personalize practice.</Empty>
         )}
       </section>
 
-      <div className="grid gap-3 sm:grid-cols-2">
-        <NeoCard tone="orange" hover={false}>
-          <p className="text-xs font-black uppercase opacity-70">SRS reviews</p>
-          <p className="text-2xl font-black">{reviewCount} due</p>
-          <Link href="/review" className="mt-2 inline-block">
-            <NeoButton tone="ink">Open deck</NeoButton>
-          </Link>
-        </NeoCard>
-        <NeoCard tone="cyan" hover={false}>
-          <p className="text-xs font-black uppercase opacity-70">Study plan</p>
-          <p className="text-sm font-bold">Mixed path for today</p>
-          <Link href="/plan" className="mt-2 inline-block">
-            <NeoButton tone="ink">Open plan</NeoButton>
-          </Link>
-        </NeoCard>
-        <NeoCard tone="lime" hover={false}>
-          <p className="text-xs font-black uppercase opacity-70">Match pairs</p>
-          <p className="text-sm font-bold">Phrase ↔ meaning warm-up</p>
-          <Link href="/match" className="mt-2 inline-block">
-            <NeoButton tone="ink">Play match</NeoButton>
-          </Link>
-        </NeoCard>
-        <NeoCard tone="yellow" hover={false}>
-          <p className="text-xs font-black uppercase opacity-70">Weekly report</p>
-          <p className="text-sm font-bold">XP · weak spots · badges</p>
-          <Link href="/report" className="mt-2 inline-block">
-            <NeoButton tone="ink">Open report</NeoButton>
-          </Link>
-        </NeoCard>
-        <NeoCard tone="pink" hover={false}>
-          <p className="text-xs font-black uppercase opacity-70">Speak the gap</p>
-          <Link href="/gap" className="mt-2 inline-block">
-            <NeoButton tone="ink">Open</NeoButton>
-          </Link>
-        </NeoCard>
-        <NeoCard tone="purple" hover={false}>
-          <p className="text-xs font-black uppercase opacity-70">Talk with Ao</p>
-          <Link href="/talk" className="mt-2 inline-block">
-            <NeoButton tone="ink">Chat</NeoButton>
-          </Link>
-        </NeoCard>
-      </div>
-
-      <section className="space-y-2">
-        <h2 className="font-black text-neo-ink">Due now</h2>
+      <details open className="space-y-2">
+        <summary className="cursor-pointer text-lg font-black text-neo-ink">
+          Due <span className="text-sm font-bold text-neo-muted">{reviewCount} reviews</span>
+        </summary>
         {due.length === 0 ? (
-          <NeoCard tone="lime" hover={false}>
-            <p className="font-bold">Nothing due — nice.</p>
-          </NeoCard>
+          <Empty>Nothing due. Your review deck is clear.</Empty>
         ) : (
           <ul className="space-y-2">
             {due.map((d) => (
@@ -120,34 +70,26 @@ export default async function PracticePage() {
                     <p className="text-sm font-bold">{d.stage.expectedText}</p>
                   </div>
                   <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
-                    <Link href={`/learn/${d.stageId}?review=1`} className="w-full sm:w-auto">
-                      <NeoButton tone="orange" className="w-full sm:w-auto">
-                        Review
-                      </NeoButton>
-                    </Link>
-                    <Link href={`/learn/${d.stageId}?shadow=1`} className="w-full sm:w-auto">
-                      <NeoButton tone="cyan" className="w-full sm:w-auto">
-                        Shadow
-                      </NeoButton>
-                    </Link>
+                    <NeoLink href={`/learn/${d.stageId}?review=1`} tone="warning" className="w-full sm:w-auto">Review</NeoLink>
+                    <NeoLink href={`/learn/${d.stageId}?shadow=1`} tone="info" className="w-full sm:w-auto">Shadow</NeoLink>
                   </div>
                 </NeoCard>
               </li>
             ))}
           </ul>
         )}
-      </section>
+      </details>
 
-      <section className="space-y-2">
-        <h2 className="font-black text-neo-ink">Weak spots</h2>
+      <details className="space-y-2">
+        <summary className="cursor-pointer text-lg font-black text-neo-ink">Weak spots</summary>
         {weak.length === 0 ? (
-          <p className="text-sm font-medium text-neo-muted">No data yet.</p>
+          <Empty>No weak spots yet. Keep learning to build insights.</Empty>
         ) : (
           <ul className="space-y-2">
             {weak.map((w) => (
               <li key={w.stageId}>
                 <NeoCard
-                  tone="pink"
+                  tone="danger"
                   className="flex flex-wrap items-center justify-between gap-2"
                 >
                   <div>
@@ -156,37 +98,23 @@ export default async function PracticePage() {
                       avg {Math.round(w.avgScore)} · fails {w.failCount}
                     </p>
                   </div>
-                  <Link href={`/learn/${w.stageId}?review=1`}>
-                    <NeoButton tone="ink">Drill</NeoButton>
-                  </Link>
+                  <NeoLink href={`/learn/${w.stageId}?review=1`} tone="surface">Drill</NeoLink>
                 </NeoCard>
               </li>
             ))}
           </ul>
         )}
-      </section>
+      </details>
 
-      <section className="space-y-2">
-        <h2 className="font-black text-neo-ink">Recommended</h2>
-        <ul className="space-y-2">
-          {rec.map((r) => (
-            <li key={r.stageId}>
-              <NeoCard
-                tone="yellow"
-                className="flex flex-wrap items-center justify-between gap-2"
-              >
-                <div>
-                  <p className="font-black">{r.title}</p>
-                  <p className="text-sm font-bold">{r.expectedText}</p>
-                </div>
-                <Link href={`/learn/${r.stageId}`}>
-                  <NeoButton tone="ink">Go</NeoButton>
-                </Link>
-              </NeoCard>
-            </li>
-          ))}
-        </ul>
-      </section>
+      <details className="space-y-2">
+        <summary className="cursor-pointer text-lg font-black text-neo-ink">Games</summary>
+        <div className="mt-2 grid gap-2 sm:grid-cols-2">
+          <NeoLink href="/match" tone="success" className="w-full">Match pairs</NeoLink>
+          <NeoLink href="/gap" tone="danger" className="w-full">Speak the gap</NeoLink>
+          <NeoLink href="/talk" tone="info" className="w-full">Talk with Ao</NeoLink>
+          <NeoLink href="/plan" tone="surface" className="w-full">Study plan</NeoLink>
+        </div>
+      </details>
     </div>
   );
 }

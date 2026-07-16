@@ -17,14 +17,13 @@ type Props = {
   isCorrect?: boolean | null;
   loading?: boolean;
   breakdown?: BreakdownView | null;
-  combo?: number;
   wordHeat?: WordHeat[] | null;
 };
 
 function Bar({ label, value }: { label: string; value: number }) {
   return (
     <div className="space-y-0.5">
-      <div className="flex justify-between text-[10px] font-black uppercase">
+      <div className="flex justify-between text-xs font-black uppercase">
         <span>{label}</span>
         <span>{value}</span>
       </div>
@@ -44,7 +43,6 @@ export function FeedbackPanel({
   isCorrect,
   loading,
   breakdown,
-  combo,
   wordHeat,
 }: Props) {
   return (
@@ -52,24 +50,29 @@ export function FeedbackPanel({
       {loading ? (
         <motion.div
           key="loading"
+          role="status"
+          aria-live="polite"
+          aria-busy="true"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -8 }}
         >
-          <NeoCard tone="cyan" hover={false} className="font-bold">
+          <NeoCard tone="info" hover={false} className="font-bold">
             Evaluating pronunciation…
           </NeoCard>
         </motion.div>
       ) : score != null || feedback ? (
         <motion.div
           key="result"
+          role={score == null ? "alert" : "status"}
+          aria-live={score == null ? "assertive" : "polite"}
           initial={{ opacity: 0, scale: 0.96, y: 12 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0 }}
           transition={{ type: "spring", stiffness: 360, damping: 24 }}
         >
           <NeoCard
-            tone={isCorrect ? "lime" : "pink"}
+            tone={isCorrect ? "success" : "danger"}
             hover={false}
             className="space-y-2 text-sm"
           >
@@ -77,9 +80,6 @@ export function FeedbackPanel({
               <p className="mb-1 text-2xl font-black">
                 Score: {score}
                 <span className="text-sm font-bold opacity-70"> / 100</span>
-                {combo != null && combo > 1 && (
-                  <span className="ml-2 text-sm font-black">×{combo} combo</span>
-                )}
               </p>
             )}
             {wordHeat && wordHeat.length > 0 && (

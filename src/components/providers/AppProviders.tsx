@@ -32,6 +32,7 @@ export function AppProviders({ children }: { children: ReactNode }) {
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
+    /* eslint-disable react-hooks/set-state-in-effect -- hydrate client-only preferences after mount */
     try {
       const l = localStorage.getItem(LOCALE_KEY) as Locale | null;
       const m = localStorage.getItem(MOTION_KEY);
@@ -47,6 +48,7 @@ export function AppProviders({ children }: { children: ReactNode }) {
       /* ignore */
     }
     setReady(true);
+    /* eslint-enable react-hooks/set-state-in-effect */
   }, []);
 
   useEffect(() => {

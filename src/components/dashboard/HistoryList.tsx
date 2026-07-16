@@ -47,7 +47,7 @@ export function HistoryList({ items }: { items: HistoryItem[] }) {
                     {item.score}
                   </span>
                 </div>
-                <p className="text-[10px] font-bold opacity-60">
+                <p className="text-xs font-bold opacity-60">
                   {new Date(item.createdAt).toLocaleString()}
                 </p>
               </NeoCard>

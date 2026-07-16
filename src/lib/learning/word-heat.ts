@@ -64,7 +64,7 @@ export function heatClass(score: number): string {
   const t = heatTone(score);
   if (t === "ok") return "bg-neo-lime text-neo-ink";
   if (t === "warm") return "bg-neo-yellow text-neo-ink";
-  if (t === "cold") return "bg-neo-orange text-neo-white";
+  if (t === "cold") return "bg-neo-warning text-neo-warning-ink";
   return "bg-neo-pink text-neo-ink";
 }
 

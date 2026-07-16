@@ -1,7 +1,6 @@
 "use client";
 
-import Link from "next/link";
-import { NeoBadge, NeoButton, NeoCard } from "@/components/ui/neo";
+import { NeoBadge, NeoCard, NeoLink } from "@/components/ui/neo";
 
 export function ReviewDeckCard({
   count,
@@ -35,11 +34,9 @@ export function ReviewDeckCard({
               </li>
             ))}
           </ul>
-          <Link href={`/review`}>
-            <NeoButton tone="ink" className="w-full sm:w-auto">
+          <NeoLink href={`/review`} tone="ink" className="w-full sm:w-auto">
               Open review deck
-            </NeoButton>
-          </Link>
+            </NeoLink>
         </>
       )}
     </NeoCard>

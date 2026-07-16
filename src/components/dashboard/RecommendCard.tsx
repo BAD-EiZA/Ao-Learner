@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { NeoBadge, NeoButton, NeoCard } from "@/components/ui/neo";
+import { NeoBadge, NeoCard, NeoLink } from "@/components/ui/neo";
 
 export type RecommendItem = {
   stageId: string;
@@ -38,11 +38,9 @@ export function RecommendCard({ items }: { items: RecommendItem[] }) {
         <p className="text-sm font-bold">{top.expectedText}</p>
         <p className="text-xs font-medium opacity-80">{top.reason}</p>
       </div>
-      <Link href={`/learn/${top.stageId}`}>
-        <NeoButton tone="ink" className="w-full sm:w-auto">
+      <NeoLink href={`/learn/${top.stageId}`} tone="ink" className="w-full sm:w-auto">
           Start recommended
-        </NeoButton>
-      </Link>
+        </NeoLink>
       {items.length > 1 && (
         <ul className="space-y-1 text-xs font-bold opacity-90">
           {items.slice(1, 4).map((it) => (

@@ -59,7 +59,7 @@ export function UserMenu({ name, email, picture }: Props) {
         onClick={() => setOpen((v) => !v)}
         className="flex h-10 items-center gap-1.5 rounded-xl border-2 border-neo-ink bg-neo-white py-0.5 pl-0.5 pr-2 font-black text-neo-ink shadow-[2px_2px_0_#1B4EF5] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none"
       >
-        <span className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-lg border-2 border-neo-ink bg-neo-pink text-[11px] font-black">
+        <span className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-lg border-2 border-neo-ink bg-neo-pink text-xs font-black">
           {picture ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
@@ -76,7 +76,7 @@ export function UserMenu({ name, email, picture }: Props) {
           {label}
         </span>
         <span
-          className={`text-[9px] opacity-60 transition-transform ${open ? "rotate-180" : ""}`}
+          className={`text-xs opacity-60 transition-transform ${open ? "rotate-180" : ""}`}
           aria-hidden
         >
           ▼
@@ -96,7 +96,7 @@ export function UserMenu({ name, email, picture }: Props) {
             <div className="border-b-2 border-neo-ink bg-neo-yellow/40 px-3 py-2">
               <p className="truncate text-xs font-black text-neo-ink">{label}</p>
               {email && name ? (
-                <p className="truncate text-[10px] font-bold text-neo-muted">
+                <p className="truncate text-xs font-bold text-neo-muted">
                   {email}
                 </p>
               ) : null}

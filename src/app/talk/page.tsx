@@ -1,9 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import Link from "next/link";
 import { AvatarViewer } from "@/components/vrm/AvatarViewer";
-import { NeoBadge, NeoButton, NeoCard } from "@/components/ui/neo";
+import { NeoBadge, NeoButton, NeoCard, NeoLink } from "@/components/ui/neo";
 import { VRM_ANIMS } from "@/lib/vrm/anims";
 
 type Turn = { role: "user" | "tutor"; text: string };
@@ -121,8 +120,9 @@ export default function TalkPage() {
     <div className="mx-auto w-full max-w-5xl px-2 py-3 sm:px-4 sm:py-4">
       <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
         <div className="flex flex-wrap items-center gap-2">
-          <NeoBadge tone="pink">Talk with Ao</NeoBadge>
-          <NeoBadge tone={limitedOut ? "orange" : "white"}>
+          <span className="sr-only" id="talk-language-label">Conversation language</span>
+          <NeoBadge tone="danger">Talk with Ao</NeoBadge>
+          <NeoBadge tone={limitedOut ? "warning" : "surface"}>
             {remaining == null
               ? `…/${LIMIT}`
               : `${remaining}/${LIMIT} left today`}
@@ -138,7 +138,9 @@ export default function TalkPage() {
           ).map(([value, short]) => (
             <NeoButton
               key={value}
-              tone={lang === value ? "ink" : "white"}
+              tone={lang === value ? "primary" : "surface"}
+              aria-pressed={lang === value}
+              aria-describedby="talk-language-label"
               onClick={() => {
                 setLang(value);
                 setHistory([]);
@@ -147,9 +149,7 @@ export default function TalkPage() {
               {short}
             </NeoButton>
           ))}
-          <Link href="/dashboard">
-            <NeoButton tone="white">← Dashboard</NeoButton>
-          </Link>
+          <NeoLink href="/dashboard" tone="surface">← Dashboard</NeoLink>
         </div>
       </div>
 
@@ -178,6 +178,10 @@ export default function TalkPage() {
           >
             <div
               ref={listRef}
+              role="log"
+              aria-live="polite"
+              aria-busy={busy}
+              aria-label="Conversation with Ao"
               className="min-h-0 flex-1 space-y-2 overflow-y-auto px-1 py-1 sm:px-2"
             >
               {history.length === 0 && (
@@ -186,7 +190,7 @@ export default function TalkPage() {
                 </p>
               )}
               {limitedOut && (
-                <p className="rounded-xl bg-neo-orange/30 px-3 py-2 text-sm font-bold">
+                <p role="alert" className="rounded-xl bg-neo-orange/30 px-3 py-2 text-sm font-bold">
                   Daily limit reached. Come back tomorrow.
                 </p>
               )}
@@ -199,7 +203,7 @@ export default function TalkPage() {
                       : "mr-6 bg-neo-pink/40 sm:mr-10"
                   }`}
                 >
-                  <span className="text-[10px] uppercase opacity-60">
+                  <span className="text-xs uppercase opacity-60">
                     {t.role === "user" ? "You" : "Ao"}
                   </span>
                   <p>{t.text}</p>
@@ -211,12 +215,20 @@ export default function TalkPage() {
                 </p>
               )}
             </div>
-            <div className="mt-2 flex flex-col gap-2 border-t-2 border-neo-ink/10 pt-3 sm:flex-row">
+            <form
+              className="mt-2 flex flex-col gap-2 border-t-2 border-neo-ink/10 pt-3 sm:flex-row"
+              onSubmit={(event) => {
+                event.preventDefault();
+                void send();
+              }}
+              aria-busy={busy}
+            >
+              <label htmlFor="talk-message" className="sr-only">Message to Ao</label>
               <input
+                id="talk-message"
                 className="neo-border min-h-11 min-w-0 flex-1 rounded-xl px-3 py-2 text-sm font-bold"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && void send()}
                 placeholder={
                   limitedOut
                     ? "Daily limit reached"
@@ -225,14 +237,14 @@ export default function TalkPage() {
                 disabled={busy || limitedOut}
               />
               <NeoButton
-                tone="ink"
+                tone="primary"
+                type="submit"
                 className="w-full sm:w-auto"
                 disabled={busy || limitedOut}
-                onClick={() => void send()}
               >
                 {busy ? "…" : "Send"}
               </NeoButton>
-            </div>
+            </form>
           </NeoCard>
         </div>
       </div>

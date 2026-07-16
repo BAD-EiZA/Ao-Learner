@@ -1,9 +1,8 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { requireUser } from "@/lib/auth/user";
 import { prisma } from "@/lib/db/prisma";
 import { GapClient } from "@/components/learn/GapClient";
-import { NeoBadge, NeoButton } from "@/components/ui/neo";
+import { NeoBadge, NeoLink } from "@/components/ui/neo";
 
 export const dynamic = "force-dynamic";
 
@@ -66,11 +65,9 @@ export default async function GapPage({
       </p>
       <div className="flex flex-wrap gap-2">
         {LANGUAGES.map((l) => (
-          <Link key={l} href={`/gap?lang=${LANGUAGE_META[l].code}`}>
-            <NeoButton tone={language === l ? "ink" : "white"}>
+          <NeoLink key={l} href={`/gap?lang=${LANGUAGE_META[l].code}`} tone={language === l ? "ink" : "white"}>
               {LANGUAGE_META[l].short}
-            </NeoButton>
-          </Link>
+            </NeoLink>
         ))}
       </div>
       <GapClient items={items} />

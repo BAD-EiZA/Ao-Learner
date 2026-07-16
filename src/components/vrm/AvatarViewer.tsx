@@ -202,7 +202,7 @@ function VrmModel({
     ((e: { action: THREE.AnimationAction }) => void) | null
   >(null);
   const idle = useRef(0);
-  const blinkNext = useRef(2 + Math.random() * 2);
+  const blinkNext = useRef(3);
   const blinkElapsed = useRef(-1);
   const emotionRef = useRef(emotion);
   const mouthRef = useRef(mouthOpen);
@@ -473,8 +473,10 @@ export function AvatarViewer({
   const [failed, setFailed] = useState(false);
 
   useEffect(() => {
+    /* eslint-disable react-hooks/set-state-in-effect -- reset load UI when the model source changes */
     setReady(false);
     setFailed(false);
+    /* eslint-enable react-hooks/set-state-in-effect */
   }, [modelUrl]);
 
   const handleReady = useCallback(() => {
@@ -554,7 +556,7 @@ export function AvatarViewer({
           <p className="text-center text-xs font-black uppercase tracking-wide text-neo-ink">
             {failed ? "Model slow to load…" : "Loading Ao…"}
           </p>
-          <p className="text-center text-[10px] font-bold text-neo-ink/60">
+          <p className="text-center text-xs font-bold text-neo-ink/60">
             {failed ? "Check connection · VRM may still appear" : "3D tutor model"}
           </p>
         </div>

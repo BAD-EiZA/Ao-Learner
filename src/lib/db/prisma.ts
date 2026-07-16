@@ -24,7 +24,7 @@ export function dbConnectionString(raw?: string) {
     "";
   if (!base) throw new Error("DATABASE_URL is not set");
 
-  let cleaned = base.trim().replace(/^["']|["']$/g, "");
+  const cleaned = base.trim().replace(/^["']|["']$/g, "");
 
   let url: URL;
   try {

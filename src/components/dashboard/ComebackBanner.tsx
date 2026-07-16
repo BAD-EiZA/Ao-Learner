@@ -1,8 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
-import { NeoButton, NeoCard } from "@/components/ui/neo";
+import { NeoButton, NeoCard, NeoLink } from "@/components/ui/neo";
 
 export function ComebackBanner() {
   const [show, setShow] = useState(false);
@@ -53,9 +52,7 @@ export function ComebackBanner() {
           {busy ? "…" : "Claim comeback"}
         </NeoButton>
         {stageIds[0] && (
-          <Link href={`/learn/${stageIds[0]}?review=1`}>
-            <NeoButton tone="lime">Easy stage</NeoButton>
-          </Link>
+          <NeoLink href={`/learn/${stageIds[0]}?review=1`} tone="lime">Easy stage</NeoLink>
         )}
       </div>
     </NeoCard>

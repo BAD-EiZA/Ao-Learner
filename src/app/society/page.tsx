@@ -1,8 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
-import { NeoBadge, NeoButton, NeoCard } from "@/components/ui/neo";
+import { NeoBadge, NeoButton, NeoCard, NeoLink } from "@/components/ui/neo";
 
 type M = {
   days: number;
@@ -50,7 +49,7 @@ export default function SocietyPage() {
       <NeoBadge tone="orange">Streak society</NeoBadge>
       <h1 className="text-3xl font-black">🔥 {streak} day streak</h1>
       {msg && (
-        <p className="neo-border rounded-lg bg-neo-lime px-2 py-1 text-xs font-black">
+        <p role="status" aria-live="polite" className="neo-border rounded-lg bg-neo-info px-2 py-1 text-xs font-black">
           {msg}
         </p>
       )}
@@ -82,9 +81,7 @@ export default function SocietyPage() {
           </li>
         ))}
       </ul>
-      <Link href="/dashboard">
-        <NeoButton tone="white">← Dashboard</NeoButton>
-      </Link>
+      <NeoLink href="/dashboard" tone="white">← Dashboard</NeoLink>
     </div>
   );
 }

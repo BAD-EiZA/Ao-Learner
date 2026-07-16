@@ -1,8 +1,7 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { requireUser } from "@/lib/auth/user";
 import { getWeeklyReport } from "@/lib/learning/report";
-import { NeoBadge, NeoButton, NeoCard } from "@/components/ui/neo";
+import { NeoBadge, NeoCard, NeoLink } from "@/components/ui/neo";
 
 export const dynamic = "force-dynamic";
 
@@ -87,12 +86,8 @@ export default async function ReportPage() {
       </section>
 
       <div className="flex flex-wrap gap-2">
-        <Link href="/dashboard">
-          <NeoButton tone="white">← Dashboard</NeoButton>
-        </Link>
-        <Link href="/practice">
-          <NeoButton tone="ink">Practice weak spots</NeoButton>
-        </Link>
+        <NeoLink href="/dashboard" tone="white">← Dashboard</NeoLink>
+        <NeoLink href="/practice" tone="ink">Practice weak spots</NeoLink>
       </div>
     </div>
   );

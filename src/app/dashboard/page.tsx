@@ -1,11 +1,10 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { requireUser } from "@/lib/auth/user";
 import { getStagesWithProgress } from "@/lib/db/progress";
 import { getUserStats } from "@/lib/db/streak";
 import { getRecentAttempts } from "@/lib/db/history";
 import { getDailyChallenge } from "@/lib/db/daily";
-import { getDueReviews, getReviewQueueCount } from "@/lib/learning/srs";
+import { getReviewQueueCount } from "@/lib/learning/srs";
 import { getRecommendedList, getWeakSpots } from "@/lib/learning/adaptive";
 import {
   getLeaderboard,
@@ -22,9 +21,7 @@ import {
   type HistoryItem,
 } from "@/components/dashboard/HistoryList";
 import { XpCard } from "@/components/dashboard/XpCard";
-import { RecommendCard } from "@/components/dashboard/RecommendCard";
 import { WeakSpotList } from "@/components/dashboard/WeakSpotList";
-import { ReviewDeckCard } from "@/components/dashboard/ReviewDeckCard";
 import { LeaderboardPanel } from "@/components/dashboard/LeaderboardPanel";
 import { HeatmapCard } from "@/components/dashboard/HeatmapCard";
 import { AoMoodBanner } from "@/components/dashboard/AoMoodBanner";
@@ -38,13 +35,12 @@ import { LeagueCard } from "@/components/dashboard/LeagueCard";
 import { SuperTrialBanner } from "@/components/dashboard/SuperTrialBanner";
 import { ComebackBanner } from "@/components/dashboard/ComebackBanner";
 import { getSkillHeatmap } from "@/lib/learning/phonemes";
-import { getGems } from "@/lib/learning/gems";
 import { refreshAoMood, type AoMood } from "@/lib/learning/mood";
 import { getHeartsState } from "@/lib/learning/hearts";
 import { getDailyGoalState } from "@/lib/learning/goals";
 import { getDailyQuests } from "@/lib/learning/quests";
 import type { StageView } from "@/types/stage";
-import { NeoBadge, NeoButton, NeoCard } from "@/components/ui/neo";
+import { NeoBadge, NeoLink } from "@/components/ui/neo";
 import { ErrorState } from "@/components/ui/EmptyState";
 
 export const dynamic = "force-dynamic";
@@ -86,12 +82,6 @@ export default async function DashboardPage() {
   let recommended: Awaited<ReturnType<typeof getRecommendedList>> = [];
   let weak: Awaited<ReturnType<typeof getWeakSpots>> = [];
   let reviewCount = 0;
-  let reviewItems: {
-    stageId: string;
-    title: string;
-    expectedText: string;
-    language: string;
-  }[] = [];
   let leaderboardRows: Awaited<ReturnType<typeof getLeaderboard>> = [];
   let leaderboardOptIn = false;
   let heat: Awaited<ReturnType<typeof getSkillHeatmap>> = [];
@@ -104,7 +94,6 @@ export default async function DashboardPage() {
   };
   let dailyGoal = { goal: 20, earned: 0, pct: 0, met: false };
   let quests: QuestView[] = [];
-  let gems = 0;
 
   try {
     english = (await getStagesWithProgress(
@@ -119,13 +108,6 @@ export default async function DashboardPage() {
     recommended = await getRecommendedList(user.id, 5);
     weak = await getWeakSpots(user.id, 6);
     reviewCount = await getReviewQueueCount(user.id);
-    const due = await getDueReviews(user.id, 5);
-    reviewItems = due.map((d) => ({
-      stageId: d.stageId,
-      title: d.stage.title,
-      expectedText: d.stage.expectedText,
-      language: d.stage.language,
-    }));
     leaderboardOptIn = await getMyLeaderboardFlag(user.id);
     if (leaderboardOptIn) {
       leaderboardRows = await getLeaderboard(20);
@@ -135,7 +117,6 @@ export default async function DashboardPage() {
     heartsState = await getHeartsState(user.id);
     dailyGoal = await getDailyGoalState(user.id);
     quests = (await getDailyQuests(user.id)) as QuestView[];
-    gems = await getGems(user.id);
   } catch (e) {
     dbError =
       e instanceof Error
@@ -147,10 +128,22 @@ export default async function DashboardPage() {
     redirect("/placement");
   }
 
+  const recommendedStage = recommended[0];
+  const fallbackStage = [...english, ...german, ...french].find(
+    (stage) => stage.unlocked && !stage.isCompleted
+  );
+  const continueHref = recommendedStage
+    ? `/learn/${recommendedStage.stageId}`
+    : fallbackStage
+      ? `/learn/${fallbackStage.id}`
+      : "/path";
+  const continueTitle =
+    recommendedStage?.title ?? fallbackStage?.title ?? "Explore your path";
+
   return (
     <div className="mx-auto w-full max-w-6xl space-y-6 px-3 py-4 sm:space-y-8 sm:px-6 sm:py-10">
       <div className="space-y-3">
-        <NeoBadge tone="pink">Dashboard</NeoBadge>
+        <NeoBadge tone="danger">Dashboard</NeoBadge>
         <h1 className="text-3xl font-black tracking-tight text-neo-ink sm:text-4xl">
           Hi{user.name ? `, ${user.name.split(" ")[0]}` : ""}!
         </h1>
@@ -161,61 +154,23 @@ export default async function DashboardPage() {
             ? ` · difficulty +${stats.passBoost}`
             : ""}
         </p>
-        <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
-          <Link href="/path" className="sm:inline">
-            <NeoButton tone="ink" className="w-full sm:w-auto">
-              Path
-            </NeoButton>
-          </Link>
-          <Link href="/practice">
-            <NeoButton tone="yellow" className="w-full sm:w-auto">
+        <div className="space-y-2">
+          <NeoLink
+            href={continueHref}
+            tone="primary"
+            className="w-full justify-between text-base sm:max-w-xl"
+          >
+            <span>Continue learning</span>
+            <span className="normal-case tracking-normal">{continueTitle} →</span>
+          </NeoLink>
+          <div className="grid grid-cols-2 gap-2 sm:flex">
+            <NeoLink href="/review" tone="warning" className="w-full sm:w-auto">
+              Review{reviewCount ? ` · ${reviewCount}` : ""}
+            </NeoLink>
+            <NeoLink href="/practice" tone="info" className="w-full sm:w-auto">
               Practice
-            </NeoButton>
-          </Link>
-          <Link href="/review">
-            <NeoButton tone="orange" className="w-full sm:w-auto">
-              Review
-            </NeoButton>
-          </Link>
-          <Link href="/talk">
-            <NeoButton tone="pink" className="w-full sm:w-auto">
-              Talk Ao
-            </NeoButton>
-          </Link>
-          <Link href="/shop" className="col-span-2 sm:col-span-1">
-            <NeoButton tone="yellow" className="w-full sm:w-auto">
-              Shop 💎{gems}
-            </NeoButton>
-          </Link>
-        </div>
-        <p className="text-[11px] font-bold text-neo-muted md:hidden">
-          More in ☰ menu · plan, match, stories, badges…
-        </p>
-        <div className="hidden flex-wrap gap-2 md:flex">
-          <Link href="/plan">
-            <NeoButton tone="cyan">Study plan</NeoButton>
-          </Link>
-          <Link href="/match">
-            <NeoButton tone="cyan">Match</NeoButton>
-          </Link>
-          <Link href="/report">
-            <NeoButton tone="yellow">Report</NeoButton>
-          </Link>
-          <Link href="/stories">
-            <NeoButton tone="purple">Stories</NeoButton>
-          </Link>
-          <Link href="/scenarios">
-            <NeoButton tone="pink">Role-play</NeoButton>
-          </Link>
-          <Link href="/achievements">
-            <NeoButton tone="purple">Badges</NeoButton>
-          </Link>
-          <Link href="/plus">
-            <NeoButton tone="white">Plus</NeoButton>
-          </Link>
-          <Link href="/placement">
-            <NeoButton tone="white">Placement</NeoButton>
-          </Link>
+            </NeoLink>
+          </div>
         </div>
       </div>
 
@@ -227,7 +182,7 @@ export default async function DashboardPage() {
           <ComebackBanner />
           <SuperTrialBanner />
 
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-4 sm:grid-cols-3">
             <StreakCard
               currentStreak={stats.currentStreak}
               longestStreak={stats.longestStreak}
@@ -235,47 +190,45 @@ export default async function DashboardPage() {
               totalAttempts={stats.totalAttempts}
             />
             <XpCard xp={stats.xp} level={stats.level} />
-            <HeartsCard
-              hearts={heartsState.hearts}
-              max={heartsState.max}
-              isPlus={heartsState.isPlus}
-              nextHeartAt={heartsState.nextHeartAt}
-            />
             <DailyGoalCard
               earned={dailyGoal.earned}
               goal={dailyGoal.goal}
               pct={dailyGoal.pct}
               met={dailyGoal.met}
             />
-            <LeagueCard
-              tier={stats.leagueTier ?? "bronze"}
-              weekXp={stats.weekXp ?? 0}
-            />
-            <ReviewDeckCard count={reviewCount} items={reviewItems} />
           </div>
 
-          <div className="grid gap-4 lg:grid-cols-2">
-            <QuestsCard initial={quests} />
-            <DailyChallengeCard daily={daily} />
-          </div>
-
-          <div className="grid gap-4 lg:grid-cols-2">
-            <RecommendCard items={recommended} />
-          </div>
-
-          <HeatmapCard items={heat} />
-          <WeakSpotList items={weak} />
-
-          <StageList language="ENGLISH" stages={english} />
-          <StageList language="GERMAN" stages={german} />
-          <StageList language="FRENCH" stages={french} />
-
-          <HistoryList items={history} />
-
-          <LeaderboardPanel
-            initialOptIn={leaderboardOptIn}
-            initialRows={leaderboardRows}
-          />
+          <details className="neo-border rounded-2xl bg-neo-white p-4">
+            <summary className="cursor-pointer text-sm font-black uppercase tracking-wide">
+              More progress and activities
+            </summary>
+            <div className="mt-4 space-y-4">
+              <div className="grid gap-4 sm:grid-cols-2">
+                <HeartsCard
+                  hearts={heartsState.hearts}
+                  max={heartsState.max}
+                  isPlus={heartsState.isPlus}
+                  nextHeartAt={heartsState.nextHeartAt}
+                />
+                <LeagueCard
+                  tier={stats.leagueTier ?? "bronze"}
+                  weekXp={stats.weekXp ?? 0}
+                />
+                <QuestsCard initial={quests} />
+                <DailyChallengeCard daily={daily} />
+              </div>
+              <HeatmapCard items={heat} />
+              <WeakSpotList items={weak} />
+              <StageList language="ENGLISH" stages={english} />
+              <StageList language="GERMAN" stages={german} />
+              <StageList language="FRENCH" stages={french} />
+              <HistoryList items={history} />
+              <LeaderboardPanel
+                initialOptIn={leaderboardOptIn}
+                initialRows={leaderboardRows}
+              />
+            </div>
+          </details>
         </>
       )}
     </div>

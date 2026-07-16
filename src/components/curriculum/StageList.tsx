@@ -69,7 +69,7 @@ export function StageList({
                         </p>
                         <h3 className="text-lg font-black">{s.title}</h3>
                         {s.mode === "DIALOGUE" ? (
-                          <p className="mt-0.5 text-[10px] font-black uppercase opacity-70">
+                          <p className="mt-0.5 text-xs font-black uppercase opacity-70">
                             Dialogue
                           </p>
                         ) : null}

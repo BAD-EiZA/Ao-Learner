@@ -56,8 +56,13 @@ export default function RootLayout({
           </main>
           <FooterBar />
           <RegisterSW />
-          <OfflineQueue />
-          <InstallNudge />
+          <div
+            aria-label="Notifications"
+            className="fixed inset-x-3 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-50 ml-auto flex max-w-sm flex-col gap-2"
+          >
+            <OfflineQueue />
+            <InstallNudge />
+          </div>
         </AppProviders>
       </body>
     </html>

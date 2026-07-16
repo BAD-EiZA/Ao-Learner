@@ -1,7 +1,6 @@
 "use client";
 
-import Link from "next/link";
-import { NeoCard, NeoButton } from "@/components/ui/neo";
+import { NeoCard, NeoLink } from "@/components/ui/neo";
 
 export function HeartsCard({
   hearts,
@@ -34,11 +33,9 @@ export function HeartsCard({
         </p>
       )}
       {!isPlus && hearts === 0 && (
-        <Link href="/plus">
-          <NeoButton tone="ink" className="mt-1 w-full text-xs">
+        <NeoLink href="/plus" tone="ink" className="mt-1 w-full text-xs">
             Get Plus · unlimited
-          </NeoButton>
-        </Link>
+          </NeoLink>
       )}
     </NeoCard>
   );

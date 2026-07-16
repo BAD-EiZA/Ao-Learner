@@ -25,7 +25,7 @@ export function GapClient({ items }: { items: Item[] }) {
   return (
     <div className="space-y-4">
       <NeoCard tone="yellow" hover={false}>
-        <p className="text-[10px] font-black uppercase opacity-70">
+        <p className="text-xs font-black uppercase opacity-70">
           {i + 1}/{items.length}
         </p>
         <p className="text-2xl font-black tracking-tight">{cur.display}</p>

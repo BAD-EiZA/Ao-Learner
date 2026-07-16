@@ -1,9 +1,8 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { requireUser } from "@/lib/auth/user";
 import { buildStudyPlan } from "@/lib/learning/plan";
 import { trackServer } from "@/lib/analytics-server";
-import { NeoBadge, NeoButton, NeoCard } from "@/components/ui/neo";
+import { NeoBadge, NeoCard, NeoLink } from "@/components/ui/neo";
 
 export const dynamic = "force-dynamic";
 
@@ -33,9 +32,7 @@ export default async function PlanPage() {
           <p className="text-sm font-medium">
             No due reviews or open stages. Explore the dashboard for more.
           </p>
-          <Link href="/dashboard" className="mt-3 inline-block">
-            <NeoButton tone="ink">Dashboard</NeoButton>
-          </Link>
+          <NeoLink href="/dashboard" className="mt-3 inline-block" tone="ink">Dashboard</NeoLink>
         </NeoCard>
       ) : (
         <>
@@ -53,30 +50,22 @@ export default async function PlanPage() {
                   className="flex flex-wrap items-center justify-between gap-3"
                 >
                   <div>
-                    <p className="text-[10px] font-black uppercase opacity-70">
+                    <p className="text-xs font-black uppercase opacity-70">
                       {i + 1}. {it.kind} · {it.cefrLevel} · {it.language}
                     </p>
                     <p className="font-black">{it.title}</p>
                     <p className="text-sm font-bold">{it.expectedText}</p>
                     <p className="text-xs font-medium opacity-80">{it.reason}</p>
                   </div>
-                  <Link
-                    href={`/learn/${it.stageId}${it.kind === "review" || it.kind === "weak" ? "?review=1" : ""}`}
-                  >
-                    <NeoButton tone="ink">Go</NeoButton>
-                  </Link>
+                  <NeoLink href={`/learn/${it.stageId}${it.kind === "review" || it.kind === "weak" ? "?review=1" : ""}`} tone="ink">Go</NeoLink>
                 </NeoCard>
               </li>
             ))}
           </ol>
           {first && (
-            <Link
-              href={`/learn/${first.stageId}${first.kind === "review" || first.kind === "weak" ? "?review=1" : ""}`}
-            >
-              <NeoButton tone="pink" className="w-full sm:w-auto">
+            <NeoLink href={`/learn/${first.stageId}${first.kind === "review" || first.kind === "weak" ? "?review=1" : ""}`} tone="pink" className="w-full sm:w-auto">
                 Start today&apos;s plan
-              </NeoButton>
-            </Link>
+              </NeoLink>
           )}
         </>
       )}

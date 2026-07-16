@@ -5,10 +5,7 @@ import {
   getWeakSpots,
   recommendNextStage,
 } from "@/lib/learning/adaptive";
-import {
-  unlockAchievement,
-  checkAchievementsAfterAttempt,
-} from "@/lib/learning/achievements";
+import { checkAchievementsAfterAttempt } from "@/lib/learning/achievements";
 import { addClubXp, getClubBoard } from "@/lib/learning/club";
 import { applyCrowns } from "@/lib/learning/crowns";
 import { ensureWeekXp, getLeagueBoard, weekKey } from "@/lib/learning/leagues";
@@ -28,7 +25,7 @@ jest.mock("@/lib/learning/srs", () => ({
   getDueReviews: jest.fn().mockResolvedValue([]),
 }));
 
-const p = prisma as any;
+const p = prisma as unknown as jest.Mocked<typeof prisma>;
 const dueMock = getDueReviews as jest.Mock;
 
 beforeEach(() => {

@@ -1,43 +1,74 @@
-/** Shared nav model — primary bar vs overflow menu */
-
 export type NavItem = {
   href: string;
   label: string;
-  /** Show on desktop bar (md+) */
   primary?: boolean;
 };
 
-export const NAV_ITEMS: NavItem[] = [
-  { href: "/dashboard", label: "Learn", primary: true },
-  { href: "/path", label: "Path", primary: true },
-  { href: "/practice", label: "Practice", primary: true },
-  { href: "/review", label: "Review", primary: true },
-  { href: "/talk", label: "Talk", primary: true },
-  { href: "/plan", label: "Plan" },
-  { href: "/match", label: "Match" },
-  { href: "/shop", label: "Shop" },
-  { href: "/stories", label: "Stories" },
-  { href: "/scenarios", label: "Role-play" },
-  { href: "/report", label: "Report" },
-  { href: "/gap", label: "Speak gap" },
-  { href: "/bank", label: "Word bank" },
-  { href: "/checkpoint", label: "Checkpoint" },
-  { href: "/society", label: "Streak" },
-  { href: "/friends", label: "Friends" },
-  { href: "/club", label: "Club" },
-  { href: "/achievements", label: "Badges" },
-  { href: "/plus", label: "Plus" },
+export type NavSection = {
+  label: "Learn" | "Practice" | "Progress" | "Social" | "Account";
+  items: NavItem[];
+};
+
+export const NAV_SECTIONS: NavSection[] = [
+  {
+    label: "Learn",
+    items: [
+      { href: "/dashboard", label: "Learn", primary: true },
+      { href: "/path", label: "Path", primary: true },
+      { href: "/plan", label: "Study plan" },
+      { href: "/stories", label: "Stories" },
+      { href: "/scenarios", label: "Role-play" },
+    ],
+  },
+  {
+    label: "Practice",
+    items: [
+      { href: "/practice", label: "Practice", primary: true },
+      { href: "/talk", label: "Talk", primary: true },
+      { href: "/review", label: "Review" },
+      { href: "/match", label: "Match" },
+      { href: "/gap", label: "Speak gap" },
+      { href: "/bank", label: "Word bank" },
+    ],
+  },
+  {
+    label: "Progress",
+    items: [
+      { href: "/report", label: "Report" },
+      { href: "/checkpoint", label: "Checkpoint" },
+      { href: "/achievements", label: "Badges" },
+      { href: "/society", label: "Streak" },
+    ],
+  },
+  {
+    label: "Social",
+    items: [
+      { href: "/friends", label: "Friends" },
+      { href: "/club", label: "Club" },
+    ],
+  },
+  {
+    label: "Account",
+    items: [
+      { href: "/shop", label: "Shop" },
+      { href: "/plus", label: "Plus" },
+    ],
+  },
 ];
 
+export const NAV_ITEMS = NAV_SECTIONS.flatMap((section) => section.items);
+
 export function navActive(pathname: string, href: string) {
-  if (href === "/") return pathname === "/";
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
 export function primaryNav() {
-  return NAV_ITEMS.filter((i) => i.primary);
+  return NAV_ITEMS.filter((item) => item.primary);
 }
 
-export function moreNav() {
-  return NAV_ITEMS.filter((i) => !i.primary);
+export function moreNavSections() {
+  return NAV_SECTIONS.map((section) => ({
+    ...section,
+    items: section.items.filter((item) => !item.primary),
+  })).filter((section) => section.items.length > 0);
 }

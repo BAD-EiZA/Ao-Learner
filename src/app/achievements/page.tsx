@@ -1,8 +1,7 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { requireUser } from "@/lib/auth/user";
 import { getUserAchievements } from "@/lib/learning/achievements";
-import { NeoBadge, NeoButton, NeoCard } from "@/components/ui/neo";
+import { NeoBadge, NeoCard, NeoLink } from "@/components/ui/neo";
 
 export const dynamic = "force-dynamic";
 
@@ -21,9 +20,7 @@ export default async function AchievementsPage() {
       <p className="text-sm font-medium text-neo-muted">
         {unlocked}/{items.length} unlocked
       </p>
-      <Link href="/dashboard">
-        <NeoButton tone="white">← Dashboard</NeoButton>
-      </Link>
+      <NeoLink href="/dashboard" tone="white">← Dashboard</NeoLink>
       <ul className="grid gap-3 sm:grid-cols-2">
         {items.map((a) => (
           <li key={a.code}>
@@ -37,7 +34,7 @@ export default async function AchievementsPage() {
               <p className="text-sm font-medium">{a.description}</p>
               <p className="mt-1 text-xs font-bold opacity-70">+{a.xp} XP</p>
               {a.unlocked && a.unlockedAt && (
-                <p className="text-[10px] font-bold opacity-60">
+                <p className="text-xs font-bold opacity-60">
                   {new Date(a.unlockedAt).toLocaleDateString()}
                 </p>
               )}

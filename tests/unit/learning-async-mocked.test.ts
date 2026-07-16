@@ -20,7 +20,7 @@ import { getAdaptivePassThreshold, updateDifficultyBoost, getWeakSpots, getRecom
 import { getMatchDeck } from "@/lib/learning/match";
 import { getSmartPracticeQueue } from "@/lib/learning/smart-practice";
 import { getWeeklyReport } from "@/lib/learning/report";
-import { getSkillHeatmap, recordPhonemeStats } from "@/lib/learning/phonemes";
+import { getSkillHeatmap } from "@/lib/learning/phonemes";
 
 const p = prisma as unknown as {
   userStats: {

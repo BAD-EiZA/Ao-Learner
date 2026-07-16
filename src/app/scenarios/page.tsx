@@ -1,8 +1,7 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { requireUser } from "@/lib/auth/user";
 import { prisma } from "@/lib/db/prisma";
-import { NeoBadge, NeoButton, NeoCard } from "@/components/ui/neo";
+import { NeoBadge, NeoCard, NeoLink } from "@/components/ui/neo";
 import { trackServer } from "@/lib/analytics-server";
 
 export const dynamic = "force-dynamic";
@@ -61,16 +60,14 @@ export default async function ScenariosPage() {
                   <p className="text-sm font-medium opacity-90">{sc.blurb}</p>
                   <div className="flex flex-wrap gap-2">
                     {pack.map((s) => (
-                      <Link key={s.id} href={`/learn/${s.id}`}>
-                        <NeoButton tone="ink">
+                      <NeoLink key={s.id} href={`/learn/${s.id}`} tone="ink">
                           {s.language === "ENGLISH"
                             ? "EN"
                             : s.language === "GERMAN"
                               ? "DE"
                               : "FR"}{" "}
                           · {s.title}
-                        </NeoButton>
-                      </Link>
+                        </NeoLink>
                     ))}
                   </div>
                 </NeoCard>
@@ -80,9 +77,7 @@ export default async function ScenariosPage() {
         </ul>
       )}
 
-      <Link href="/dashboard">
-        <NeoButton tone="white">← Dashboard</NeoButton>
-      </Link>
+      <NeoLink href="/dashboard" tone="white">← Dashboard</NeoLink>
     </div>
   );
 }

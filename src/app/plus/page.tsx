@@ -1,8 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
-import { NeoBadge, NeoButton, NeoCard } from "@/components/ui/neo";
+import { NeoBadge, NeoButton, NeoCard, NeoLink } from "@/components/ui/neo";
 
 type PlusState = {
   isPlus: boolean;
@@ -37,7 +36,7 @@ export default function PlusPage() {
   };
 
   return (
-    <div className="mx-auto max-w-lg space-y-6 px-3 py-8">
+    <div className="mx-auto max-w-lg space-y-6 px-3 py-8" aria-busy={busy || !state}>
       <NeoBadge tone="pink">Ao Plus</NeoBadge>
       <h1 className="text-3xl font-black text-neo-ink">Go Plus</h1>
       <p className="text-sm font-medium text-neo-muted">
@@ -69,9 +68,7 @@ export default function PlusPage() {
         )}
       </NeoCard>
 
-      <Link href="/dashboard">
-        <NeoButton tone="white">← Dashboard</NeoButton>
-      </Link>
+      <NeoLink href="/dashboard" tone="white">← Dashboard</NeoLink>
     </div>
   );
 }

@@ -1,8 +1,7 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { requireUser } from "@/lib/auth/user";
 import { getStagesWithProgress } from "@/lib/db/progress";
-import { NeoBadge, NeoButton, NeoCard } from "@/components/ui/neo";
+import { NeoBadge, NeoCard, NeoLink } from "@/components/ui/neo";
 import type { StageView } from "@/types/stage";
 import { crownEmoji } from "@/lib/learning/crowns";
 import { LANGUAGE_META, LANGUAGES, parseLangParam } from "@/lib/languages";
@@ -39,24 +38,24 @@ export default async function PathPage({
     <div className="mx-auto max-w-3xl space-y-6 px-3 py-8">
       <NeoBadge tone="cyan">Learning path</NeoBadge>
       <h1 className="text-3xl font-black text-neo-ink">Your path</h1>
-      <div className="flex flex-wrap gap-2">
+      <nav className="flex flex-wrap gap-2" aria-label="Path language">
         {LANGUAGES.map((l) => (
-          <Link key={l} href={`/path?lang=${LANGUAGE_META[l].code}`}>
-            <NeoButton tone={lang === l ? "ink" : "white"}>
-              {LANGUAGE_META[l].label}
-            </NeoButton>
-          </Link>
+          <NeoLink
+            key={l}
+            href={`/path?lang=${LANGUAGE_META[l].code}`}
+            tone={lang === l ? "primary" : "surface"}
+            aria-current={lang === l ? "page" : undefined}
+          >
+            {LANGUAGE_META[l].label}
+          </NeoLink>
         ))}
-        <Link href="/dashboard">
-          <NeoButton tone="pink">Dashboard</NeoButton>
-        </Link>
-        <Link href="/checkpoint">
-          <NeoButton tone="ink">Checkpoints</NeoButton>
-        </Link>
-        <Link href="/shop">
-          <NeoButton tone="yellow">Shop</NeoButton>
-        </Link>
-      </div>
+      </nav>
+      <NeoLink
+        href={`/checkpoint?lang=${LANGUAGE_META[lang].code}`}
+        tone="surface"
+      >
+        Checkpoints for {LANGUAGE_META[lang].label}
+      </NeoLink>
 
       {byCefr.map(({ level, stages: list }) => (
         <section key={level} className="space-y-3">
@@ -74,7 +73,7 @@ export default async function PathPage({
                     className="flex flex-wrap items-center justify-between gap-3"
                   >
                     <div>
-                      <p className="text-[10px] font-black uppercase opacity-70">
+                      <p className="text-xs font-black uppercase opacity-70">
                         #{s.order}
                         {done ? " · done" : locked ? " · locked" : " · open"}
                         {s.bestScore != null ? ` · best ${s.bestScore}` : ""}
@@ -89,11 +88,9 @@ export default async function PathPage({
                       </p>
                     </div>
                     {!locked ? (
-                      <Link href={`/learn/${s.id}`}>
-                        <NeoButton tone={done ? "cyan" : "ink"}>
-                          {done ? "Retry" : "Start"}
-                        </NeoButton>
-                      </Link>
+                      <NeoLink href={`/learn/${s.id}`} tone={done ? "info" : "primary"}>
+                        {done ? "Retry" : "Start"}
+                      </NeoLink>
                     ) : (
                       <span className="text-xs font-black opacity-50">🔒</span>
                     )}

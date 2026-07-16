@@ -1,7 +1,6 @@
 "use client";
 
-import Link from "next/link";
-import { NeoBadge, NeoButton, NeoCard } from "@/components/ui/neo";
+import { NeoBadge, NeoCard, NeoLink } from "@/components/ui/neo";
 
 export type DailyChallengeView = {
   dateKey: string;
@@ -51,11 +50,9 @@ export function DailyChallengeCard({ daily }: { daily: DailyChallengeView | null
           {daily.passed ? " · passed" : ""}
         </p>
       ) : (
-        <Link href={`/learn/${daily.stage.id}?daily=1`}>
-          <NeoButton tone="ink" className="w-full sm:w-auto">
+        <NeoLink href={`/learn/${daily.stage.id}?daily=1`} tone="ink" className="w-full sm:w-auto">
             Take today&apos;s challenge
-          </NeoButton>
-        </Link>
+          </NeoLink>
       )}
     </NeoCard>
   );

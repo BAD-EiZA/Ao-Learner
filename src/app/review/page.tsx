@@ -1,8 +1,7 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { requireUser } from "@/lib/auth/user";
 import { getDueReviews } from "@/lib/learning/srs";
-import { NeoBadge, NeoButton, NeoCard } from "@/components/ui/neo";
+import { NeoBadge, NeoCard, NeoLink } from "@/components/ui/neo";
 
 export const dynamic = "force-dynamic";
 
@@ -24,9 +23,7 @@ export default async function ReviewPage() {
         <NeoCard tone="lime" hover={false}>
           <p className="font-black">All clear!</p>
           <p className="text-sm font-medium">No reviews due right now.</p>
-          <Link href="/dashboard" className="mt-3 inline-block">
-            <NeoButton tone="ink">Back to dashboard</NeoButton>
-          </Link>
+          <NeoLink href="/dashboard" className="mt-3 inline-block" tone="ink">Back to dashboard</NeoLink>
         </NeoCard>
       ) : (
         <ul className="space-y-3">
@@ -44,12 +41,8 @@ export default async function ReviewPage() {
                   ) : null}
                 </div>
                 <div className="flex flex-col gap-2">
-                  <Link href={`/learn/${it.stageId}?review=1`}>
-                    <NeoButton tone="orange">Review</NeoButton>
-                  </Link>
-                  <Link href={`/learn/${it.stageId}?shadow=1`}>
-                    <NeoButton tone="cyan">Shadow</NeoButton>
-                  </Link>
+                  <NeoLink href={`/learn/${it.stageId}?review=1`} tone="orange">Review</NeoLink>
+                  <NeoLink href={`/learn/${it.stageId}?shadow=1`} tone="cyan">Shadow</NeoLink>
                 </div>
               </NeoCard>
             </li>

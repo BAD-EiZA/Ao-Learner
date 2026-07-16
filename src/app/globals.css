@@ -1,8 +1,5 @@
 @import "tailwindcss";
 
-/* ColorHunt: https://colorhunt.co/palette/1b4ef53874ff5996fff4ceff */
-/* #1B4EF5 #3874FF #5996FF #F4CEFF */
-
 :root {
   --background: #f4f7ff;
   --foreground: #1b4ef5;
@@ -10,17 +7,28 @@
   --p-mid: #3874ff;
   --p-light: #5996ff;
   --p-soft: #f4ceff;
+  --success: #15803d;
+  --warning: #fef3c7;
+  --danger: #fee2e2;
+  --info: #dbeafe;
 }
 
 @theme {
   --color-background: #f4f7ff;
   --color-foreground: #1b4ef5;
-  --color-neo-yellow: #3874ff;
-  --color-neo-pink: #f4ceff;
-  --color-neo-cyan: #5996ff;
-  --color-neo-lime: #5996ff;
+  --color-neo-primary: #1b4ef5;
+  --color-neo-info: #dbeafe;
+  --color-neo-success: #15803d;
+  --color-neo-warning: #fef3c7;
+  --color-neo-warning-ink: #713f12;
+  --color-neo-danger: #fee2e2;
+  --color-neo-danger-ink: #991b1b;
+  --color-neo-yellow: #1b4ef5;
+  --color-neo-pink: #fee2e2;
+  --color-neo-cyan: #dbeafe;
+  --color-neo-lime: #15803d;
   --color-neo-purple: #f4ceff;
-  --color-neo-orange: #3874ff;
+  --color-neo-orange: #fef3c7;
   --color-neo-white: #ffffff;
   --color-neo-ink: #1b4ef5;
   --color-neo-muted: #3d5fd4;
@@ -57,36 +65,38 @@ body {
 }
 
 /* Explicit neo utilities */
-.bg-neo-yellow { background-color: #3874ff !important; }
-.bg-neo-pink { background-color: #f4ceff !important; }
-.bg-neo-cyan { background-color: #5996ff !important; }
-.bg-neo-lime { background-color: #5996ff !important; }
+.bg-neo-primary { background-color: #1b4ef5 !important; }
+.bg-neo-info { background-color: #dbeafe !important; }
+.bg-neo-success { background-color: #15803d !important; }
+.bg-neo-warning { background-color: #fef3c7 !important; }
+.bg-neo-danger { background-color: #fee2e2 !important; }
+.bg-neo-yellow { background-color: #1b4ef5 !important; }
+.bg-neo-pink { background-color: #fee2e2 !important; }
+.bg-neo-cyan { background-color: #dbeafe !important; }
+.bg-neo-lime { background-color: #15803d !important; }
 .bg-neo-purple { background-color: #f4ceff !important; }
-.bg-neo-orange { background-color: #3874ff !important; }
+.bg-neo-orange { background-color: #fef3c7 !important; }
 .bg-neo-white { background-color: #ffffff !important; }
 .bg-neo-ink { background-color: #1b4ef5 !important; }
 
-.text-neo-yellow { color: #3874ff !important; }
-.text-neo-pink { color: #f4ceff !important; }
-.text-neo-cyan { color: #5996ff !important; }
-.text-neo-lime { color: #5996ff !important; }
+.text-neo-yellow { color: #1b4ef5 !important; }
+.text-neo-pink { color: #991b1b !important; }
+.text-neo-cyan { color: #1d4ed8 !important; }
+.text-neo-lime { color: #15803d !important; }
 .text-neo-purple { color: #f4ceff !important; }
-.text-neo-orange { color: #3874ff !important; }
+.text-neo-orange { color: #713f12 !important; }
+.text-neo-warning-ink { color: #713f12 !important; }
+.text-neo-danger-ink { color: #991b1b !important; }
 .text-neo-white { color: #ffffff !important; }
 .text-neo-ink { color: #1b4ef5 !important; }
 .text-neo-muted { color: #3d5fd4 !important; }
 
-/* Readable text on mid/deep blue fills */
 .bg-neo-yellow,
-.bg-neo-cyan,
-.bg-neo-lime,
-.bg-neo-orange {
+.bg-neo-lime {
   color: #ffffff !important;
 }
 .bg-neo-yellow.text-neo-ink,
-.bg-neo-cyan.text-neo-ink,
-.bg-neo-lime.text-neo-ink,
-.bg-neo-orange.text-neo-ink {
+.bg-neo-lime.text-neo-ink {
   color: #ffffff !important;
 }
 
@@ -94,19 +104,28 @@ body {
 .border-neo-yellow { border-color: #3874ff !important; }
 
 .neo-border {
-  border: 3px solid #1b4ef5 !important;
+  border: 2px solid #1b4ef5 !important;
 }
 
 .neo-shadow {
-  box-shadow: 4px 4px 0 #1b4ef5 !important;
+  box-shadow: 3px 3px 0 #1b4ef5 !important;
 }
 
 .neo-shadow-lg {
-  box-shadow: 6px 6px 0 #1b4ef5 !important;
+  box-shadow: 5px 5px 0 #1b4ef5 !important;
 }
 
 .neo-shadow-sm {
-  box-shadow: 2px 2px 0 #1b4ef5 !important;
+  box-shadow: 1px 1px 0 #1b4ef5 !important;
+}
+
+:where(a, button, input, textarea, select, summary):focus-visible {
+  outline: 3px solid #111827;
+  outline-offset: 3px;
+}
+
+:where(input, textarea, select) {
+  min-height: 44px;
 }
 
 .neo-press:active {

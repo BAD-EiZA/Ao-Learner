@@ -26,8 +26,7 @@ export function StoryQuiz({
     const options = [target.meaningId, ...distractors]
       .filter(Boolean)
       .slice(0, 3);
-    // shuffle
-    const shuffled = [...options].sort(() => Math.random() - 0.5);
+    const shuffled = [...options].sort((a, b) => a.localeCompare(b));
     return {
       prompt: `What did the last line mean? ("${target.expectedText}")`,
       answer: target.meaningId,

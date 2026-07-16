@@ -13,6 +13,7 @@ export function OfflineQueue() {
   const refresh = () => setPending(listQueuedAttempts().length);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- localStorage queue is client-only
     refresh();
     const onOnline = async () => {
       const r = await flushQueue();
@@ -24,16 +25,26 @@ export function OfflineQueue() {
     return () => window.removeEventListener("online", onOnline);
   }, []);
 
+  useEffect(() => {
+    if (!msg) return;
+    const timeout = window.setTimeout(() => setMsg(null), 5000);
+    return () => window.clearTimeout(timeout);
+  }, [msg]);
+
   if (pending === 0 && !msg) return null;
 
   return (
-    <div className="fixed bottom-[max(0.75rem,env(safe-area-inset-bottom))] left-3 z-50 max-w-[min(16rem,calc(100vw-1.5rem))] neo-border neo-shadow rounded-xl bg-neo-yellow px-3 py-2 text-xs font-black text-neo-ink">
+    <div
+      role="status"
+      aria-live="polite"
+      className="neo-border rounded-xl bg-neo-info px-3 py-2 text-xs font-black text-neo-ink shadow-lg"
+    >
       {pending > 0 && <p>Offline queue: {pending}</p>}
       {msg && (
         <p className="text-neo-ink opacity-90">
           {msg}{" "}
-          <button type="button" className="underline" onClick={() => setMsg(null)}>
-            ok
+          <button type="button" className="min-h-11 underline" onClick={() => setMsg(null)}>
+            Dismiss
           </button>
         </p>
       )}

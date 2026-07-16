@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { useAppOptional } from "@/components/providers/AppProviders";
 import { MobileNav } from "@/components/layout/MobileNav";
-import { moreNav, navActive, primaryNav } from "@/lib/nav";
+import { moreNavSections, navActive, primaryNav } from "@/lib/nav";
 import { cn } from "@/lib/utils";
 
 export function NavClientLinks({ authed = false }: { authed?: boolean }) {
@@ -14,11 +14,8 @@ export function NavClientLinks({ authed = false }: { authed?: boolean }) {
   const [moreOpen, setMoreOpen] = useState(false);
   const moreRef = useRef<HTMLDivElement>(null);
   const primary = primaryNav();
-  const more = moreNav();
-
-  useEffect(() => {
-    setMoreOpen(false);
-  }, [pathname]);
+  const moreSections = moreNavSections();
+  const more = moreSections.flatMap((section) => section.items);
 
   useEffect(() => {
     if (!moreOpen) return;
@@ -51,6 +48,7 @@ export function NavClientLinks({ authed = false }: { authed?: boolean }) {
             <Link
               key={item.href}
               href={item.href}
+              aria-current={active ? "page" : undefined}
               className={cn(
                 "rounded-lg px-2.5 py-1.5 text-xs font-black uppercase tracking-wide transition-colors lg:px-3 lg:text-sm",
                 active
@@ -67,7 +65,7 @@ export function NavClientLinks({ authed = false }: { authed?: boolean }) {
           <button
             type="button"
             aria-expanded={moreOpen}
-            aria-haspopup="menu"
+            aria-controls="desktop-more-navigation"
             onClick={() => setMoreOpen((v) => !v)}
             className={cn(
               "flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-black uppercase tracking-wide lg:px-3 lg:text-sm",
@@ -79,7 +77,7 @@ export function NavClientLinks({ authed = false }: { authed?: boolean }) {
             More
             <span
               className={cn(
-                "text-[9px] opacity-80 transition-transform",
+                "text-xs opacity-80 transition-transform",
                 moreOpen && "rotate-180"
               )}
             >
@@ -88,28 +86,33 @@ export function NavClientLinks({ authed = false }: { authed?: boolean }) {
           </button>
           {moreOpen && (
             <div
-              role="menu"
-              className="neo-border neo-shadow absolute right-0 z-50 mt-2 grid w-56 grid-cols-2 gap-1 rounded-2xl bg-neo-white p-2"
+              id="desktop-more-navigation"
+              className="neo-border neo-shadow absolute right-0 z-50 mt-2 w-64 rounded-2xl bg-neo-white p-3"
             >
-              {more.map((item) => {
-                const active = navActive(pathname, item.href);
-                return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    role="menuitem"
-                    onClick={() => setMoreOpen(false)}
-                    className={cn(
-                      "rounded-xl px-2.5 py-2 text-left text-[11px] font-black uppercase !text-neo-ink",
-                      active
-                        ? "bg-neo-ink !text-neo-white"
-                        : "hover:bg-neo-yellow/15"
-                    )}
-                  >
-                    {item.label}
-                  </Link>
-                );
-              })}
+              {moreSections.map((section) => (
+                <div key={section.label} className="mb-2 last:mb-0">
+                  <p className="px-2 py-1 text-xs font-black uppercase text-neo-muted">{section.label}</p>
+                  <div className="grid grid-cols-2 gap-1">
+                    {section.items.map((item) => {
+                      const active = navActive(pathname, item.href);
+                      return (
+                        <Link
+                          key={item.href}
+                          href={item.href}
+                          aria-current={active ? "page" : undefined}
+                          onClick={() => setMoreOpen(false)}
+                          className={cn(
+                            "min-h-11 rounded-xl px-2.5 py-2 text-left text-xs font-black uppercase !text-neo-ink",
+                            active ? "bg-neo-ink !text-neo-white" : "hover:bg-neo-yellow/15"
+                          )}
+                        >
+                          {item.label}
+                        </Link>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
             </div>
           )}
         </div>
@@ -119,8 +122,9 @@ export function NavClientLinks({ authed = false }: { authed?: boolean }) {
         <div className="ml-1 hidden items-center gap-0.5 border-l-2 border-white/30 pl-2 lg:flex">
           <button
             type="button"
+            aria-pressed={app.locale === "en"}
             className={cn(
-              "rounded-md px-2 py-1 text-[10px] font-black",
+              "min-h-11 rounded-md px-2 py-1 text-xs font-black",
               app.locale === "en"
                 ? "bg-neo-white !text-neo-ink"
                 : "!text-white/90 hover:bg-white/20"
@@ -131,8 +135,9 @@ export function NavClientLinks({ authed = false }: { authed?: boolean }) {
           </button>
           <button
             type="button"
+            aria-pressed={app.locale === "id"}
             className={cn(
-              "rounded-md px-2 py-1 text-[10px] font-black",
+              "min-h-11 rounded-md px-2 py-1 text-xs font-black",
               app.locale === "id"
                 ? "bg-neo-white !text-neo-ink"
                 : "!text-white/90 hover:bg-white/20"

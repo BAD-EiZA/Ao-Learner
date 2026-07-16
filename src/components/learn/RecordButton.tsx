@@ -155,6 +155,7 @@ export function RecordButton({ disabled, onRecorded }: Props) {
         type="button"
         disabled={disabled}
         onClick={recording ? stop : start}
+        aria-pressed={recording}
         className={cn(
           "neo-border neo-shadow relative z-10 flex h-16 w-16 items-center justify-center rounded-full text-xs font-black uppercase sm:h-[4.5rem] sm:w-[4.5rem] sm:text-sm",
           recording ? "bg-neo-pink text-neo-ink" : "bg-neo-ink text-neo-white",
@@ -187,13 +188,13 @@ export function RecordButton({ disabled, onRecorded }: Props) {
       >
         {recording ? "STOP" : "REC"}
       </motion.button>
-      <p className="relative z-10 mt-1 text-[10px] font-bold text-neo-ink drop-shadow-[0_1px_0_#fff] sm:text-xs">
+      <p aria-live="polite" className="relative z-10 mt-1 text-xs font-bold text-neo-ink drop-shadow-[0_1px_0_#fff]">
         {recording
           ? app?.tr("rec_listening") ?? "Listening… tap to stop"
           : app?.tr("rec_tap") ?? "Tap to speak"}
       </p>
       {error && (
-        <p className="neo-border relative z-10 mt-1 rounded-lg bg-neo-pink px-2 py-1 text-center text-[10px] font-bold">
+        <p role="alert" className="neo-border relative z-10 mt-1 rounded-lg bg-neo-pink px-2 py-1 text-center text-xs font-bold">
           {error}
         </p>
       )}

@@ -46,7 +46,6 @@ import {
 import { activatePlus, getPlusState } from "@/lib/learning/plus";
 import {
   ensureDailyXpBucket,
-  addDailyXp,
   setDailyXpGoal,
   getDailyGoalState,
 } from "@/lib/learning/goals";
@@ -66,11 +65,9 @@ import { refillHeartsForPlus, consumeHeart, getHeartsState } from "@/lib/learnin
 import {
   alignWordHeat,
   heatClass,
-  heatTone,
   tokenizePhrase,
 } from "@/lib/learning/word-heat";
 import {
-  getAdaptivePassThreshold,
   updateDifficultyBoost,
   getWeakSpots,
   recommendNextStage,
@@ -87,7 +84,7 @@ jest.mock("@/lib/learning/srs", () => ({
   getDueReviews: jest.fn().mockResolvedValue([]),
 }));
 
-const p = prisma as any;
+const p = prisma as unknown as jest.Mocked<typeof prisma>;
 const dueMock = getDueReviews as jest.Mock;
 
 beforeEach(() => {
@@ -758,7 +755,7 @@ describe("word-heat remaining branches", () => {
     expect(h2[0]!.score).toBe(10); // positional after empty key skip
 
     expect(heatClass(75)).toContain("yellow");
-    expect(heatClass(55)).toContain("orange");
+    expect(heatClass(55)).toContain("warning");
     expect(tokenizePhrase("  ")).toEqual([]);
   });
 });

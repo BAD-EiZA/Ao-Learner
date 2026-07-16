@@ -1,7 +1,6 @@
 "use client";
 
-import Link from "next/link";
-import { NeoCard, NeoButton } from "@/components/ui/neo";
+import { NeoCard, NeoLink } from "@/components/ui/neo";
 
 const TIER_EMOJI: Record<string, string> = {
   bronze: "🥉",
@@ -26,11 +25,9 @@ export function LeagueCard({
         {emoji} {tier}
       </p>
       <p className="text-sm font-bold">{weekXp} XP this week</p>
-      <Link href="/path">
-        <NeoButton tone="ink" className="w-full text-xs">
+      <NeoLink href="/path" tone="ink" className="w-full text-xs">
           Path map
-        </NeoButton>
-      </Link>
+        </NeoLink>
     </NeoCard>
   );
 }

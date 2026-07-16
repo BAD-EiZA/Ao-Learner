@@ -1,8 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
-import { NeoBadge, NeoButton, NeoCard } from "@/components/ui/neo";
+import { NeoBadge, NeoButton, NeoCard, NeoLink } from "@/components/ui/neo";
 
 type ShopData = {
   gems: number;
@@ -67,7 +66,7 @@ export default function ShopPage() {
   };
 
   return (
-    <div className="mx-auto max-w-lg space-y-6 px-3 py-8">
+    <div className="mx-auto max-w-lg space-y-6 px-3 py-8" aria-busy={busy}>
       <NeoBadge tone="yellow">Shop</NeoBadge>
       <h1 className="text-3xl font-black">Gems & freezes</h1>
       <p className="text-2xl font-black">💎 {data?.gems ?? "…"}</p>
@@ -75,7 +74,7 @@ export default function ShopPage() {
         Freezes: {data?.streakFreezes ?? 0}
       </p>
       {msg && (
-        <p className="neo-border rounded-lg bg-neo-lime px-2 py-1 text-xs font-black">
+        <p role="status" aria-live="polite" className="neo-border rounded-lg bg-neo-info px-2 py-1 text-xs font-black">
           {msg}
         </p>
       )}
@@ -123,9 +122,7 @@ export default function ShopPage() {
           )}
         </div>
       </section>
-      <Link href="/dashboard">
-        <NeoButton tone="white">← Dashboard</NeoButton>
-      </Link>
+      <NeoLink href="/dashboard" tone="white">← Dashboard</NeoLink>
     </div>
   );
 }

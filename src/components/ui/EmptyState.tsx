@@ -8,21 +8,25 @@ export function EmptyState({
   body,
   action,
   tone = "white",
+  compact = false,
 }: {
   title: string;
   body?: string;
   action?: ReactNode;
   tone?: "white" | "cyan" | "lime" | "pink" | "orange";
+  compact?: boolean;
 }) {
   return (
-    <NeoCard tone={tone} hover={false} className="space-y-3 text-center">
-      <div
-        className="mx-auto flex h-20 w-20 items-center justify-center rounded-2xl neo-border bg-neo-yellow text-3xl"
-        aria-hidden
-      >
-        ∅
-      </div>
-      <p className="text-lg font-black">{title}</p>
+    <NeoCard tone={tone} hover={false} className="space-y-3 text-center" role="status">
+      {!compact && (
+        <div
+          className="mx-auto flex h-20 w-20 items-center justify-center rounded-2xl neo-border bg-neo-info text-3xl"
+          aria-hidden
+        >
+          ∅
+        </div>
+      )}
+      <p className={compact ? "font-black" : "text-lg font-black"}>{title}</p>
       {body ? <p className="text-sm font-medium opacity-80">{body}</p> : null}
       {action}
     </NeoCard>
@@ -39,7 +43,7 @@ export function ErrorState({
   action?: ReactNode;
 }) {
   return (
-    <NeoCard tone="orange" hover={false} className="space-y-3 text-center">
+    <NeoCard tone="danger" hover={false} className="space-y-3 text-center" role="alert">
       <div
         className="mx-auto flex h-20 w-20 items-center justify-center rounded-2xl neo-border bg-neo-pink text-3xl font-black"
         aria-hidden

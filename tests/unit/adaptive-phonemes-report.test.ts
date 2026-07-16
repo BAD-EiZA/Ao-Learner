@@ -33,7 +33,7 @@ describe("adaptive threshold branches", () => {
       PASS_SCORE + 10
     );
     p.userStats.findUnique.mockResolvedValue({ passBoost: 50 });
-    expect(await getAdaptivePassThreshold("u", "B1", true)).toBe(90);
+    expect(await getAdaptivePassThreshold("u", "B1", true)).toBe(92);
     p.userStats.findUnique.mockResolvedValue(null);
     expect(await getAdaptivePassThreshold("u")).toBe(PASS_SCORE);
   });

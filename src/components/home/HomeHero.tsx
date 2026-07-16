@@ -1,12 +1,12 @@
 "use client";
 
-import Link from "next/link";
 import { LoginLink, RegisterLink } from "@kinde-oss/kinde-auth-nextjs/components";
 import { motion } from "framer-motion";
 import {
   NeoBadge,
   NeoButton,
   NeoChip,
+  NeoLink,
   NeoPanel,
   fadeUp,
   stagger,
@@ -37,11 +37,9 @@ export function HomeHero({ authed }: { authed: boolean }) {
         </p>
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
           {authed ? (
-            <Link href="/dashboard">
-              <NeoButton tone="pink" className="w-full sm:w-auto">
+            <NeoLink href="/dashboard" tone="pink" className="w-full sm:w-auto">
                 Start learning
-              </NeoButton>
-            </Link>
+              </NeoLink>
           ) : (
             <>
               <RegisterLink postLoginRedirectURL="/dashboard">
@@ -69,7 +67,7 @@ export function HomeHero({ authed }: { authed: boolean }) {
           <div className="h-[36vh] min-h-[200px] sm:h-[48vh] sm:min-h-[280px] lg:h-[min(70vh,640px)]">
             <HomeAvatar />
           </div>
-          <p className="border-t-4 border-neo-ink bg-neo-yellow px-4 py-2 text-center text-[11px] font-black uppercase tracking-wide text-neo-ink">
+          <p className="border-t-4 border-neo-ink bg-neo-yellow px-4 py-2 text-center text-xs font-black uppercase tracking-wide text-neo-ink">
             Click Ao · Drag to rotate · Pinch/zoom
           </p>
         </NeoPanel>

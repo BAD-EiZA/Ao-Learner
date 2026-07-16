@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { redirect, notFound } from "next/navigation";
 import { requireUser } from "@/lib/auth/user";
 import {
@@ -10,7 +9,7 @@ import { getDailyChallenge } from "@/lib/db/daily";
 import { getAdaptivePassThreshold } from "@/lib/learning/adaptive";
 import { LearnSession } from "@/components/learn/LearnSession";
 import type { StageView } from "@/types/stage";
-import { NeoButton, NeoCard } from "@/components/ui/neo";
+import { NeoCard, NeoLink } from "@/components/ui/neo";
 
 export const dynamic = "force-dynamic";
 
@@ -60,11 +59,9 @@ export default async function LearnPage({
           <p className="text-sm font-medium">
             Complete the previous stage first — or try Review / Daily.
           </p>
-          <Link href="/dashboard">
-            <NeoButton tone="ink" className="w-full">
-              Back to dashboard
-            </NeoButton>
-          </Link>
+          <NeoLink href="/dashboard" tone="ink" className="w-full">
+            Back to dashboard
+          </NeoLink>
         </NeoCard>
       </div>
     );
@@ -73,12 +70,13 @@ export default async function LearnPage({
   return (
     <div>
       <div className="mx-auto max-w-6xl px-3 pt-4 sm:px-6">
-        <Link
+        <NeoLink
           href="/dashboard"
-          className="neo-border neo-shadow-sm neo-press inline-flex rounded-xl bg-neo-white px-3 py-1.5 text-xs font-black uppercase text-neo-ink"
+          tone="surface"
+          className="px-3 py-1.5 text-xs"
         >
           ← Dashboard
-        </Link>
+        </NeoLink>
       </div>
       <LearnSession
         stage={stage as StageView}

@@ -106,7 +106,6 @@ export function LearnSession({
   const [wordHeat, setWordHeat] = useState<
     { word: string; score: number }[] | null
   >(null);
-  const [combo, setCombo] = useState(0);
   const [hearts, setHearts] = useState<number | null>(null);
   /** Listen-first: must hear tutor before first record per turn */
   const [heardTurn, setHeardTurn] = useState(false);
@@ -115,11 +114,13 @@ export function LearnSession({
 
   // reset listen gate when turn changes
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- each turn requires a fresh listen gate
     setHeardTurn(false);
   }, [turnIndex, stage.id]);
 
   useEffect(() => {
     try {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- client-only preference hydrates after mount
       setHardMode(localStorage.getItem(HARD_KEY) === "1");
     } catch {
       /* */
@@ -426,7 +427,6 @@ export function LearnSession({
         setThreshold(data.passThreshold);
       }
       if (typeof data.xpGain === "number") setXpGain(data.xpGain);
-      if (typeof data.combo === "number") setCombo(data.combo);
       if (typeof data.hearts === "number") setHearts(data.hearts);
       if (data.breakdown) setBreakdown(data.breakdown);
       if (Array.isArray(data.word_heat)) setWordHeat(data.word_heat);
@@ -505,10 +505,20 @@ export function LearnSession({
     dialogueDone ||
     hearts === 0 ||
     (!heardTurn && !isReview);
+  const contextLabel = isDaily
+    ? "Daily"
+    : isShadow
+      ? "Shadow"
+      : isStory
+        ? "Story"
+        : isDialogue
+          ? "Dialogue"
+          : null;
 
   return (
     <motion.div
       className="relative mx-auto w-full max-w-5xl px-2 py-2 sm:px-4 sm:py-3"
+      aria-busy={loading}
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ type: "spring", stiffness: 280, damping: 26 }}
@@ -536,73 +546,80 @@ export function LearnSession({
             <div className="pointer-events-auto flex items-start justify-between gap-2">
               <div className="min-w-0 flex-1">
                 <div className="flex flex-wrap gap-1">
-                  <NeoBadge tone="purple">
-                    {stage.cefrLevel || "A1"} · {stage.order}
+                  <NeoBadge tone="primary">
+                    {isDialogue
+                      ? `${Math.min(turnIndex + 1, turns.length)}/${turns.length}`
+                      : `${stage.cefrLevel || "A1"} · ${stage.order}`}
                   </NeoBadge>
-                  <NeoBadge tone="white">≥{threshold}</NeoBadge>
-                  {isDaily && <NeoBadge tone="pink">Daily</NeoBadge>}
-                  {isReview && <NeoBadge tone="orange">Review</NeoBadge>}
-                  {isShadow && <NeoBadge tone="cyan">Shadow</NeoBadge>}
-                  {isStory && <NeoBadge tone="purple">Story</NeoBadge>}
-                  {isDialogue && (
-                    <NeoBadge tone="cyan">
-                      {Math.min(turnIndex + 1, turns.length)}/{turns.length}
-                    </NeoBadge>
-                  )}
-                  {xpGain > 0 && (
-                    <NeoBadge tone="lime">+{xpGain}</NeoBadge>
-                  )}
-                  {combo > 1 && (
-                    <NeoBadge tone="orange">×{combo}</NeoBadge>
-                  )}
                   {hearts != null && (
-                    <NeoBadge tone="pink">
-                      {"❤".repeat(Math.min(5, hearts))}
+                    <NeoBadge tone="danger">
+                      <span aria-hidden>
+                        {hearts > 0 ? "❤".repeat(Math.min(5, hearts)) : "0"}
+                      </span>
+                      <span className="sr-only">{hearts} hearts</span>
                     </NeoBadge>
                   )}
-                  {!heardTurn && !completed && !dialogueDone && (
-                    <NeoBadge tone="orange">Listen</NeoBadge>
-                  )}
-                  {hardMode && <NeoBadge tone="ink">Hard</NeoBadge>}
-                  {!isDaily && !isDialogue && (
-                    <NeoBadge tone="white">
-                      {attemptsLeft}/{MAX_ATTEMPTS}
-                    </NeoBadge>
-                  )}
+                  {contextLabel && <NeoBadge tone="info">{contextLabel}</NeoBadge>}
                 </div>
                 <h1 className="mt-1 truncate text-base font-black text-neo-ink drop-shadow-[0_1px_0_#fff] sm:text-lg">
                   {stage.title}
                 </h1>
               </div>
-              <div className="flex shrink-0 flex-col items-end gap-1">
-                <button
-                  type="button"
-                  onClick={toggleHard}
-                  className={`rounded-lg border-2 border-neo-ink px-2 py-1 text-[10px] font-black uppercase ${
-                    hardMode
-                      ? "bg-neo-ink text-neo-white"
-                      : "bg-white/95 text-neo-ink"
-                  }`}
-                >
-                  Hard {hardMode ? "ON" : "OFF"}
-                </button>
-                <div className="flex gap-0.5 rounded-lg border-2 border-neo-ink bg-white/95 p-0.5">
-                  {SPEEDS.map((s) => (
+              <details className="relative shrink-0">
+                <summary className="flex min-h-11 cursor-pointer list-none items-center rounded-xl border-2 border-neo-ink bg-white/95 px-3 text-xs font-black uppercase text-neo-ink shadow-[2px_2px_0_#1B4EF5]">
+                  Options
+                </summary>
+                <div className="absolute right-0 z-30 mt-1 w-56 space-y-3 rounded-xl border-2 border-neo-ink bg-white p-3 shadow-[3px_3px_0_#1B4EF5]">
+                  <button
+                    type="button"
+                    onClick={toggleHard}
+                    aria-pressed={hardMode}
+                    className={`min-h-11 w-full rounded-lg border-2 border-neo-ink px-2 py-2 text-xs font-black uppercase ${
+                      hardMode
+                        ? "bg-neo-ink text-neo-white"
+                        : "bg-white text-neo-ink"
+                    }`}
+                  >
+                    Hard {hardMode ? "ON" : "OFF"}
+                  </button>
+                  <fieldset className="space-y-1">
+                    <legend className="text-xs font-black uppercase text-neo-ink">
+                      Speed
+                    </legend>
+                    <div className="flex gap-1">
+                      {SPEEDS.map((s) => (
+                        <button
+                          key={s}
+                          type="button"
+                          onClick={() => setPlaybackRate(s)}
+                          aria-pressed={playbackRate === s}
+                          className={`min-h-11 min-w-11 flex-1 rounded-md px-1 py-1 text-xs font-black ${
+                            playbackRate === s
+                              ? "bg-neo-ink text-neo-white"
+                              : "border-2 border-neo-ink text-neo-ink"
+                          }`}
+                        >
+                          {s}x
+                        </button>
+                      ))}
+                    </div>
+                  </fieldset>
+                  {lastUserBlob && (
                     <button
-                      key={s}
                       type="button"
-                      onClick={() => setPlaybackRate(s)}
-                      className={`min-w-7 rounded-md px-1 py-0.5 text-[10px] font-black ${
-                        playbackRate === s
+                      onClick={() => setShowCompare((v) => !v)}
+                      aria-pressed={showCompare}
+                      className={`min-h-11 w-full rounded-lg border-2 border-neo-ink px-2 py-2 text-xs font-black uppercase ${
+                        showCompare
                           ? "bg-neo-ink text-neo-white"
-                          : "text-neo-ink"
+                          : "bg-white text-neo-ink"
                       }`}
                     >
-                      {s}x
+                      Compare
                     </button>
-                  ))}
+                  )}
                 </div>
-              </div>
+              </details>
             </div>
           </div>
 
@@ -623,7 +640,7 @@ export function LearnSession({
             )}
 
             {hearts === 0 && (
-              <div className="mb-1 rounded-xl border-2 border-neo-ink bg-neo-pink/95 px-2 py-1 text-center text-[11px] font-bold text-neo-ink">
+              <div className="mb-1 rounded-xl border-2 border-neo-ink bg-neo-pink/95 px-2 py-1 text-center text-xs font-bold text-neo-ink">
                 Out of hearts ·{" "}
                 <button
                   type="button"
@@ -639,7 +656,7 @@ export function LearnSession({
             <div className="mb-2 flex justify-center px-1">
               <div className="max-w-md rounded-2xl border-2 border-neo-ink bg-white/95 px-3 py-1.5 text-center shadow-[2px_2px_0_#1B4EF5] backdrop-blur-md sm:px-4 sm:py-2">
                 {currentTurn.prompt ? (
-                  <p className="mb-0.5 text-[10px] font-black uppercase text-neo-muted">
+                  <p className="mb-0.5 text-xs font-black uppercase text-neo-muted">
                     {currentTurn.prompt}
                   </p>
                 ) : null}
@@ -656,29 +673,29 @@ export function LearnSession({
                 {!dialogueDone &&
                 currentTurn.meaningId &&
                 (!hardMode || attemptNum >= 2) ? (
-                  <p className="mt-0.5 text-[11px] font-bold text-neo-muted">
+                  <p className="mt-0.5 text-xs font-bold text-neo-muted">
                     {currentTurn.meaningId}
                   </p>
                 ) : null}
                 {hardMode && !dialogueDone && attemptNum < 2 && (
-                  <p className="mt-0.5 text-[10px] font-black uppercase text-neo-muted">
+                  <p className="mt-0.5 text-xs font-black uppercase text-neo-muted">
                     Hard · meaning after attempt 2
                   </p>
                 )}
                 {!dialogueDone && attemptNum >= 3 && (
-                  <p className="mt-0.5 font-mono text-[10px] font-bold text-neo-ink/70">
+                  <p className="mt-0.5 font-mono text-xs font-bold text-neo-ink/70">
                     {syllables}
                   </p>
                 )}
               </div>
             </div>
 
-            <div className="flex items-center justify-between gap-2">
+            <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-2">
               <button
                 type="button"
                 onClick={playReference}
                 disabled={loading || dialogueDone}
-                className={`min-h-10 shrink-0 rounded-xl border-2 border-neo-ink px-2.5 py-2 text-[11px] font-black uppercase shadow-[2px_2px_0_#1B4EF5] disabled:opacity-50 sm:px-3 sm:text-xs ${
+                className={`min-h-11 min-w-11 justify-self-start rounded-xl border-2 border-neo-ink px-2.5 py-2 text-xs font-black uppercase shadow-[2px_2px_0_#1B4EF5] disabled:opacity-50 sm:px-3 ${
                   !heardTurn
                     ? "bg-neo-ink text-neo-white"
                     : "bg-white text-neo-ink"
@@ -689,7 +706,7 @@ export function LearnSession({
 
               <div className="relative z-10 flex min-w-0 flex-1 flex-col items-center">
                 {!heardTurn && !completed && !dialogueDone && (
-                  <p className="mb-0.5 text-[10px] font-black text-neo-ink drop-shadow-[0_1px_0_#fff]">
+                  <p className="mb-0.5 text-xs font-black text-neo-ink drop-shadow-[0_1px_0_#fff]">
                     Listen first
                   </p>
                 )}
@@ -699,24 +716,14 @@ export function LearnSession({
                 />
               </div>
 
-              <div className="flex w-[4.5rem] shrink-0 justify-end sm:w-[5rem]">
-                {lastUserBlob ? (
-                  <button
-                    type="button"
-                    onClick={() => setShowCompare((v) => !v)}
-                    className="min-h-10 rounded-xl border-2 border-neo-ink bg-white px-2.5 py-2 text-[11px] font-black uppercase text-neo-ink sm:text-xs"
-                  >
-                    {showCompare ? "Hide" : "Cmp"}
-                  </button>
-                ) : null}
-              </div>
+              <div aria-hidden />
             </div>
 
             <div className="mt-1.5 flex gap-2">
               {prevStageId && !isDaily ? (
                 <NeoButton
                   type="button"
-                  tone="white"
+                  tone="surface"
                   className="flex-1 !py-1.5 text-xs"
                   onClick={() => router.push(`/learn/${prevStageId}`)}
                 >
@@ -725,7 +732,7 @@ export function LearnSession({
               ) : (
                 <NeoButton
                   type="button"
-                  tone="white"
+                  tone="surface"
                   className="flex-1 !py-1.5 text-xs"
                   onClick={() => router.push("/dashboard")}
                 >
@@ -735,7 +742,7 @@ export function LearnSession({
               {canGoNext ? (
                 <NeoButton
                   type="button"
-                  tone="lime"
+                  tone="success"
                   className="flex-1 !py-1.5 text-xs"
                   onClick={() => router.push(`/learn/${nextStageId}`)}
                 >
@@ -744,7 +751,7 @@ export function LearnSession({
               ) : completed || dialogueDone || isDaily ? (
                 <NeoButton
                   type="button"
-                  tone="lime"
+                  tone="success"
                   className="flex-1 !py-1.5 text-xs"
                   onClick={() => router.push("/dashboard")}
                 >
@@ -781,7 +788,6 @@ export function LearnSession({
           feedback={feedback}
           isCorrect={isCorrect}
           breakdown={breakdown}
-          combo={combo}
           wordHeat={wordHeat}
         />
         {showRecap && score != null && (

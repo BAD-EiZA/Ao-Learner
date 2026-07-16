@@ -1,9 +1,8 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { requireUser } from "@/lib/auth/user";
 import { getMatchDeck } from "@/lib/learning/match";
 import { MatchGameClient } from "@/components/learn/MatchGameClient";
-import { NeoBadge, NeoButton } from "@/components/ui/neo";
+import { NeoBadge, NeoLink } from "@/components/ui/neo";
 
 export const dynamic = "force-dynamic";
 
@@ -31,15 +30,11 @@ export default async function MatchPage({
       </p>
       <div className="flex flex-wrap gap-2">
         {LANGUAGES.map((l) => (
-          <Link key={l} href={`/match?lang=${LANGUAGE_META[l].code}`}>
-            <NeoButton tone={lang === l ? "ink" : "white"}>
+          <NeoLink key={l} href={`/match?lang=${LANGUAGE_META[l].code}`} tone={lang === l ? "ink" : "white"}>
               {LANGUAGE_META[l].short}
-            </NeoButton>
-          </Link>
+            </NeoLink>
         ))}
-        <Link href="/practice">
-          <NeoButton tone="orange">Practice hub</NeoButton>
-        </Link>
+        <NeoLink href="/practice" tone="orange">Practice hub</NeoLink>
       </div>
       {deck.length < 2 ? (
         <p className="font-bold">Need more stages. Run seed.</p>

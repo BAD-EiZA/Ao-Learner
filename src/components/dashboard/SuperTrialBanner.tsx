@@ -1,8 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
-import { NeoButton, NeoCard } from "@/components/ui/neo";
+import { NeoButton, NeoCard, NeoLink } from "@/components/ui/neo";
 
 export function SuperTrialBanner() {
   const [show, setShow] = useState(false);
@@ -40,9 +39,7 @@ export function SuperTrialBanner() {
         <NeoButton tone="ink" disabled={busy} onClick={() => void start()}>
           {busy ? "…" : "Start Super trial"}
         </NeoButton>
-        <Link href="/plus">
-          <NeoButton tone="white">See Plus</NeoButton>
-        </Link>
+        <NeoLink href="/plus" tone="white">See Plus</NeoLink>
       </div>
     </NeoCard>
   );
