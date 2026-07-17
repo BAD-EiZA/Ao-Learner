@@ -22,9 +22,11 @@ export async function Nav() {
       <div className="mx-auto flex h-14 max-w-6xl items-center gap-2 px-3 sm:h-14 sm:gap-3 sm:px-6">
         <Link
           href="/"
-          className="shrink-0 rounded-lg border-2 border-neo-ink bg-neo-white px-2.5 py-1.5 text-sm font-black tracking-tight !text-neo-ink shadow-[2px_2px_0_#1B4EF5]"
+          className="flex shrink-0 items-center gap-1.5 rounded-lg border-2 border-neo-ink bg-neo-white py-1.5 pl-1 pr-2.5 text-sm font-black tracking-tight !text-neo-ink shadow-[2px_2px_0_#1B4EF5]"
         >
-          Ao<span className="!text-neo-muted">.</span>
+          <span className="flex h-7 w-7 items-center justify-center rounded-md bg-neo-primary text-xs font-black text-neo-white">
+            AO
+          </span>
           <span className="hidden sm:inline">Learner</span>
         </Link>
 
