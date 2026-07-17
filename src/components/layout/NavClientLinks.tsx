@@ -40,7 +40,7 @@ export function NavClientLinks({ authed = false }: { authed?: boolean }) {
     <>
       <MobileNav />
 
-      {/* Desktop primary links — text, not rainbow pills */}
+       {/* Frequent actions only; less-used routes stay in More. */}
       <div className="hidden items-center gap-0.5 md:flex">
         {primary.map((item) => {
           const active = navActive(pathname, item.href);
@@ -74,7 +74,7 @@ export function NavClientLinks({ authed = false }: { authed?: boolean }) {
                 : "!text-white hover:bg-white/20"
             )}
           >
-            More
+            Lainnya
             <span
               className={cn(
                 "text-xs opacity-80 transition-transform",

@@ -83,13 +83,13 @@ export function MobileNav() {
             className="fixed inset-x-0 top-[calc(3.5rem+env(safe-area-inset-top))] z-50 max-h-[min(85dvh,calc(100dvh-4rem))] overflow-y-auto border-b-4 border-neo-ink bg-neo-white px-3 pb-[max(1rem,env(safe-area-inset-bottom))] pt-3 shadow-[0_12px_40px_rgba(27,78,245,0.15)] sm:inset-x-3 sm:top-[4.5rem] sm:rounded-2xl sm:border-4"
           >
             <div className="mb-3 flex items-center justify-between">
-              <p className="text-xs font-black uppercase tracking-wider text-neo-muted">Navigate</p>
+              <p className="text-xs font-black uppercase tracking-wider text-neo-muted">Navigasi</p>
               <button
                 type="button"
                 className="min-h-11 rounded-lg px-3 py-2 text-xs font-black text-neo-muted"
                 onClick={() => setOpen(false)}
               >
-                Close
+                Tutup
               </button>
             </div>
             <nav aria-label="Mobile navigation" className="space-y-3">

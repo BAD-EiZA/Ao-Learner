@@ -623,8 +623,8 @@ export function LearnSession({
             </div>
           </div>
 
-          {/* Bottom dock: phrase above Listen, mic center */}
-          <div className="absolute inset-x-0 bottom-0 z-20 px-2 pb-1.5 pt-1 sm:px-3 sm:pb-2">
+            {/* Bottom dock: phrase above Listen, mic center */}
+            <div className="absolute inset-x-0 bottom-0 z-20 px-2 pb-1.5 pt-1 sm:px-3 sm:pb-2">
             {!isDaily && !isDialogue && cooldownUntil && (
               <div className="mb-1">
                 <CooldownTimer
@@ -653,7 +653,7 @@ export function LearnSession({
             )}
 
             {/* Phrase card — directly above Listen / mic row */}
-            <div className="mb-2 flex justify-center px-1">
+              <div className="mb-2 flex justify-center px-1">
               <div className="max-w-md rounded-2xl border-2 border-neo-ink bg-white/95 px-3 py-1.5 text-center shadow-[2px_2px_0_#1B4EF5] backdrop-blur-md sm:px-4 sm:py-2">
                 {currentTurn.prompt ? (
                   <p className="mb-0.5 text-xs font-black uppercase text-neo-muted">
@@ -688,9 +688,15 @@ export function LearnSession({
                   </p>
                 )}
               </div>
-            </div>
+              </div>
 
-            <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-2">
+              <ol className="mb-1 flex justify-center gap-2 text-[10px] font-black uppercase text-neo-muted sm:text-xs" aria-label="Langkah latihan">
+                <li className={heardTurn ? "text-neo-success" : "text-neo-ink"}>1. Dengar</li>
+                <li className={!heardTurn ? "opacity-50" : "text-neo-ink"}>2. Ucapkan</li>
+                <li className="opacity-50">3. Skor</li>
+              </ol>
+
+              <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-2">
               <button
                 type="button"
                 onClick={playReference}
@@ -700,14 +706,14 @@ export function LearnSession({
                     ? "bg-neo-ink text-neo-white"
                     : "bg-white text-neo-ink"
                 }`}
-              >
-                {!heardTurn ? "▶ Listen" : "▶ Tutor"}
+                >
+                 {!heardTurn ? "▶ Dengar" : "▶ Ulangi"}
               </button>
 
               <div className="relative z-10 flex min-w-0 flex-1 flex-col items-center">
                 {!heardTurn && !completed && !dialogueDone && (
                   <p className="mb-0.5 text-xs font-black text-neo-ink drop-shadow-[0_1px_0_#fff]">
-                    Listen first
+                    Dengarkan tutor dulu
                   </p>
                 )}
                 <RecordButton

@@ -61,6 +61,7 @@ export function AppProviders({ children }: { children: ReactNode }) {
     setLocaleState(l);
     try {
       localStorage.setItem(LOCALE_KEY, l);
+      document.cookie = `ao_locale=${l}; path=/; max-age=31536000; samesite=lax`;
     } catch {
       /* ignore */
     }

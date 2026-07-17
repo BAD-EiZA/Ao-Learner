@@ -14,7 +14,7 @@ export const NAV_SECTIONS: NavSection[] = [
     label: "Learn",
     items: [
       { href: "/dashboard", label: "Learn", primary: true },
-      { href: "/path", label: "Path", primary: true },
+      { href: "/path", label: "Path" },
       { href: "/plan", label: "Study plan" },
       { href: "/stories", label: "Stories" },
       { href: "/scenarios", label: "Role-play" },
@@ -24,7 +24,7 @@ export const NAV_SECTIONS: NavSection[] = [
     label: "Practice",
     items: [
       { href: "/practice", label: "Practice", primary: true },
-      { href: "/talk", label: "Talk", primary: true },
+      { href: "/talk", label: "Talk" },
       { href: "/review", label: "Review" },
       { href: "/match", label: "Match" },
       { href: "/gap", label: "Speak gap" },

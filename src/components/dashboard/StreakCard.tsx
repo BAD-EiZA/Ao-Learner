@@ -14,7 +14,7 @@ export function StreakCard({
   totalAttempts: number;
 }) {
   return (
-    <NeoCard tone="pink" hover={false} className="space-y-2">
+    <NeoCard tone="danger" hover={false} className="space-y-2">
       <p className="text-xs font-black uppercase opacity-70">Daily streak</p>
       <p className="text-4xl font-black leading-none">
         {currentStreak}

@@ -14,7 +14,7 @@ export function DailyGoalCard({
   met: boolean;
 }) {
   return (
-    <NeoCard tone={met ? "lime" : "cyan"} hover={false} className="space-y-2">
+    <NeoCard tone={met ? "success" : "info"} hover={false} className="space-y-2">
       <p className="text-xs font-black uppercase opacity-70">Daily XP goal</p>
       <p className="text-2xl font-black">
         {earned}

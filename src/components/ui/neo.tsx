@@ -30,6 +30,7 @@ export type Tone =
   | "warning"
   | "danger"
   | "surface"
+  // ponytail: Legacy visual names remain for existing screens; migrate when each screen changes.
   | "yellow"
   | "pink"
   | "cyan"
@@ -53,13 +54,13 @@ const tones: Record<Tone, string> = {
   purple: "bg-neo-purple text-neo-ink",
   orange: "bg-neo-warning text-neo-warning-ink",
   white: "bg-neo-white text-neo-ink",
-  ink: "bg-neo-ink text-neo-white", // #1B4EF5
+  ink: "bg-neo-ink text-neo-white",
 };
 
 export function NeoCard({
   children,
   className,
-  tone = "white",
+  tone = "surface",
   hover = false,
   ...props
 }: {
@@ -87,7 +88,7 @@ export function NeoCard({
 export function NeoButton({
   children,
   className,
-  tone = "yellow",
+  tone = "primary",
   disabled,
   type = "button",
   ...props
@@ -144,7 +145,7 @@ export function NeoLink({
 export function NeoBadge({
   children,
   className,
-  tone = "cyan",
+  tone = "info",
 }: {
   children: ReactNode;
   className?: string;
@@ -166,7 +167,7 @@ export function NeoBadge({
 export function NeoChip({
   children,
   className,
-  tone = "white",
+  tone = "surface",
 }: {
   children: ReactNode;
   className?: string;
@@ -188,7 +189,7 @@ export function NeoChip({
 export function NeoPanel({
   children,
   className,
-  tone = "white",
+  tone = "surface",
 }: {
   children: ReactNode;
   className?: string;
