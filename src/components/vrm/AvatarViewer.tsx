@@ -496,12 +496,13 @@ export function AvatarViewer({
 
   return (
     <div
-      className={`relative overflow-hidden ${className ?? "h-full w-full min-h-[280px]"}`}
+      className={`relative min-w-0 max-w-full overflow-hidden ${className ?? "h-full w-full min-h-[280px]"}`}
     >
       <Canvas
         camera={{ position: cameraPosition, fov: 32 }}
         dpr={[1, 1.75]}
         gl={{ antialias: true, alpha: true }}
+        className="!h-full !w-full !max-w-full"
       >
         <color attach="background" args={[backgroundColor]} />
         <ambientLight intensity={0.95} />

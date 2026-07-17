@@ -169,9 +169,9 @@ export function HomeHero({ authed }: { authed: boolean }) {
           </div>
         </motion.div>
 
-        <motion.div className="order-1 lg:order-2" variants={fadeUp}>
-          <NeoPanel tone="surface">
-            <div className="h-[36vh] min-h-[240px] sm:h-[48vh] sm:min-h-[330px] lg:h-[min(70vh,640px)]"><HomeAvatar /></div>
+        <motion.div className="order-1 min-w-0 max-w-full lg:order-2" variants={fadeUp}>
+          <NeoPanel tone="surface" className="max-w-full">
+            <div className="h-[36vh] min-h-[240px] w-full max-w-full overflow-hidden sm:h-[48vh] sm:min-h-[330px] lg:h-[min(70vh,640px)]"><HomeAvatar /></div>
             <p className="border-t-4 border-neo-ink bg-neo-primary px-4 py-2 text-center text-xs font-black uppercase tracking-wide text-neo-white">{text.avatar}</p>
           </NeoPanel>
         </motion.div>

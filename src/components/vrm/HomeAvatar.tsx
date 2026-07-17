@@ -115,11 +115,11 @@ export function HomeAvatar() {
   const onReady = useCallback(() => setModelReady(true), []);
 
   return (
-    <div className="relative h-full w-full">
+    <div className="relative h-full w-full min-w-0 max-w-full overflow-hidden">
       <AvatarViewer
         autoRotate={false}
         interactive={!busy && modelReady && greeted}
-        className="h-full w-full"
+        className="h-full w-full min-w-0 max-w-full [&>canvas]:!h-full [&>canvas]:!w-full [&>canvas]:!max-w-full"
         emotion={anim.emotion}
         animationUrl={anim.url}
         loopAnimation={loop}
