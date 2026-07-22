@@ -13,7 +13,13 @@ export type StageView = {
   expectedText: string;
   meaningId: string;
   referenceAudio: string;
-  language: "ENGLISH" | "GERMAN" | "FRENCH";
+  language:
+    | "ENGLISH"
+    | "GERMAN"
+    | "FRENCH"
+    | "SPANISH"
+    | "ITALIAN"
+    | "PORTUGUESE";
   order: number;
   cefrLevel: CefrLevel;
   mode?: "PHRASE" | "DIALOGUE" | "ROLEPLAY" | "STORY";

@@ -55,6 +55,9 @@ export default async function DashboardPage() {
   let english: StageView[] = [];
   let german: StageView[] = [];
   let french: StageView[] = [];
+  let spanish: StageView[] = [];
+  let italian: StageView[] = [];
+  let portuguese: StageView[] = [];
   let dbError: string | null = null;
   let stats = await getUserStats(user.id).catch(() => ({
     currentStreak: 0,
@@ -105,6 +108,12 @@ export default async function DashboardPage() {
     )) as StageView[];
     german = (await getStagesWithProgress(user.id, "GERMAN")) as StageView[];
     french = (await getStagesWithProgress(user.id, "FRENCH")) as StageView[];
+    spanish = (await getStagesWithProgress(user.id, "SPANISH")) as StageView[];
+    italian = (await getStagesWithProgress(user.id, "ITALIAN")) as StageView[];
+    portuguese = (await getStagesWithProgress(
+      user.id,
+      "PORTUGUESE"
+    )) as StageView[];
     stats = await getUserStats(user.id);
     daily = (await getDailyChallenge(user.id)) as DailyChallengeView | null;
     history = (await getRecentAttempts(user.id, 10)) as HistoryItem[];
@@ -132,9 +141,14 @@ export default async function DashboardPage() {
   }
 
   const recommendedStage = recommended[0];
-  const fallbackStage = [...english, ...german, ...french].find(
-    (stage) => stage.unlocked && !stage.isCompleted
-  );
+  const fallbackStage = [
+    ...english,
+    ...german,
+    ...french,
+    ...spanish,
+    ...italian,
+    ...portuguese,
+  ].find((stage) => stage.unlocked && !stage.isCompleted);
   const continueHref = recommendedStage
     ? `/learn/${recommendedStage.stageId}`
     : fallbackStage
@@ -146,6 +160,9 @@ export default async function DashboardPage() {
     ENGLISH: english,
     GERMAN: german,
     FRENCH: french,
+    SPANISH: spanish,
+    ITALIAN: italian,
+    PORTUGUESE: portuguese,
   };
 
   return (
@@ -199,7 +216,7 @@ export default async function DashboardPage() {
                 {locale === "id" ? "Lihat semua jalur" : "View all paths"}
               </NeoLink>
             </div>
-            <div className="grid gap-3 md:grid-cols-3">
+            <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6">
               {LANGUAGES.map((language) => {
                 const stages = languageStages[language];
                 const completedCount = stages.filter((stage) => stage.isCompleted).length;

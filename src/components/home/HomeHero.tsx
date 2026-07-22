@@ -16,7 +16,8 @@ import { HomeAvatar } from "@/components/vrm/HomeAvatar";
 
 const copy = {
   en: {
-    badge: "English · German · French · 3D AI tutor",
+    badge:
+      "English · German · French · Spanish · Italian · Portuguese · 3D AI tutor",
     hero: ["Speak.", "Get scored.", "Level up."],
     intro: "Short speaking drills with Ao, your virtual tutor. Hear a phrase, say it back, then get clear feedback on your pronunciation.",
     start: "Start learning",
@@ -70,7 +71,8 @@ const copy = {
     finalBody: "Start with a short speaking drill. Ao handles rest.",
   },
   id: {
-    badge: "English · German · French · Tutor AI 3D",
+    badge:
+      "English · German · French · Spanish · Italian · Portuguese · Tutor AI 3D",
     hero: ["Bicara.", "Dapat skor.", "Naik level."],
     intro: "Latihan bicara singkat bersama Ao, tutor virtualmu. Dengarkan frasa, ucapkan kembali, lalu dapatkan feedback pelafalan yang jelas.",
     start: "Lanjut belajar",
@@ -148,6 +150,9 @@ export function HomeHero({ authed }: { authed: boolean }) {
     ["EN", "English", "en"],
     ["DE", "German", "de"],
     ["FR", "French", "fr"],
+    ["ES", "Spanish", "es"],
+    ["IT", "Italian", "it"],
+    ["PT", "Portuguese", "pt"],
   ] as const;
 
   return (

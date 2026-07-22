@@ -39,11 +39,17 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "message required" }, { status: 400 });
 
     const language =
-      body.language === "French" || body.language === "fr"
-        ? ("French" as const)
-        : body.language === "German" || body.language === "de"
-          ? ("German" as const)
-          : ("English" as const);
+      body.language === "Portuguese" || body.language === "pt"
+        ? ("Portuguese" as const)
+        : body.language === "Italian" || body.language === "it"
+          ? ("Italian" as const)
+          : body.language === "Spanish" || body.language === "es"
+            ? ("Spanish" as const)
+            : body.language === "French" || body.language === "fr"
+              ? ("French" as const)
+              : body.language === "German" || body.language === "de"
+                ? ("German" as const)
+                : ("English" as const);
     const history = (
       Array.isArray(body.history) ? body.history : []
     ) as TalkTurn[];

@@ -19,7 +19,9 @@ type QuizItem = {
 };
 
 export default function CheckpointPage() {
-  const [lang, setLang] = useState<"en" | "de" | "fr">("en");
+  const [lang, setLang] = useState<"en" | "de" | "fr" | "es" | "it" | "pt">(
+    "en"
+  );
   const [units, setUnits] = useState<Unit[]>([]);
   const [quiz, setQuiz] = useState<QuizItem[] | null>(null);
   const [unitKey, setUnitKey] = useState<string | null>(null);
@@ -101,6 +103,9 @@ export default function CheckpointPage() {
             ["en", "EN"],
             ["de", "DE"],
             ["fr", "FR"],
+            ["es", "ES"],
+            ["it", "IT"],
+            ["pt", "PT"],
           ] as const
         ).map(([code, label]) => (
           <NeoButton

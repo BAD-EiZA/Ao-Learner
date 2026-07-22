@@ -142,11 +142,17 @@ export async function POST(req: Request) {
       mimeType: file.type || "audio/webm",
       expectedText,
       language:
-        stage.language === "FRENCH"
-          ? "French"
-          : stage.language === "GERMAN"
-            ? "German"
-            : "English",
+        stage.language === "PORTUGUESE"
+          ? "Portuguese"
+          : stage.language === "ITALIAN"
+            ? "Italian"
+            : stage.language === "SPANISH"
+              ? "Spanish"
+              : stage.language === "FRENCH"
+                ? "French"
+                : stage.language === "GERMAN"
+                  ? "German"
+                  : "English",
       feedbackLocale,
       hardMode: isHard,
     });

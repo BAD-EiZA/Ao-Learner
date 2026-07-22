@@ -5,7 +5,13 @@ import { GEMINI_MODEL } from "@/lib/constants";
 export type TalkTurn = { role: "user" | "tutor"; text: string };
 
 export async function aoConversation(params: {
-  language: "English" | "German" | "French";
+  language:
+    | "English"
+    | "German"
+    | "French"
+    | "Spanish"
+    | "Italian"
+    | "Portuguese";
   history: TalkTurn[];
   userMessage: string;
   level?: string;

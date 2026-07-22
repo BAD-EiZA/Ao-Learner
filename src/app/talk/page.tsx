@@ -34,9 +34,9 @@ async function readTalkJson(res: Response): Promise<Record<string, unknown>> {
 }
 
 export default function TalkPage() {
-  const [lang, setLang] = useState<"English" | "German" | "French">(
-    "English"
-  );
+  const [lang, setLang] = useState<
+    "English" | "German" | "French" | "Spanish" | "Italian" | "Portuguese"
+  >("English");
   const [history, setHistory] = useState<Turn[]>([]);
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
@@ -134,6 +134,9 @@ export default function TalkPage() {
               ["English", "EN"],
               ["German", "DE"],
               ["French", "FR"],
+              ["Spanish", "ES"],
+              ["Italian", "IT"],
+              ["Portuguese", "PT"],
             ] as const
           ).map(([value, short]) => (
             <NeoButton

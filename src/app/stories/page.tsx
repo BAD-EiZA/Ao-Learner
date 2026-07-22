@@ -52,7 +52,13 @@ export default async function StoriesPage() {
                         ? "EN"
                         : s.language === "GERMAN"
                           ? "DE"
-                          : "FR"}{" "}
+                          : s.language === "FRENCH"
+                            ? "FR"
+                            : s.language === "SPANISH"
+                              ? "ES"
+                              : s.language === "ITALIAN"
+                                ? "IT"
+                                : "PT"}{" "}
                       · {s.cefrLevel}
                       {turns ? ` · ${turns} lines` : ""}
                       {done ? " · done" : ""}

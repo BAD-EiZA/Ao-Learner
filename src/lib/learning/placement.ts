@@ -105,6 +105,111 @@ export const PLACEMENT_PROMPTS: Record<
       cefr: "C1",
     },
   ],
+  SPANISH: [
+    { expectedText: "Hola", meaningId: "Halo", cefr: "A1" },
+    {
+      expectedText: "Me llamo Alex",
+      meaningId: "Nama saya Alex",
+      cefr: "A1",
+    },
+    {
+      expectedText: "¿Dónde está el baño?",
+      meaningId: "Di mana kamar mandi?",
+      cefr: "A2",
+    },
+    {
+      expectedText: "Un café, por favor",
+      meaningId: "Satu kopi, tolong",
+      cefr: "A2",
+    },
+    {
+      expectedText: "Creo que deberíamos salir más temprano mañana",
+      meaningId: "Menurut saya kita harus berangkat lebih awal besok",
+      cefr: "B1",
+    },
+    {
+      expectedText: "Aunque fue difícil, logré terminar a tiempo",
+      meaningId: "Meski sulit, saya berhasil selesai tepat waktu",
+      cefr: "B2",
+    },
+    {
+      expectedText:
+        "Diría que una comunicación clara es esencial en el trabajo",
+      meaningId:
+        "Saya berpendapat komunikasi yang jelas penting di tempat kerja",
+      cefr: "C1",
+    },
+  ],
+  ITALIAN: [
+    { expectedText: "Ciao", meaningId: "Halo", cefr: "A1" },
+    {
+      expectedText: "Mi chiamo Alex",
+      meaningId: "Nama saya Alex",
+      cefr: "A1",
+    },
+    {
+      expectedText: "Dov'è il bagno?",
+      meaningId: "Di mana kamar mandi?",
+      cefr: "A2",
+    },
+    {
+      expectedText: "Un caffè, per favore",
+      meaningId: "Satu kopi, tolong",
+      cefr: "A2",
+    },
+    {
+      expectedText: "Penso che dovremmo partire prima domani",
+      meaningId: "Menurut saya kita harus berangkat lebih awal besok",
+      cefr: "B1",
+    },
+    {
+      expectedText: "Anche se è stato difficile, sono riuscito a finire in tempo",
+      meaningId: "Meski sulit, saya berhasil selesai tepat waktu",
+      cefr: "B2",
+    },
+    {
+      expectedText:
+        "Direi che una comunicazione chiara è essenziale sul lavoro",
+      meaningId:
+        "Saya berpendapat komunikasi yang jelas penting di tempat kerja",
+      cefr: "C1",
+    },
+  ],
+  PORTUGUESE: [
+    { expectedText: "Olá", meaningId: "Halo", cefr: "A1" },
+    {
+      expectedText: "Meu nome é Alex",
+      meaningId: "Nama saya Alex",
+      cefr: "A1",
+    },
+    {
+      expectedText: "Onde fica o banheiro?",
+      meaningId: "Di mana kamar mandi?",
+      cefr: "A2",
+    },
+    {
+      expectedText: "Um café, por favor",
+      meaningId: "Satu kopi, tolong",
+      cefr: "A2",
+    },
+    {
+      expectedText: "Acho que deveríamos sair mais cedo amanhã",
+      meaningId: "Menurut saya kita harus berangkat lebih awal besok",
+      cefr: "B1",
+    },
+    {
+      expectedText: "Embora tenha sido difícil, consegui terminar a tempo",
+      meaningId: "Meski sulit, saya berhasil selesai tepat waktu",
+      cefr: "B2",
+    },
+    {
+      expectedText:
+        "Eu diria que uma comunicação clara é essencial no trabalho",
+      meaningId:
+        "Saya berpendapat komunikasi yang jelas penting di tempat kerja",
+      cefr: "C1",
+    },
+  ],
 };
 
 export function computePlacementLevel(scores: number[]): CefrLevel {

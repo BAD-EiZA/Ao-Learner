@@ -57,16 +57,28 @@ async function ttsBuffer(
   text: string,
   language: string
 ): Promise<{ buffer: Buffer; mime: string } | null> {
-  const langHint = /french/i.test(language)
-    ? "French"
-    : /german/i.test(language)
-      ? "German"
-      : "English";
-  const languageCode = /french/i.test(language)
-    ? "fr-FR"
-    : /german/i.test(language)
-      ? "de-DE"
-      : "en-US";
+  const langHint = /portuguese/i.test(language)
+    ? "Portuguese"
+    : /italian/i.test(language)
+      ? "Italian"
+      : /spanish/i.test(language)
+        ? "Spanish"
+        : /french/i.test(language)
+          ? "French"
+          : /german/i.test(language)
+            ? "German"
+            : "English";
+  const languageCode = /portuguese/i.test(language)
+    ? "pt-BR"
+    : /italian/i.test(language)
+      ? "it-IT"
+      : /spanish/i.test(language)
+        ? "es-ES"
+        : /french/i.test(language)
+          ? "fr-FR"
+          : /german/i.test(language)
+            ? "de-DE"
+            : "en-US";
   const prompt = `Say clearly and naturally in ${langHint}, as a friendly language tutor demonstrating pronunciation for a beginner. Speak only this phrase, nothing else: ${text}`;
 
   let lastErr: unknown;
@@ -204,11 +216,17 @@ async function main() {
     }
 
     const lang =
-      stage.language === "FRENCH"
-        ? "French"
-        : stage.language === "GERMAN"
-          ? "German"
-          : "English";
+      stage.language === "PORTUGUESE"
+        ? "Portuguese"
+        : stage.language === "ITALIAN"
+          ? "Italian"
+          : stage.language === "SPANISH"
+            ? "Spanish"
+            : stage.language === "FRENCH"
+              ? "French"
+              : stage.language === "GERMAN"
+                ? "German"
+                : "English";
     process.stdout.write(
       `[${stage.language} #${stage.order}] ${stage.expectedText} … `
     );

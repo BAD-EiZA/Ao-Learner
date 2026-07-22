@@ -65,7 +65,13 @@ export default async function ScenariosPage() {
                             ? "EN"
                             : s.language === "GERMAN"
                               ? "DE"
-                              : "FR"}{" "}
+                              : s.language === "FRENCH"
+                                ? "FR"
+                                : s.language === "SPANISH"
+                                  ? "ES"
+                                  : s.language === "ITALIAN"
+                                    ? "IT"
+                                    : "PT"}{" "}
                           · {s.title}
                         </NeoLink>
                     ))}

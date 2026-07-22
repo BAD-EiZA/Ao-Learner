@@ -99,7 +99,7 @@ function createClient(pool: Pool) {
 }
 
 // Bump when UserStats schema fields change so HMR doesn't keep a stale client
-const PRISMA_CLIENT_REV = 3;
+const PRISMA_CLIENT_REV = 6;
 
 const pool = globalForPrisma.pgPool || createPool();
 const cached = globalForPrisma.prisma as

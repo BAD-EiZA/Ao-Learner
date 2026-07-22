@@ -14,7 +14,13 @@ export function StageList({
   language,
   stages,
 }: {
-  language: "ENGLISH" | "GERMAN" | "FRENCH";
+  language:
+    | "ENGLISH"
+    | "GERMAN"
+    | "FRENCH"
+    | "SPANISH"
+    | "ITALIAN"
+    | "PORTUGUESE";
   stages: StageView[];
 }) {
   const byLevel = CEFR_LEVELS.map((level) => ({
@@ -23,7 +29,17 @@ export function StageList({
   })).filter((g) => g.items.length > 0);
 
   const badgeTone =
-    language === "ENGLISH" ? "cyan" : language === "GERMAN" ? "orange" : "pink";
+    language === "ENGLISH"
+      ? "cyan"
+      : language === "GERMAN"
+        ? "orange"
+        : language === "FRENCH"
+          ? "pink"
+          : language === "SPANISH"
+            ? "lime"
+            : language === "ITALIAN"
+              ? "purple"
+              : "yellow";
 
   return (
     <section className="space-y-6">

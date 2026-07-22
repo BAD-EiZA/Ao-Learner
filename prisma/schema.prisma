@@ -292,6 +292,9 @@ enum Language {
   ENGLISH
   GERMAN
   FRENCH
+  SPANISH
+  ITALIAN
+  PORTUGUESE
 }
 
 enum StageMode {

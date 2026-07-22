@@ -43,22 +43,31 @@ function autoTags(row: Row): string[] {
   const t = row.expectedText.toLowerCase();
   const tags: string[] = [row.cefrLevel.toLowerCase()];
   if (
-    /hello|good morning|guten|tag|bye|wiedersehen|bonjour|bonsoir|au revoir/.test(
+    /hello|good morning|guten|tag|bye|wiedersehen|bonjour|bonsoir|au revoir|hola|buenos|adiós|ciao|buongiorno|arrivederci|olá|ola|bom dia|tchau|adeus/.test(
       t
     )
   )
     tags.push("greeting");
-  if (/thank|danke|welcome|bitte|merci|de rien|s'il vous plaît/.test(t))
-    tags.push("courtesy");
-  if (/name|heiße|meet|freut|je m'appelle|enchanté/.test(t)) tags.push("intro");
   if (
-    /bathroom|toilette|toilettes|where|wo ist|où|much|kostet|combien|coffee|kaffee|café/.test(
+    /thank|danke|welcome|bitte|merci|de rien|s'il vous plaît|gracias|de nada|por favor|grazie|prego|per favore|obrigad|de nada|por favor/.test(
+      t
+    )
+  )
+    tags.push("courtesy");
+  if (
+    /name|heiße|meet|freut|je m'appelle|enchanté|me llamo|mucho gusto|mi chiamo|piacere|meu nome|prazer/.test(
+      t
+    )
+  )
+    tags.push("intro");
+  if (
+    /bathroom|toilette|toilettes|baño|bagno|banheiro|where|wo ist|où|dónde|dov'è|onde|much|kostet|combien|cuánto|quanto|custa|coffee|kaffee|café|cafe|caffè/.test(
       t
     )
   )
     tags.push("everyday");
   if (
-    /help|helfen|aider|understand|verstehe|comprends|repeat|wiederholen|répéter/.test(
+    /help|helfen|aider|ayudar|aiutare|ajudar|understand|verstehe|comprends|entiendo|capisco|entendo|repeat|wiederholen|répéter|repetir|ripetere|repetir/.test(
       t
     )
   )
@@ -594,7 +603,13 @@ const GERMAN: Row[] = [
 const PLACEHOLDER_AUDIO = "/audio/placeholder.mp3";
 
 async function upsertStages(
-  language: "ENGLISH" | "GERMAN" | "FRENCH",
+  language:
+    | "ENGLISH"
+    | "GERMAN"
+    | "FRENCH"
+    | "SPANISH"
+    | "ITALIAN"
+    | "PORTUGUESE",
   rows: Row[]
 ) {
   // Remove obsolete higher-order stages if curriculum shrank/grew inconsistently
@@ -755,7 +770,13 @@ const ROLEPLAY_DE: Row[] = [
 ];
 
 async function upsertRoleplay(
-  language: "ENGLISH" | "GERMAN" | "FRENCH",
+  language:
+    | "ENGLISH"
+    | "GERMAN"
+    | "FRENCH"
+    | "SPANISH"
+    | "ITALIAN"
+    | "PORTUGUESE",
   rows: Row[]
 ) {
   for (const row of rows) {
@@ -935,7 +956,13 @@ const STORIES_DE: Row[] = [
 ];
 
 async function upsertStories(
-  language: "ENGLISH" | "GERMAN" | "FRENCH",
+  language:
+    | "ENGLISH"
+    | "GERMAN"
+    | "FRENCH"
+    | "SPANISH"
+    | "ITALIAN"
+    | "PORTUGUESE",
   rows: Row[]
 ) {
   for (const row of rows) {
@@ -1347,21 +1374,1150 @@ const STORIES_FR: Row[] = [
   },
 ];
 
+/** Spanish — CEFR speaking micro-lessons (aligned with EN/DE/FR path) */
+const SPANISH: Row[] = [
+  // —— A1 ——
+  {
+    order: 1,
+    cefrLevel: "A1",
+    title: "Hola",
+    description: "CEFR A1 · Saludar de forma simple.",
+    expectedText: "Hola",
+    meaningId: "Halo",
+  },
+  {
+    order: 2,
+    cefrLevel: "A1",
+    title: "Buenos días",
+    description: "CEFR A1 · Saludo de la mañana.",
+    expectedText: "Buenos días",
+    meaningId: "Selamat pagi",
+  },
+  {
+    order: 3,
+    cefrLevel: "A1",
+    title: "¿Cómo estás?",
+    description: "CEFR A1 · Preguntar cómo está alguien.",
+    expectedText: "¿Cómo estás?",
+    meaningId: "Apa kabar?",
+  },
+  {
+    order: 4,
+    cefrLevel: "A1",
+    title: "Estoy bien, gracias",
+    description: "CEFR A1 · Responder a un saludo.",
+    expectedText: "Estoy bien, gracias",
+    meaningId: "Saya baik-baik saja, terima kasih",
+  },
+  {
+    order: 5,
+    cefrLevel: "A1",
+    title: "Me llamo Alex",
+    description: "CEFR A1 · Presentarse.",
+    expectedText: "Me llamo Alex",
+    meaningId: "Nama saya Alex",
+  },
+  {
+    order: 6,
+    cefrLevel: "A1",
+    title: "Mucho gusto",
+    description: "CEFR A1 · Presentación educada.",
+    expectedText: "Mucho gusto",
+    meaningId: "Senang bertemu denganmu",
+  },
+  {
+    order: 7,
+    cefrLevel: "A1",
+    title: "Gracias",
+    description: "CEFR A1 · Dar las gracias.",
+    expectedText: "Gracias",
+    meaningId: "Terima kasih",
+  },
+  {
+    order: 8,
+    cefrLevel: "A1",
+    title: "De nada",
+    description: "CEFR A1 · Responder a un gracias.",
+    expectedText: "De nada",
+    meaningId: "Sama-sama",
+  },
+  {
+    order: 9,
+    cefrLevel: "A1",
+    title: "Perdón",
+    description: "CEFR A1 · Llamar la atención con cortesía.",
+    expectedText: "Perdón",
+    meaningId: "Permisi",
+  },
+  {
+    order: 10,
+    cefrLevel: "A1",
+    title: "Lo siento",
+    description: "CEFR A1 · Disculparse de forma simple.",
+    expectedText: "Lo siento",
+    meaningId: "Maaf",
+  },
+  {
+    order: 11,
+    cefrLevel: "A1",
+    title: "Adiós",
+    description: "CEFR A1 · Despedirse.",
+    expectedText: "Adiós",
+    meaningId: "Selamat tinggal",
+  },
+  // —— A2 ——
+  {
+    order: 12,
+    cefrLevel: "A2",
+    title: "¿Dónde está el baño?",
+    description: "CEFR A2 · Preguntar por un lugar.",
+    expectedText: "¿Dónde está el baño?",
+    meaningId: "Di mana kamar mandi?",
+  },
+  {
+    order: 13,
+    cefrLevel: "A2",
+    title: "¿Cuánto cuesta esto?",
+    description: "CEFR A2 · Preguntar el precio.",
+    expectedText: "¿Cuánto cuesta esto?",
+    meaningId: "Berapa harganya?",
+  },
+  {
+    order: 14,
+    cefrLevel: "A2",
+    title: "No entiendo",
+    description: "CEFR A2 · Señalar una dificultad.",
+    expectedText: "No entiendo",
+    meaningId: "Saya tidak mengerti",
+  },
+  {
+    order: 15,
+    cefrLevel: "A2",
+    title: "¿Me puede ayudar?",
+    description: "CEFR A2 · Pedir ayuda.",
+    expectedText: "¿Me puede ayudar?",
+    meaningId: "Bisakah Anda membantu saya?",
+  },
+  {
+    order: 16,
+    cefrLevel: "A2",
+    title: "Un café, por favor",
+    description: "CEFR A2 · Pedir una bebida.",
+    expectedText: "Un café, por favor",
+    meaningId: "Saya mau kopi, tolong",
+  },
+  {
+    order: 17,
+    cefrLevel: "A2",
+    title: "¿Puede repetir, por favor?",
+    description: "CEFR A2 · Pedir que repitan.",
+    expectedText: "¿Puede repetir, por favor?",
+    meaningId: "Bisa ulangi lagi?",
+  },
+  // —— B1 ——
+  {
+    order: 18,
+    cefrLevel: "B1",
+    title: "Creo que deberíamos salir más temprano",
+    description: "CEFR B1 · Sugerir un plan con cortesía.",
+    expectedText: "Creo que deberíamos salir más temprano mañana",
+    meaningId: "Menurut saya kita harus berangkat lebih awal besok",
+  },
+  {
+    order: 19,
+    cefrLevel: "B1",
+    title: "En mi opinión",
+    description: "CEFR B1 · Dar una opinión simple.",
+    expectedText: "En mi opinión, es una buena idea",
+    meaningId: "Menurut pendapat saya, ini ide bagus",
+  },
+  {
+    order: 20,
+    cefrLevel: "B1",
+    title: "Tengo ganas de",
+    description: "CEFR B1 · Expresar anticipación.",
+    expectedText: "Tengo ganas de que llegue el fin de semana",
+    meaningId: "Saya menantikan akhir pekan",
+  },
+  {
+    order: 21,
+    cefrLevel: "B1",
+    title: "Conocer a alguien",
+    description: "CEFR B1 · Diálogo de presentación (3 turnos).",
+    expectedText: "Hola",
+    meaningId: "Dialog perkenalan singkat",
+    mode: "DIALOGUE",
+    turns: [
+      {
+        prompt: "Salúdalos:",
+        expectedText: "Hola",
+        meaningId: "Halo",
+      },
+      {
+        prompt: "Pregunta cómo están:",
+        expectedText: "¿Cómo estás?",
+        meaningId: "Apa kabar?",
+      },
+      {
+        prompt: "Preséntate:",
+        expectedText: "Me llamo Alex",
+        meaningId: "Nama saya Alex",
+      },
+    ],
+  },
+  // —— B2 ——
+  {
+    order: 22,
+    cefrLevel: "B2",
+    title: "Aunque fue difícil",
+    description: "CEFR B2 · Contraste con aunque.",
+    expectedText: "Aunque fue difícil, logré terminar a tiempo",
+    meaningId: "Meski sulit, saya berhasil selesai tepat waktu",
+  },
+  {
+    order: 23,
+    cefrLevel: "B2",
+    title: "La razón principal",
+    description: "CEFR B2 · Explicar una razón con claridad.",
+    expectedText: "La razón principal es que necesitamos más práctica",
+    meaningId: "Alasan utamanya adalah kita butuh lebih banyak latihan",
+  },
+  {
+    order: 24,
+    cefrLevel: "B2",
+    title: "Por otro lado",
+    description: "CEFR B2 · Presentar un contrapunto.",
+    expectedText: "Por otro lado, podría ahorrarnos mucho tiempo",
+    meaningId: "Di sisi lain, ini bisa menghemat banyak waktu",
+  },
+  {
+    order: 25,
+    cefrLevel: "B2",
+    title: "Preferiría esperar",
+    description: "CEFR B2 · Preferencia / rechazo suave.",
+    expectedText: "Preferiría esperar hasta tener más información",
+    meaningId: "Saya lebih baik menunggu sampai ada info lebih",
+  },
+  // —— C1 ——
+  {
+    order: 26,
+    cefrLevel: "C1",
+    title: "Diría que",
+    description: "CEFR C1 · Abrir un argumento estructurado.",
+    expectedText:
+      "Diría que una comunicación clara es esencial en el trabajo",
+    meaningId:
+      "Saya berpendapat komunikasi yang jelas penting di tempat kerja",
+  },
+  {
+    order: 27,
+    cefrLevel: "C1",
+    title: "Dicho de otro modo",
+    description: "CEFR C1 · Reformular con precisión.",
+    expectedText: "Dicho de otro modo, necesitamos un enfoque más sostenible",
+    meaningId: "Dengan kata lain, kita butuh pendekatan yang lebih berkelanjutan",
+  },
+  {
+    order: 28,
+    cefrLevel: "C1",
+    title: "Dicho esto",
+    description: "CEFR C1 · Concesión + contraste.",
+    expectedText: "Dicho esto, todavía hay algunos riesgos",
+    meaningId: "Meski begitu, masih ada beberapa risiko",
+  },
+  {
+    order: 29,
+    cefrLevel: "C1",
+    title: "Vale la pena considerar",
+    description: "CEFR C1 · Recomendación matizada.",
+    expectedText: "Vale la pena considerar las implicaciones a largo plazo",
+    meaningId: "Perlu dipertimbangkan implikasi jangka panjangnya",
+  },
+];
+
+const ROLEPLAY_ES: Row[] = [
+  {
+    order: 100,
+    cefrLevel: "A2",
+    title: "Café · Pedir",
+    description: "Juego de rol: pedir un café con cortesía.",
+    expectedText: "Un café, por favor",
+    meaningId: "Skenario kafe — pesan kopi",
+    mode: "ROLEPLAY",
+    tags: ["everyday", "roleplay", "cafe"],
+    turns: [
+      {
+        prompt: "Saluda al camarero:",
+        expectedText: "Hola",
+        meaningId: "Halo",
+      },
+      {
+        prompt: "Pide un café:",
+        expectedText: "Un café, por favor",
+        meaningId: "Saya mau kopi, tolong",
+      },
+      {
+        prompt: "Da las gracias:",
+        expectedText: "Gracias",
+        meaningId: "Terima kasih",
+      },
+    ],
+  },
+  {
+    order: 101,
+    cefrLevel: "A2",
+    title: "Madrid · Direcciones",
+    description: "Juego de rol: preguntar por el baño.",
+    expectedText: "¿Dónde está el baño?",
+    meaningId: "Skenario Madrid — minta arah",
+    mode: "ROLEPLAY",
+    tags: ["everyday", "roleplay", "madrid"],
+    turns: [
+      {
+        prompt: "Llama la atención:",
+        expectedText: "Perdón",
+        meaningId: "Permisi",
+      },
+      {
+        prompt: "Pregunta por el baño:",
+        expectedText: "¿Dónde está el baño?",
+        meaningId: "Di mana kamar mandi?",
+      },
+      {
+        prompt: "Da las gracias:",
+        expectedText: "Gracias",
+        meaningId: "Terima kasih",
+      },
+    ],
+  },
+];
+
+const STORIES_ES: Row[] = [
+  {
+    order: 200,
+    cefrLevel: "A1",
+    title: "Mañana · Encontrar a un amigo",
+    description: "Historia A1 · Saludar, preguntar cómo está, despedirse.",
+    expectedText: "Hola",
+    meaningId: "Cerita pagi — sapa teman",
+    tags: ["story", "a1"],
+    turns: [
+      {
+        prompt: "Saluda a tu amigo:",
+        expectedText: "Hola",
+        meaningId: "Halo",
+      },
+      {
+        prompt: "Pregunta cómo está:",
+        expectedText: "¿Cómo estás?",
+        meaningId: "Apa kabar?",
+      },
+      {
+        prompt: "Despídete:",
+        expectedText: "Adiós",
+        meaningId: "Selamat tinggal",
+      },
+    ],
+  },
+  {
+    order: 201,
+    cefrLevel: "A2",
+    title: "Tienda · Comprar algo",
+    description: "Historia A2 · Precio, pedido, agradecimiento.",
+    expectedText: "¿Cuánto cuesta esto?",
+    meaningId: "Cerita toko — beli sesuatu",
+    tags: ["story", "a2"],
+    turns: [
+      {
+        prompt: "Pregunta el precio:",
+        expectedText: "¿Cuánto cuesta esto?",
+        meaningId: "Berapa harganya?",
+      },
+      {
+        prompt: "Pide un café:",
+        expectedText: "Un café, por favor",
+        meaningId: "Saya mau kopi, tolong",
+      },
+      {
+        prompt: "Da las gracias:",
+        expectedText: "Gracias",
+        meaningId: "Terima kasih",
+      },
+    ],
+  },
+];
+
+/** Italian — CEFR speaking micro-lessons (aligned with EN/DE/FR/ES path) */
+const ITALIAN: Row[] = [
+  // —— A1 ——
+  {
+    order: 1,
+    cefrLevel: "A1",
+    title: "Ciao",
+    description: "CEFR A1 · Salutare in modo semplice.",
+    expectedText: "Ciao",
+    meaningId: "Halo",
+  },
+  {
+    order: 2,
+    cefrLevel: "A1",
+    title: "Buongiorno",
+    description: "CEFR A1 · Saluto del mattino.",
+    expectedText: "Buongiorno",
+    meaningId: "Selamat pagi",
+  },
+  {
+    order: 3,
+    cefrLevel: "A1",
+    title: "Come stai?",
+    description: "CEFR A1 · Chiedere come sta qualcuno.",
+    expectedText: "Come stai?",
+    meaningId: "Apa kabar?",
+  },
+  {
+    order: 4,
+    cefrLevel: "A1",
+    title: "Sto bene, grazie",
+    description: "CEFR A1 · Rispondere a un saluto.",
+    expectedText: "Sto bene, grazie",
+    meaningId: "Saya baik-baik saja, terima kasih",
+  },
+  {
+    order: 5,
+    cefrLevel: "A1",
+    title: "Mi chiamo Alex",
+    description: "CEFR A1 · Presentarsi.",
+    expectedText: "Mi chiamo Alex",
+    meaningId: "Nama saya Alex",
+  },
+  {
+    order: 6,
+    cefrLevel: "A1",
+    title: "Piacere",
+    description: "CEFR A1 · Presentazione educata.",
+    expectedText: "Piacere",
+    meaningId: "Senang bertemu denganmu",
+  },
+  {
+    order: 7,
+    cefrLevel: "A1",
+    title: "Grazie",
+    description: "CEFR A1 · Ringraziare.",
+    expectedText: "Grazie",
+    meaningId: "Terima kasih",
+  },
+  {
+    order: 8,
+    cefrLevel: "A1",
+    title: "Prego",
+    description: "CEFR A1 · Rispondere a un grazie.",
+    expectedText: "Prego",
+    meaningId: "Sama-sama",
+  },
+  {
+    order: 9,
+    cefrLevel: "A1",
+    title: "Scusi",
+    description: "CEFR A1 · Attirare l'attenzione con cortesia.",
+    expectedText: "Scusi",
+    meaningId: "Permisi",
+  },
+  {
+    order: 10,
+    cefrLevel: "A1",
+    title: "Mi dispiace",
+    description: "CEFR A1 · Scusarsi in modo semplice.",
+    expectedText: "Mi dispiace",
+    meaningId: "Maaf",
+  },
+  {
+    order: 11,
+    cefrLevel: "A1",
+    title: "Arrivederci",
+    description: "CEFR A1 · Salutare in partenza.",
+    expectedText: "Arrivederci",
+    meaningId: "Selamat tinggal",
+  },
+  // —— A2 ——
+  {
+    order: 12,
+    cefrLevel: "A2",
+    title: "Dov'è il bagno?",
+    description: "CEFR A2 · Chiedere un luogo.",
+    expectedText: "Dov'è il bagno?",
+    meaningId: "Di mana kamar mandi?",
+  },
+  {
+    order: 13,
+    cefrLevel: "A2",
+    title: "Quanto costa questo?",
+    description: "CEFR A2 · Chiedere il prezzo.",
+    expectedText: "Quanto costa questo?",
+    meaningId: "Berapa harganya?",
+  },
+  {
+    order: 14,
+    cefrLevel: "A2",
+    title: "Non capisco",
+    description: "CEFR A2 · Segnalare una difficoltà.",
+    expectedText: "Non capisco",
+    meaningId: "Saya tidak mengerti",
+  },
+  {
+    order: 15,
+    cefrLevel: "A2",
+    title: "Può aiutarmi?",
+    description: "CEFR A2 · Chiedere aiuto.",
+    expectedText: "Può aiutarmi?",
+    meaningId: "Bisakah Anda membantu saya?",
+  },
+  {
+    order: 16,
+    cefrLevel: "A2",
+    title: "Un caffè, per favore",
+    description: "CEFR A2 · Ordinare una bevanda.",
+    expectedText: "Un caffè, per favore",
+    meaningId: "Saya mau kopi, tolong",
+  },
+  {
+    order: 17,
+    cefrLevel: "A2",
+    title: "Può ripetere, per favore?",
+    description: "CEFR A2 · Chiedere di ripetere.",
+    expectedText: "Può ripetere, per favore?",
+    meaningId: "Bisa ulangi lagi?",
+  },
+  // —— B1 ——
+  {
+    order: 18,
+    cefrLevel: "B1",
+    title: "Penso che dovremmo partire prima",
+    description: "CEFR B1 · Suggerire un piano con cortesia.",
+    expectedText: "Penso che dovremmo partire prima domani",
+    meaningId: "Menurut saya kita harus berangkat lebih awal besok",
+  },
+  {
+    order: 19,
+    cefrLevel: "B1",
+    title: "Secondo me",
+    description: "CEFR B1 · Dare un'opinione semplice.",
+    expectedText: "Secondo me è una buona idea",
+    meaningId: "Menurut pendapat saya, ini ide bagus",
+  },
+  {
+    order: 20,
+    cefrLevel: "B1",
+    title: "Non vedo l'ora",
+    description: "CEFR B1 · Esprimere anticipazione.",
+    expectedText: "Non vedo l'ora che arrivi il weekend",
+    meaningId: "Saya menantikan akhir pekan",
+  },
+  {
+    order: 21,
+    cefrLevel: "B1",
+    title: "Conoscere qualcuno",
+    description: "CEFR B1 · Dialogo di presentazione (3 turni).",
+    expectedText: "Ciao",
+    meaningId: "Dialog perkenalan singkat",
+    mode: "DIALOGUE",
+    turns: [
+      {
+        prompt: "Salutali:",
+        expectedText: "Ciao",
+        meaningId: "Halo",
+      },
+      {
+        prompt: "Chiedi come stanno:",
+        expectedText: "Come stai?",
+        meaningId: "Apa kabar?",
+      },
+      {
+        prompt: "Presentati:",
+        expectedText: "Mi chiamo Alex",
+        meaningId: "Nama saya Alex",
+      },
+    ],
+  },
+  // —— B2 ——
+  {
+    order: 22,
+    cefrLevel: "B2",
+    title: "Anche se è stato difficile",
+    description: "CEFR B2 · Contrasto con anche se.",
+    expectedText: "Anche se è stato difficile, sono riuscito a finire in tempo",
+    meaningId: "Meski sulit, saya berhasil selesai tepat waktu",
+  },
+  {
+    order: 23,
+    cefrLevel: "B2",
+    title: "Il motivo principale",
+    description: "CEFR B2 · Spiegare una ragione con chiarezza.",
+    expectedText: "Il motivo principale è che abbiamo bisogno di più pratica",
+    meaningId: "Alasan utamanya adalah kita butuh lebih banyak latihan",
+  },
+  {
+    order: 24,
+    cefrLevel: "B2",
+    title: "D'altra parte",
+    description: "CEFR B2 · Presentare un contrapunto.",
+    expectedText: "D'altra parte, potrebbe farci risparmiare molto tempo",
+    meaningId: "Di sisi lain, ini bisa menghemat banyak waktu",
+  },
+  {
+    order: 25,
+    cefrLevel: "B2",
+    title: "Preferirei aspettare",
+    description: "CEFR B2 · Preferenza / rifiuto morbido.",
+    expectedText: "Preferirei aspettare di avere più informazioni",
+    meaningId: "Saya lebih baik menunggu sampai ada info lebih",
+  },
+  // —— C1 ——
+  {
+    order: 26,
+    cefrLevel: "C1",
+    title: "Direi che",
+    description: "CEFR C1 · Aprire un argomento strutturato.",
+    expectedText:
+      "Direi che una comunicazione chiara è essenziale sul lavoro",
+    meaningId:
+      "Saya berpendapat komunikasi yang jelas penting di tempat kerja",
+  },
+  {
+    order: 27,
+    cefrLevel: "C1",
+    title: "In altre parole",
+    description: "CEFR C1 · Riformulare con precisione.",
+    expectedText: "In altre parole, abbiamo bisogno di un approccio più sostenibile",
+    meaningId: "Dengan kata lain, kita butuh pendekatan yang lebih berkelanjutan",
+  },
+  {
+    order: 28,
+    cefrLevel: "C1",
+    title: "Detto questo",
+    description: "CEFR C1 · Concessione + contrasto.",
+    expectedText: "Detto questo, ci sono ancora alcuni rischi",
+    meaningId: "Meski begitu, masih ada beberapa risiko",
+  },
+  {
+    order: 29,
+    cefrLevel: "C1",
+    title: "Vale la pena considerare",
+    description: "CEFR C1 · Raccomandazione sfumata.",
+    expectedText: "Vale la pena considerare le implicazioni a lungo termine",
+    meaningId: "Perlu dipertimbangkan implikasi jangka panjangnya",
+  },
+];
+
+const ROLEPLAY_IT: Row[] = [
+  {
+    order: 100,
+    cefrLevel: "A2",
+    title: "Caffè · Ordinare",
+    description: "Gioco di ruolo: ordinare un caffè con cortesia.",
+    expectedText: "Un caffè, per favore",
+    meaningId: "Skenario kafe — pesan kopi",
+    mode: "ROLEPLAY",
+    tags: ["everyday", "roleplay", "cafe"],
+    turns: [
+      {
+        prompt: "Saluta il cameriere:",
+        expectedText: "Buongiorno",
+        meaningId: "Halo",
+      },
+      {
+        prompt: "Ordina un caffè:",
+        expectedText: "Un caffè, per favore",
+        meaningId: "Saya mau kopi, tolong",
+      },
+      {
+        prompt: "Ringrazia:",
+        expectedText: "Grazie",
+        meaningId: "Terima kasih",
+      },
+    ],
+  },
+  {
+    order: 101,
+    cefrLevel: "A2",
+    title: "Roma · Indicazioni",
+    description: "Gioco di ruolo: chiedere il bagno.",
+    expectedText: "Dov'è il bagno?",
+    meaningId: "Skenario Roma — minta arah",
+    mode: "ROLEPLAY",
+    tags: ["everyday", "roleplay", "roma"],
+    turns: [
+      {
+        prompt: "Attira l'attenzione:",
+        expectedText: "Scusi",
+        meaningId: "Permisi",
+      },
+      {
+        prompt: "Chiedi il bagno:",
+        expectedText: "Dov'è il bagno?",
+        meaningId: "Di mana kamar mandi?",
+      },
+      {
+        prompt: "Ringrazia:",
+        expectedText: "Grazie",
+        meaningId: "Terima kasih",
+      },
+    ],
+  },
+];
+
+const STORIES_IT: Row[] = [
+  {
+    order: 200,
+    cefrLevel: "A1",
+    title: "Mattina · Incontrare un amico",
+    description: "Storia A1 · Salutare, chiedere come sta, salutare in partenza.",
+    expectedText: "Ciao",
+    meaningId: "Cerita pagi — sapa teman",
+    tags: ["story", "a1"],
+    turns: [
+      {
+        prompt: "Saluta il tuo amico:",
+        expectedText: "Ciao",
+        meaningId: "Halo",
+      },
+      {
+        prompt: "Chiedi come sta:",
+        expectedText: "Come stai?",
+        meaningId: "Apa kabar?",
+      },
+      {
+        prompt: "Saluta in partenza:",
+        expectedText: "Arrivederci",
+        meaningId: "Selamat tinggal",
+      },
+    ],
+  },
+  {
+    order: 201,
+    cefrLevel: "A2",
+    title: "Negozio · Comprare qualcosa",
+    description: "Storia A2 · Prezzo, ordine, ringraziamento.",
+    expectedText: "Quanto costa questo?",
+    meaningId: "Cerita toko — beli sesuatu",
+    tags: ["story", "a2"],
+    turns: [
+      {
+        prompt: "Chiedi il prezzo:",
+        expectedText: "Quanto costa questo?",
+        meaningId: "Berapa harganya?",
+      },
+      {
+        prompt: "Ordina un caffè:",
+        expectedText: "Un caffè, per favore",
+        meaningId: "Saya mau kopi, tolong",
+      },
+      {
+        prompt: "Ringrazia:",
+        expectedText: "Grazie",
+        meaningId: "Terima kasih",
+      },
+    ],
+  },
+];
+
+/** Portuguese (BR) — CEFR speaking micro-lessons */
+const PORTUGUESE: Row[] = [
+  // —— A1 ——
+  {
+    order: 1,
+    cefrLevel: "A1",
+    title: "Olá",
+    description: "CEFR A1 · Cumprimentar de forma simples.",
+    expectedText: "Olá",
+    meaningId: "Halo",
+  },
+  {
+    order: 2,
+    cefrLevel: "A1",
+    title: "Bom dia",
+    description: "CEFR A1 · Saudação da manhã.",
+    expectedText: "Bom dia",
+    meaningId: "Selamat pagi",
+  },
+  {
+    order: 3,
+    cefrLevel: "A1",
+    title: "Como vai?",
+    description: "CEFR A1 · Perguntar como alguém está.",
+    expectedText: "Como vai?",
+    meaningId: "Apa kabar?",
+  },
+  {
+    order: 4,
+    cefrLevel: "A1",
+    title: "Estou bem, obrigado",
+    description: "CEFR A1 · Responder a um cumprimento.",
+    expectedText: "Estou bem, obrigado",
+    meaningId: "Saya baik-baik saja, terima kasih",
+  },
+  {
+    order: 5,
+    cefrLevel: "A1",
+    title: "Meu nome é Alex",
+    description: "CEFR A1 · Apresentar-se.",
+    expectedText: "Meu nome é Alex",
+    meaningId: "Nama saya Alex",
+  },
+  {
+    order: 6,
+    cefrLevel: "A1",
+    title: "Prazer em conhecê-lo",
+    description: "CEFR A1 · Apresentação educada.",
+    expectedText: "Prazer em conhecê-lo",
+    meaningId: "Senang bertemu denganmu",
+  },
+  {
+    order: 7,
+    cefrLevel: "A1",
+    title: "Obrigado",
+    description: "CEFR A1 · Agradecer.",
+    expectedText: "Obrigado",
+    meaningId: "Terima kasih",
+  },
+  {
+    order: 8,
+    cefrLevel: "A1",
+    title: "De nada",
+    description: "CEFR A1 · Responder a um obrigado.",
+    expectedText: "De nada",
+    meaningId: "Sama-sama",
+  },
+  {
+    order: 9,
+    cefrLevel: "A1",
+    title: "Com licença",
+    description: "CEFR A1 · Chamar atenção com educação.",
+    expectedText: "Com licença",
+    meaningId: "Permisi",
+  },
+  {
+    order: 10,
+    cefrLevel: "A1",
+    title: "Desculpe",
+    description: "CEFR A1 · Pedir desculpas de forma simples.",
+    expectedText: "Desculpe",
+    meaningId: "Maaf",
+  },
+  {
+    order: 11,
+    cefrLevel: "A1",
+    title: "Tchau",
+    description: "CEFR A1 · Despedir-se.",
+    expectedText: "Tchau",
+    meaningId: "Selamat tinggal",
+  },
+  // —— A2 ——
+  {
+    order: 12,
+    cefrLevel: "A2",
+    title: "Onde fica o banheiro?",
+    description: "CEFR A2 · Perguntar por um lugar.",
+    expectedText: "Onde fica o banheiro?",
+    meaningId: "Di mana kamar mandi?",
+  },
+  {
+    order: 13,
+    cefrLevel: "A2",
+    title: "Quanto custa isto?",
+    description: "CEFR A2 · Perguntar o preço.",
+    expectedText: "Quanto custa isto?",
+    meaningId: "Berapa harganya?",
+  },
+  {
+    order: 14,
+    cefrLevel: "A2",
+    title: "Não entendo",
+    description: "CEFR A2 · Sinalizar dificuldade.",
+    expectedText: "Não entendo",
+    meaningId: "Saya tidak mengerti",
+  },
+  {
+    order: 15,
+    cefrLevel: "A2",
+    title: "Pode me ajudar?",
+    description: "CEFR A2 · Pedir ajuda.",
+    expectedText: "Pode me ajudar?",
+    meaningId: "Bisakah Anda membantu saya?",
+  },
+  {
+    order: 16,
+    cefrLevel: "A2",
+    title: "Um café, por favor",
+    description: "CEFR A2 · Pedir uma bebida.",
+    expectedText: "Um café, por favor",
+    meaningId: "Saya mau kopi, tolong",
+  },
+  {
+    order: 17,
+    cefrLevel: "A2",
+    title: "Pode repetir, por favor?",
+    description: "CEFR A2 · Pedir para repetir.",
+    expectedText: "Pode repetir, por favor?",
+    meaningId: "Bisa ulangi lagi?",
+  },
+  // —— B1 ——
+  {
+    order: 18,
+    cefrLevel: "B1",
+    title: "Acho que deveríamos sair mais cedo",
+    description: "CEFR B1 · Sugerir um plano com educação.",
+    expectedText: "Acho que deveríamos sair mais cedo amanhã",
+    meaningId: "Menurut saya kita harus berangkat lebih awal besok",
+  },
+  {
+    order: 19,
+    cefrLevel: "B1",
+    title: "Na minha opinião",
+    description: "CEFR B1 · Dar uma opinião simples.",
+    expectedText: "Na minha opinião, é uma boa ideia",
+    meaningId: "Menurut pendapat saya, ini ide bagus",
+  },
+  {
+    order: 20,
+    cefrLevel: "B1",
+    title: "Estou ansioso pelo fim de semana",
+    description: "CEFR B1 · Expressar antecipação.",
+    expectedText: "Estou ansioso pelo fim de semana",
+    meaningId: "Saya menantikan akhir pekan",
+  },
+  {
+    order: 21,
+    cefrLevel: "B1",
+    title: "Conhecer alguém",
+    description: "CEFR B1 · Diálogo de apresentação (3 turnos).",
+    expectedText: "Olá",
+    meaningId: "Dialog perkenalan singkat",
+    mode: "DIALOGUE",
+    turns: [
+      {
+        prompt: "Cumprimente-os:",
+        expectedText: "Olá",
+        meaningId: "Halo",
+      },
+      {
+        prompt: "Pergunte como estão:",
+        expectedText: "Como vai?",
+        meaningId: "Apa kabar?",
+      },
+      {
+        prompt: "Apresente-se:",
+        expectedText: "Meu nome é Alex",
+        meaningId: "Nama saya Alex",
+      },
+    ],
+  },
+  // —— B2 ——
+  {
+    order: 22,
+    cefrLevel: "B2",
+    title: "Embora tenha sido difícil",
+    description: "CEFR B2 · Contraste com embora.",
+    expectedText: "Embora tenha sido difícil, consegui terminar a tempo",
+    meaningId: "Meski sulit, saya berhasil selesai tepat waktu",
+  },
+  {
+    order: 23,
+    cefrLevel: "B2",
+    title: "O principal motivo",
+    description: "CEFR B2 · Explicar um motivo com clareza.",
+    expectedText: "O principal motivo é que precisamos de mais prática",
+    meaningId: "Alasan utamanya adalah kita butuh lebih banyak latihan",
+  },
+  {
+    order: 24,
+    cefrLevel: "B2",
+    title: "Por outro lado",
+    description: "CEFR B2 · Apresentar um contraponto.",
+    expectedText: "Por outro lado, isso poderia nos poupar muito tempo",
+    meaningId: "Di sisi lain, ini bisa menghemat banyak waktu",
+  },
+  {
+    order: 25,
+    cefrLevel: "B2",
+    title: "Preferiria esperar",
+    description: "CEFR B2 · Preferência / recusa suave.",
+    expectedText: "Preferiria esperar até termos mais informações",
+    meaningId: "Saya lebih baik menunggu sampai ada info lebih",
+  },
+  // —— C1 ——
+  {
+    order: 26,
+    cefrLevel: "C1",
+    title: "Eu diria que",
+    description: "CEFR C1 · Abrir um argumento estruturado.",
+    expectedText:
+      "Eu diria que uma comunicação clara é essencial no trabalho",
+    meaningId:
+      "Saya berpendapat komunikasi yang jelas penting di tempat kerja",
+  },
+  {
+    order: 27,
+    cefrLevel: "C1",
+    title: "Em outras palavras",
+    description: "CEFR C1 · Reformular com precisão.",
+    expectedText:
+      "Em outras palavras, precisamos de uma abordagem mais sustentável",
+    meaningId: "Dengan kata lain, kita butuh pendekatan yang lebih berkelanjutan",
+  },
+  {
+    order: 28,
+    cefrLevel: "C1",
+    title: "Dito isso",
+    description: "CEFR C1 · Concessão + contraste.",
+    expectedText: "Dito isso, ainda existem alguns riscos",
+    meaningId: "Meski begitu, masih ada beberapa risiko",
+  },
+  {
+    order: 29,
+    cefrLevel: "C1",
+    title: "Vale a pena considerar",
+    description: "CEFR C1 · Recomendação matizada.",
+    expectedText: "Vale a pena considerar as implicações a longo prazo",
+    meaningId: "Perlu dipertimbangkan implikasi jangka panjangnya",
+  },
+];
+
+const ROLEPLAY_PT: Row[] = [
+  {
+    order: 100,
+    cefrLevel: "A2",
+    title: "Café · Pedir",
+    description: "Role-play: pedir um café com educação.",
+    expectedText: "Um café, por favor",
+    meaningId: "Skenario kafe — pesan kopi",
+    mode: "ROLEPLAY",
+    tags: ["everyday", "roleplay", "cafe"],
+    turns: [
+      {
+        prompt: "Cumprimente o atendente:",
+        expectedText: "Olá",
+        meaningId: "Halo",
+      },
+      {
+        prompt: "Peça um café:",
+        expectedText: "Um café, por favor",
+        meaningId: "Saya mau kopi, tolong",
+      },
+      {
+        prompt: "Agradeça:",
+        expectedText: "Obrigado",
+        meaningId: "Terima kasih",
+      },
+    ],
+  },
+  {
+    order: 101,
+    cefrLevel: "A2",
+    title: "São Paulo · Direções",
+    description: "Role-play: perguntar onde fica o banheiro.",
+    expectedText: "Onde fica o banheiro?",
+    meaningId: "Skenario São Paulo — minta arah",
+    mode: "ROLEPLAY",
+    tags: ["everyday", "roleplay", "saopaulo"],
+    turns: [
+      {
+        prompt: "Chame atenção:",
+        expectedText: "Com licença",
+        meaningId: "Permisi",
+      },
+      {
+        prompt: "Pergunte o banheiro:",
+        expectedText: "Onde fica o banheiro?",
+        meaningId: "Di mana kamar mandi?",
+      },
+      {
+        prompt: "Agradeça:",
+        expectedText: "Obrigado",
+        meaningId: "Terima kasih",
+      },
+    ],
+  },
+];
+
+const STORIES_PT: Row[] = [
+  {
+    order: 200,
+    cefrLevel: "A1",
+    title: "Manhã · Encontrar um amigo",
+    description: "História A1 · Cumprimentar, perguntar como vai, despedir-se.",
+    expectedText: "Olá",
+    meaningId: "Cerita pagi — sapa teman",
+    tags: ["story", "a1"],
+    turns: [
+      {
+        prompt: "Cumprimente seu amigo:",
+        expectedText: "Olá",
+        meaningId: "Halo",
+      },
+      {
+        prompt: "Pergunte como vai:",
+        expectedText: "Como vai?",
+        meaningId: "Apa kabar?",
+      },
+      {
+        prompt: "Despeça-se:",
+        expectedText: "Tchau",
+        meaningId: "Selamat tinggal",
+      },
+    ],
+  },
+  {
+    order: 201,
+    cefrLevel: "A2",
+    title: "Loja · Comprar algo",
+    description: "História A2 · Preço, pedido, agradecimento.",
+    expectedText: "Quanto custa isto?",
+    meaningId: "Cerita toko — beli sesuatu",
+    tags: ["story", "a2"],
+    turns: [
+      {
+        prompt: "Pergunte o preço:",
+        expectedText: "Quanto custa isto?",
+        meaningId: "Berapa harganya?",
+      },
+      {
+        prompt: "Peça um café:",
+        expectedText: "Um café, por favor",
+        meaningId: "Saya mau kopi, tolong",
+      },
+      {
+        prompt: "Agradeça:",
+        expectedText: "Obrigado",
+        meaningId: "Terima kasih",
+      },
+    ],
+  },
+];
+
 async function main() {
   console.log("Seeding CEFR curriculum…");
   await upsertStages("ENGLISH", ENGLISH);
   await upsertStages("GERMAN", GERMAN);
   await upsertStages("FRENCH", FRENCH);
+  await upsertStages("SPANISH", SPANISH);
+  await upsertStages("ITALIAN", ITALIAN);
+  await upsertStages("PORTUGUESE", PORTUGUESE);
   console.log("Seeding role-play scenarios…");
   await upsertRoleplay("ENGLISH", ROLEPLAY_EN);
   await upsertRoleplay("GERMAN", ROLEPLAY_DE);
   await upsertRoleplay("FRENCH", ROLEPLAY_FR);
+  await upsertRoleplay("SPANISH", ROLEPLAY_ES);
+  await upsertRoleplay("ITALIAN", ROLEPLAY_IT);
+  await upsertRoleplay("PORTUGUESE", ROLEPLAY_PT);
   console.log("Seeding stories…");
   await upsertStories("ENGLISH", STORIES_EN);
   await upsertStories("GERMAN", STORIES_DE);
   await upsertStories("FRENCH", STORIES_FR);
+  await upsertStories("SPANISH", STORIES_ES);
+  await upsertStories("ITALIAN", STORIES_IT);
+  await upsertStories("PORTUGUESE", STORIES_PT);
   console.log(
-    `Done: ${ENGLISH.length} EN + ${GERMAN.length} DE + ${FRENCH.length} FR + role-plays + stories.`
+    `Done: ${ENGLISH.length} EN + ${GERMAN.length} DE + ${FRENCH.length} FR + ${SPANISH.length} ES + ${ITALIAN.length} IT + ${PORTUGUESE.length} PT + role-plays + stories.`
   );
   console.log("Run npm run seed:audio to regenerate reference audio.");
 }
